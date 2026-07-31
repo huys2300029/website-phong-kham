@@ -1,155 +1,396 @@
 "use strict";
 
-(function initializeSweetAlert2() {
-    const nativeAlert = window.alert.bind(window);
+/*
+ * =====================================================
+ * SWEETALERT2 DÙNG CHUNG CHO TOÀN WEBSITE
+ * =====================================================
+ *
+ * Yêu cầu phải tải trước file này:
+ *
+ * /vendor/sweetalert2/sweetalert2.all.min.js
+ */
 
-    if (typeof window.Swal === "undefined") {
+(function initializeSweetAlert2() {
+    const nativeAlert =
+        window.alert.bind(window);
+
+    /*
+     * Kiểm tra thư viện SweetAlert2 đã tải thành công chưa.
+     */
+    if (
+        typeof window.Swal === "undefined" ||
+        typeof window.Swal.fire !== "function"
+    ) {
         console.error(
-            "SweetAlert2 chưa được tải. Hãy kiểm tra /vendor/sweetalert2/sweetalert2.min.js"
+            "[SweetAlert2] Không tải được thư viện. " +
+            "Hãy kiểm tra đường dẫn " +
+            "/vendor/sweetalert2/sweetalert2.all.min.js"
         );
+
         return;
     }
 
-    const swal = window.Swal.mixin({
-        confirmButtonText: "Đồng ý",
-        cancelButtonText: "Hủy",
-        reverseButtons: true,
-        heightAuto: false,
-        focusCancel: false
-    });
+    console.log(
+        "[SweetAlert2] Thư viện đã được tải thành công."
+    );
 
-    window.AppAlert = Object.freeze({
-        fire(options) {
-            return swal.fire(options);
-        },
+    /*
+     * Cấu hình chung cho tất cả thông báo.
+     */
+    const appSwal =
+        window.Swal.mixin({
+            confirmButtonText: "Đồng ý",
+            cancelButtonText: "Hủy",
 
-        success(message, title = "Thành công") {
-            return swal.fire({
-                icon: "success",
-                title,
-                text: String(message ?? "")
-            });
-        },
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#6c757d",
 
-        error(message, title = "Đã xảy ra lỗi") {
-            return swal.fire({
-                icon: "error",
-                title,
-                text: String(message ?? "")
-            });
-        },
+            reverseButtons: true,
+            heightAuto: false,
 
-        warning(message, title = "Cảnh báo") {
-            return swal.fire({
-                icon: "warning",
-                title,
-                text: String(message ?? "")
-            });
-        },
+            allowEscapeKey: true,
+            allowOutsideClick: true,
 
-        info(message, title = "Thông báo") {
-            return swal.fire({
-                icon: "info",
-                title,
-                text: String(message ?? "")
-            });
-        },
+            focusConfirm: true,
+            focusCancel: false
+        });
 
-        confirm(message, options = {}) {
-            return swal.fire({
-                icon: options.icon || "warning",
-                title: options.title || "Xác nhận thao tác",
-                text: String(message ?? "Bạn có chắc chắn muốn tiếp tục?"),
-                showCancelButton: true,
-                confirmButtonText: options.confirmButtonText || "Đồng ý",
-                cancelButtonText: options.cancelButtonText || "Hủy",
-                confirmButtonColor: options.confirmButtonColor || "#d33",
-                cancelButtonColor: options.cancelButtonColor || "#6c757d"
-            });
-        }
-    });
+    /*
+     * API thông báo dùng chung.
+     */
+    window.AppAlert =
+        Object.freeze({
+            fire(options = {}) {
+                return appSwal.fire(
+                    options
+                );
+            },
 
-    // Các lệnh alert() cũ trong JavaScript tương lai cũng hiển thị bằng SweetAlert2.
-    window.alert = function sweetAlertReplacement(message) {
-        if (window.AppAlert) {
-            void window.AppAlert.info(message);
+            success(
+                message,
+                title = "Thành công"
+            ) {
+                return appSwal.fire({
+                    icon: "success",
+                    title,
+                    text: String(
+                        message ?? ""
+                    )
+                });
+            },
+
+            error(
+                message,
+                title = "Đã xảy ra lỗi"
+            ) {
+                return appSwal.fire({
+                    icon: "error",
+                    title,
+                    text: String(
+                        message ?? ""
+                    )
+                });
+            },
+
+            warning(
+                message,
+                title = "Cảnh báo"
+            ) {
+                return appSwal.fire({
+                    icon: "warning",
+                    title,
+                    text: String(
+                        message ?? ""
+                    )
+                });
+            },
+
+            info(
+                message,
+                title = "Thông báo"
+            ) {
+                return appSwal.fire({
+                    icon: "info",
+                    title,
+                    text: String(
+                        message ?? ""
+                    )
+                });
+            },
+
+            confirm(
+                message,
+                options = {}
+            ) {
+                return appSwal.fire({
+                    icon:
+                        options.icon ||
+                        "warning",
+
+                    title:
+                        options.title ||
+                        "Xác nhận thao tác",
+
+                    text:
+                        String(
+                            message ??
+                            "Bạn có chắc chắn muốn tiếp tục?"
+                        ),
+
+                    showCancelButton: true,
+
+                    confirmButtonText:
+                        options.confirmButtonText ||
+                        "Đồng ý",
+
+                    cancelButtonText:
+                        options.cancelButtonText ||
+                        "Hủy",
+
+                    confirmButtonColor:
+                        options.confirmButtonColor ||
+                        "#d33",
+
+                    cancelButtonColor:
+                        options.cancelButtonColor ||
+                        "#6c757d",
+
+                    allowOutsideClick: false
+                });
+            }
+        });
+
+    /*
+     * Thay alert() thông thường bằng SweetAlert2.
+     */
+    window.alert =
+        function sweetAlertReplacement(
+            message
+        ) {
+            if (
+                window.AppAlert
+            ) {
+                void window.AppAlert.info(
+                    message
+                );
+
+                return;
+            }
+
+            nativeAlert(
+                message
+            );
+        };
+
+    /*
+     * Xử lý các nút hoặc liên kết có:
+     *
+     * data-confirm-message="Bạn chắc chắn muốn xóa?"
+     */
+    async function handleConfirmTrigger(
+        event
+    ) {
+        const clickedElement =
+            event.target instanceof Element
+                ? event.target
+                : null;
+
+        if (
+            !clickedElement
+        ) {
             return;
         }
 
-        nativeAlert(message);
-    };
+        const trigger =
+            clickedElement.closest(
+                "[data-confirm-message]"
+            );
 
-    async function handleConfirmTrigger(event) {
-        const trigger = event.target.closest("[data-confirm-message]");
-
-        if (!trigger || trigger.dataset.swalConfirmed === "true") {
+        if (
+            !trigger ||
+            trigger.dataset.swalConfirmed ===
+                "true"
+        ) {
             return;
         }
 
         event.preventDefault();
+        event.stopPropagation();
         event.stopImmediatePropagation();
 
-        const result = await window.AppAlert.confirm(
-            trigger.dataset.confirmMessage || "Bạn có chắc chắn muốn tiếp tục?",
-            {
-                title: trigger.dataset.confirmTitle || "Xác nhận thao tác",
-                confirmButtonText: trigger.dataset.confirmButtonText || "Đồng ý",
-                cancelButtonText: trigger.dataset.cancelButtonText || "Hủy"
-            }
-        );
+        const result =
+            await window.AppAlert.confirm(
+                trigger.dataset
+                    .confirmMessage ||
+                    "Bạn có chắc chắn muốn tiếp tục?",
+                {
+                    title:
+                        trigger.dataset
+                            .confirmTitle ||
+                        "Xác nhận thao tác",
 
-        if (!result.isConfirmed) {
+                    confirmButtonText:
+                        trigger.dataset
+                            .confirmButtonText ||
+                        "Đồng ý",
+
+                    cancelButtonText:
+                        trigger.dataset
+                            .cancelButtonText ||
+                        "Hủy"
+                }
+            );
+
+        if (
+            !result.isConfirmed
+        ) {
             return;
         }
 
-        if (trigger.matches("a[href]")) {
-            window.location.assign(trigger.href);
+        /*
+         * Nếu là liên kết thì điều hướng sau khi xác nhận.
+         */
+        if (
+            trigger.matches(
+                "a[href]"
+            )
+        ) {
+            window.location.assign(
+                trigger.href
+            );
+
             return;
         }
 
-        const form = trigger.form || trigger.closest("form");
+        /*
+         * Nếu là nút trong form thì gửi form.
+         */
+        const form =
+            trigger.form ||
+            trigger.closest(
+                "form"
+            );
 
-        if (!form) {
+        if (
+            !form
+        ) {
             return;
         }
 
-        trigger.dataset.swalConfirmed = "true";
+        trigger.dataset.swalConfirmed =
+            "true";
 
-        if (typeof form.requestSubmit === "function") {
-            form.requestSubmit(trigger);
+        if (
+            typeof form.requestSubmit ===
+            "function"
+        ) {
+            form.requestSubmit(
+                trigger
+            );
         } else {
             form.submit();
         }
     }
 
-    function showServerMessages() {
-        document.querySelectorAll("[data-swal-message]").forEach(function (element) {
-            if (element.dataset.swalShown === "true") {
-                return;
+    /*
+     * Hiển thị thông báo được server truyền qua thẻ:
+     *
+     * <div
+     *   data-swal-message="Nội dung"
+     *   data-swal-icon="error"
+     *   data-swal-title="Thông báo">
+     * </div>
+     */
+    async function showServerMessages() {
+        const messageElements =
+            Array.from(
+                document.querySelectorAll(
+                    "[data-swal-message]"
+                )
+            );
+
+        for (
+            const element
+            of messageElements
+        ) {
+            if (
+                element.dataset.swalShown ===
+                "true"
+            ) {
+                continue;
             }
 
-            const message = (element.dataset.swalMessage || "").trim();
+            const message =
+                (
+                    element.dataset
+                        .swalMessage ||
+                    ""
+                ).trim();
 
-            if (!message) {
-                return;
+            if (
+                !message
+            ) {
+                element.remove();
+                continue;
             }
 
-            element.dataset.swalShown = "true";
+            element.dataset.swalShown =
+                "true";
 
-            void swal.fire({
-                icon: element.dataset.swalIcon || "info",
-                title: element.dataset.swalTitle || "Thông báo",
-                text: message,
-                confirmButtonText: element.dataset.swalConfirmText || "Đồng ý"
+            /*
+             * Xóa thẻ thông báo khỏi giao diện.
+             * Thông báo chỉ được hiển thị bằng popup.
+             */
+            element.remove();
+
+            await appSwal.fire({
+                icon:
+                    element.dataset
+                        .swalIcon ||
+                    "info",
+
+                title:
+                    element.dataset
+                        .swalTitle ||
+                    "Thông báo",
+
+                text:
+                    message,
+
+                confirmButtonText:
+                    element.dataset
+                        .swalConfirmText ||
+                    "Đồng ý"
             });
-        });
+        }
     }
 
-    document.addEventListener("click", handleConfirmTrigger, true);
+    /*
+     * Bắt sự kiện xác nhận trước các listener khác.
+     */
+    document.addEventListener(
+        "click",
+        handleConfirmTrigger,
+        true
+    );
 
-    if (document.readyState === "loading") {
-        document.addEventListener("DOMContentLoaded", showServerMessages, { once: true });
+    /*
+     * Chờ HTML tải xong mới đọc thông báo từ server.
+     */
+    if (
+        document.readyState ===
+        "loading"
+    ) {
+        document.addEventListener(
+            "DOMContentLoaded",
+            function onReady() {
+                void showServerMessages();
+            },
+            {
+                once: true
+            }
+        );
     } else {
-        showServerMessages();
+        void showServerMessages();
     }
 })();

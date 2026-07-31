@@ -87,25 +87,25 @@ app.use(
                     "'none'"
                 ],
 
+                /*
+                * CSS bên ngoài được phép tải từ chính website.
+                *
+                * SweetAlert2 bản all.min.js tự tạo một thẻ <style>
+                * trong trình duyệt, vì vậy style-src-elem cần
+                * cho phép style nội tuyến.
+                *
+                * script-src vẫn được bảo vệ bằng nonce,
+                * không mở unsafe-inline cho JavaScript.
+                */
                 'style-src': [
-                    "'self'",
-
-                    (req, res) =>
-                        `'nonce-${res.locals.cspNonce}'`
+                    "'self'"
                 ],
 
                 'style-src-elem': [
                     "'self'",
-
-                    (req, res) =>
-                        `'nonce-${res.locals.cspNonce}'`
+                    "'unsafe-inline'"
                 ],
 
-                /*
-                 * SweetAlert2 và Bootstrap cần cập nhật một số thuộc tính
-                 * style động trên phần tử. Chỉ nới lỏng style attribute;
-                 * script nội tuyến vẫn bắt buộc có nonce.
-                 */
                 'style-src-attr': [
                     "'unsafe-inline'"
                 ],
@@ -159,10 +159,10 @@ app.use(
         strictTransportSecurity:
             isProduction
                 ? {
-                      maxAge: 31536000,
-                      includeSubDomains: true,
-                      preload: false
-                  }
+                    maxAge: 31536000,
+                    includeSubDomains: true,
+                    preload: false
+                }
                 : false
     })
 );
@@ -193,9 +193,11 @@ app.use(
 app.use((req, res, next) => {
     res.setHeader(
         'X-CSP-Build',
-        'sweetalert2-csp-v1'
+        'sweetalert2-csp-v2'
     );
-
+    console.log(
+        'CSP sweetalert2-csp-v2 và MIME nosniff đã được bật.'
+    );
     next();
 });
 
@@ -704,9 +706,8 @@ app.listen(PORT, () => {
     );
 
     console.log(
-        `NODE_ENV: ${
-            process.env.NODE_ENV ||
-            'development'
+        `NODE_ENV: ${process.env.NODE_ENV ||
+        'development'
         }`
     );
 
