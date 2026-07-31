@@ -9,22 +9,24 @@
     <link rel="stylesheet" href="/css/khachHang/lichSuDatLich.css" />
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css"/>
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-    
-<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/vendor/axios/axios.min.js"></script>
-  
-<style nonce="<%= cspNonce %>">
-/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
-.csp-khachhang-datlich-lichsudatlich-ejs-1 { min-height: 100px; }
-</style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
+<script src="/vendor/axios/axios.min.js"></script>
 
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
   <body>
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
     <main class="main">
       <%- include('../header') %>
 
@@ -282,14 +284,14 @@
           if (res.data.success) {
             window.location.href = res.data.payUrl; // Chuyển sang web ZaloPay
           } else {
-            Swal.fire({
+            AppDialog.fire({
               icon: 'warning',
               title: 'Cảnh báo',
               text: res.data.msg
             });
           }
         } catch (error) {
-          Swal.fire({
+          AppDialog.fire({
             icon: 'error',
             title: 'Lỗi',
             text: 'Lỗi hệ thống khi khởi tạo thanh toán.'
@@ -299,7 +301,7 @@
 
       // Hàm xử lý khi bấm nút Hủy
       async function huyLich(id_lichHen) {
-        const result = await Swal.fire({
+        const result = await AppDialog.fire({
           title: 'Bạn có chắc chắn?',
           text: "Bạn có chắc chắn muốn hủy lịch khám này không? Hành động này không thể hoàn tác.",
           icon: 'warning',
@@ -315,7 +317,7 @@
             const res = await axios.post('/huyLich', { id_lichHen });
             
             if (res.data.success) {
-              await Swal.fire({
+              await AppDialog.fire({
                 icon: 'success',
                 title: 'Thành công!',
                 text: 'Đã hủy lịch hẹn thành công!',
@@ -323,14 +325,14 @@
               });
               window.location.reload(); // Load lại trang để cập nhật bảng
             } else {
-              Swal.fire({
+              AppDialog.fire({
                 icon: 'error',
                 title: 'Không thể hủy',
                 text: res.data.msg
               });
             }
           } catch (error) {
-            Swal.fire({
+            AppDialog.fire({
               icon: 'error',
               title: 'Lỗi',
               text: 'Lỗi hệ thống khi hủy lịch.'

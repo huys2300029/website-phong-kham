@@ -12,20 +12,22 @@
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
 
-<style nonce="<%= cspNonce %>">
-/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
-.csp-khachhang-datlich-thongtinlichkham-ejs-3 { padding-top: 100px; padding-bottom: 50px; }
-.csp-khachhang-datlich-thongtinlichkham-ejs-2 { max-width: 600px; padding: 20px; }
-.csp-khachhang-datlich-thongtinlichkham-ejs-1 { letter-spacing: 1px; }
-</style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
-
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 <body>
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
 
 <%- include('../header') %>
 
@@ -93,7 +95,6 @@
     </div>
 </div>
 <%- include('../footer') %>
-<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="/vendor/html2canvas/html2canvas.min.js"></script>
 <script nonce="<%= cspNonce %>">
     document.getElementById('btnDownload').addEventListener('click', function() {
@@ -126,7 +127,7 @@
                 btn.innerHTML = originalText;
                 btn.disabled = false;
                 
-                Swal.fire({
+                AppDialog.fire({
                     icon: 'success',
                     title: 'Đã lưu thành công!',
                     text: 'Vé khám đã được lưu vào thư viện ảnh/thư mục Download của bạn.',
@@ -136,7 +137,7 @@
 
             }).catch(err => {
                 console.error("Lỗi khi tải ảnh:", err);
-                Swal.fire('Lỗi', 'Không thể tạo ảnh, vui lòng chụp màn hình thủ công!', 'error');
+                AppDialog.fire('Lỗi', 'Không thể tạo ảnh, vui lòng chụp màn hình thủ công!', 'error');
                 btn.innerHTML = originalText;
                 btn.disabled = false;
             });

@@ -8,26 +8,23 @@
     <link rel="stylesheet" href="/css/admin/style.css">
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
-<style nonce="<%= cspNonce %>">
-/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
-.csp-admin-quanlybacsi-suabacsi-ejs-9 { background-color: var(--bg-light, #f4f6f9); }
-.csp-admin-quanlybacsi-suabacsi-ejs-8 { max-width: 800px; height: fit-content; }
-.csp-admin-quanlybacsi-suabacsi-ejs-7 { color: var(--primary-color); }
-.csp-admin-quanlybacsi-suabacsi-ejs-6 { color: var(--primary-color); }
-.csp-admin-quanlybacsi-suabacsi-ejs-5 { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #ccc; }
-.csp-admin-quanlybacsi-suabacsi-ejs-4 { width: 80px; height: 80px; border-radius: 8px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; }
-.csp-admin-quanlybacsi-suabacsi-ejs-3 { font-size: 12px; }
-.csp-admin-quanlybacsi-suabacsi-ejs-2 { color: var(--primary-color); }
-.csp-admin-quanlybacsi-suabacsi-ejs-1 { background-color: #e9ecef; }
-</style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
 
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 <body>
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
     <div class="d-flex vh-100 overflow-hidden csp-admin-quanlybacsi-suabacsi-ejs-9">
         <%- include('../sidebar') %>
         
@@ -138,10 +135,9 @@
     <% if (typeof msg !== 'undefined' && msg) { %>
         <script nonce="<%= cspNonce %>">
             document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({ icon: 'error', title: 'Thông báo', text: '<%= msg %>', confirmButtonText: 'Đã hiểu', confirmButtonColor: '#1565C0' });
+                AppDialog.fire({ icon: 'error', title: 'Thông báo', text: '<%= msg %>', confirmButtonText: 'Đã hiểu', confirmButtonColor: '#1565C0' });
             });
         </script>
     <% } %>
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

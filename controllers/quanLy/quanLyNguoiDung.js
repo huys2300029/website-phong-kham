@@ -294,10 +294,30 @@ const postSuaNguoiDung = (req, res) => {
 // 6. Xóa Người Dùng
 const xoaNguoiDung = (req, res) => {
     const id = req.params.id;
-    con.query("DELETE FROM NguoiDung WHERE id = ?", [id], (err) => {
-        if (err) return res.send(`<script>alert('Không thể xóa: ${err.message}'); window.location.href='/admin/quanLyNguoiDung';</script>`);
-        res.redirect('/admin/quanLyNguoiDung');
-    });
+
+    con.query(
+        "DELETE FROM NguoiDung WHERE id = ?",
+        [id],
+        (err) => {
+            if (err) {
+                req.session.uiMessage = {
+                    type: 'error',
+                    title: 'Không thể xóa người dùng',
+                    message: `Không thể xóa: ${err.message}`
+                };
+
+                return res.redirect('/admin/quanLyNguoiDung');
+            }
+
+            req.session.uiMessage = {
+                type: 'success',
+                title: 'Thành công',
+                message: 'Đã xóa người dùng thành công.'
+            };
+
+            return res.redirect('/admin/quanLyNguoiDung');
+        }
+    );
 };
 
 module.exports = { getDanhSachNguoiDung, getThemNguoiDung, postThemNguoiDung, getSuaNguoiDung, postSuaNguoiDung, xoaNguoiDung };

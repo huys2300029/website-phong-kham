@@ -11,70 +11,23 @@
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
 
-    <style nonce="<%= cspNonce %>">
-        .hover-notification:hover {
-            background-color: #f8f9fa;
-            border-left: 4px solid #0d6efd;
-            padding-left: 1.25rem !important;
-        }
-
-        .cursor-pointer {
-            cursor: pointer;
-            text-decoration: none;
-            display: block;
-            transition: all 0.2s;
-        }
-
-        .main-content {
-            margin-left: 250px;
-            width: calc(100% - 250px);
-        }
-
-        .swal2-html-container {
-            margin: 1em 1.6em 0.3em !important;
-        }
-
-        @media (max-width: 992px) {
-            .main-content {
-                margin-left: 0;
-                width: 100%;
-                padding: 16px !important;
-            }
-
-            .notification-item {
-                padding: 16px !important;
-            }
-
-            .notification-header {
-                flex-direction: column;
-                align-items: flex-start !important;
-                gap: 8px;
-            }
-
-            .notification-title {
-                font-size: 16px;
-            }
-
-            .notification-content {
-                max-width: 100% !important;
-                font-size: 14px;
-            }
-        }
-    
-/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
-.csp-bacsi-thongbao-ejs-3 { font-size: 4rem; color: #dee2e6; }
-.csp-bacsi-thongbao-ejs-2 { max-width: 90%; }
-.csp-bacsi-thongbao-ejs-1 { font-size: 1.05rem; }
-</style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
-
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 
 <body>
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
 
     <audio id="sound-notification" src="/sounds/thongBao.mp3" preload="auto"></audio>
 
@@ -178,8 +131,6 @@
 
         </div>
     </div>
-
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script nonce="<%= cspNonce %>">
         let currentUnreadCount = document.querySelectorAll('[id^="badge-"]').length;
 
@@ -348,7 +299,7 @@
             const isInvalidId = !idYeuCau || idYeuCau === 'null' || idYeuCau === 'undefined' || idYeuCau === '';
 
             if (isInvalidId) {
-                return Swal.fire({
+                return AppDialog.fire({
                     title: tieuDeMacDinh || 'Thông báo',
                     text: noiDungMacDinh || '',
                     icon: 'info',
@@ -359,11 +310,11 @@
                 });
             }
 
-            Swal.fire({
+            AppDialog.fire({
                 title: 'Đang tải thông tin...',
                 allowOutsideClick: false,
                 didOpen: function() {
-                    Swal.showLoading();
+                    AppDialog.showLoading();
                 }
             });
 
@@ -372,7 +323,7 @@
                 const data = await res.json();
 
                 if (!data.success) {
-                    return Swal.fire({
+                    return AppDialog.fire({
                         title: tieuDeMacDinh || 'Thông báo',
                         text: noiDungMacDinh || '',
                         icon: 'warning',
@@ -441,7 +392,7 @@
                     `;
                 }
 
-                Swal.fire({
+                AppDialog.fire({
                     title: 'Chi tiết đổi lịch',
                     html: thongTinChungHtml + statusHtml,
                     icon: 'info',
@@ -455,7 +406,7 @@
             } catch (e) {
                 console.error(e);
 
-                Swal.fire('Lỗi', 'Không thể kết nối đến máy chủ để lấy chi tiết.', 'error')
+                AppDialog.fire('Lỗi', 'Không thể kết nối đến máy chủ để lấy chi tiết.', 'error')
                     .then(function() {
                         window.location.reload();
                     });

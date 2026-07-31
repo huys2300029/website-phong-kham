@@ -12,165 +12,23 @@
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
 
-<style nonce="<%= cspNonce %>">
-        .patient-info-list li {
-            margin-bottom: 12px;
-            color: #374151;
-        }
-
-        .w-icon {
-            width: 24px;
-            color: #0d6efd;
-        }
-
-        .history-btn {
-            border-radius: 999px;
-            font-weight: 700;
-        }
-
-        .history-count-badge {
-            background-color: #e0f2fe;
-            color: #0369a1;
-            border-radius: 999px;
-            padding: 5px 12px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        .history-modal-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .history-modal-table thead th {
-            background-color: #0d6efd;
-            color: #fff;
-            padding: 12px;
-            font-size: 14px;
-            white-space: nowrap;
-            vertical-align: middle;
-        }
-
-        .history-modal-table tbody td {
-            padding: 12px;
-            border-bottom: 1px solid #e5e7eb;
-            font-size: 14px;
-            vertical-align: top;
-        }
-
-        .history-note-cell {
-            white-space: pre-wrap;
-            max-width: 360px;
-            color: #374151;
-        }
-
-        .history-date-badge {
-            background-color: #f3f4f6;
-            color: #111827;
-            padding: 6px 10px;
-            border-radius: 999px;
-            font-weight: 700;
-            white-space: nowrap;
-            display: inline-block;
-        }
-
-        .history-specialty {
-            font-weight: 700;
-            color: #0d6efd;
-        }
-
-        .history-pagination {
-            display: flex;
-            justify-content: center;
-            gap: 6px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-
-        .history-page-btn {
-            border: 1px solid #0d6efd;
-            background: #fff;
-            color: #0d6efd;
-            border-radius: 10px;
-            padding: 6px 12px;
-            font-weight: 700;
-        }
-
-        .history-page-btn.active {
-            background: #0d6efd;
-            color: #fff;
-        }
-
-        .history-page-btn:disabled {
-            opacity: 0.45;
-            cursor: not-allowed;
-        }
-
-        .history-mobile-card {
-            display: none;
-            border: 1px solid #e5e7eb;
-            border-radius: 14px;
-            padding: 14px;
-            margin-bottom: 12px;
-            background: #fff;
-            text-align: left;
-        }
-
-        .history-mobile-label {
-            font-size: 12px;
-            font-weight: 800;
-            color: #64748b;
-            text-transform: uppercase;
-            margin-bottom: 3px;
-        }
-
-        .history-mobile-value {
-            color: #111827;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 15px;
-            }
-
-            .history-table-wrapper {
-                display: none;
-            }
-
-            .history-mobile-card {
-                display: block;
-            }
-
-            .swal2-popup {
-                width: 95% !important;
-                padding: 16px !important;
-            }
-
-            .history-note-cell {
-                max-width: 100%;
-            }
-
-            .d-flex.justify-content-between.align-items-center.mb-4 {
-                align-items: flex-start !important;
-                gap: 12px;
-                flex-direction: column;
-            }
-        }
-    
-/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
-.csp-bacsi-chandoan-ejs-1 { white-space: pre-wrap; }
-</style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
-
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 
 <body>
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
 
     <%- include('sidebar', { page: page }) %>
 
@@ -337,10 +195,7 @@
     <script nonce="<%= cspNonce %>" id="dataLichSuKham" type="application/json">
         <%- JSON.stringify(lichSu || []) %>
     </script>
-
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script nonce="<%= cspNonce %>">
+<script nonce="<%= cspNonce %>">
         const lichSuKham = JSON.parse(
             document.getElementById('dataLichSuKham').textContent || '[]'
         );
@@ -518,7 +373,7 @@
         });
 
         function moLichSuKham() {
-            Swal.fire({
+            AppDialog.fire({
                 title: 'Lịch sử khám bệnh',
                 width: 950,
                 html: `
@@ -545,7 +400,7 @@
         document.getElementById('formChanDoan').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            Swal.fire({
+            AppDialog.fire({
                 title: 'Hoàn thành ca khám?',
                 text: "Bạn có chắc chắn muốn lưu kết quả và hoàn thành ca khám này không?",
                 icon: 'question',
@@ -557,11 +412,11 @@
                 reverseButtons: true
             }).then((result) => {
                 if (result.isConfirmed) {
-                    Swal.fire({
+                    AppDialog.fire({
                         title: 'Đang lưu kết quả...',
                         allowOutsideClick: false,
                         didOpen: () => {
-                            Swal.showLoading();
+                            AppDialog.showLoading();
                         }
                     });
 

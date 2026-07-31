@@ -40,7 +40,7 @@ app.disable('x-powered-by');
 
 /*
  * =====================================================
- * TẠO CSP NONCE CHO MỖI RESPONSE
+ * TẠO CSP NONCE CHO JAVASCRIPT NỘI TUYẾN
  * =====================================================
  */
 app.use((req, res, next) => {
@@ -63,13 +63,9 @@ const getCspNonce = (req, res) =>
  * CẤU HÌNH HELMET VÀ CSP
  * =====================================================
  *
- * SweetAlert2 sử dụng:
- *
- * /vendor/sweetalert2/sweetalert2.min.css
- * /vendor/sweetalert2/sweetalert2.min.js
- *
- * Không dùng sweetalert2.all.min.js vì bản đó tự chèn
- * thẻ <style> không có nonce và sẽ bị CSP chặn.
+ * Toàn bộ CSS của dự án được tải từ thư mục Public.
+ * Bootstrap Modal và Toast dùng CSS tĩnh trong thư mục Public.
+ * JavaScript nội tuyến trong EJS vẫn phải có nonce.
  */
 app.use(
     helmet({
@@ -81,45 +77,26 @@ app.use(
                     "'self'"
                 ],
 
-                /*
-                 * Cho phép JavaScript từ website hiện tại.
-                 * Script nội tuyến phải có nonce.
-                 */
                 'script-src': [
                     "'self'",
                     getCspNonce
                 ],
 
-                /*
-                 * Không cho phép onclick="", onerror=""...
-                 */
                 'script-src-attr': [
                     "'none'"
                 ],
 
-                /*
-                 * Cho phép file CSS của chính website.
-                 * Style nội tuyến phải có nonce.
-                 */
                 'style-src': [
-                    "'self'",
-                    getCspNonce
+                    "'self'"
                 ],
 
-                /*
-                 * Áp dụng cho <link> và <style>.
-                 *
-                 * File CSS ngoài được phép từ 'self'.
-                 * Thẻ <style> nội tuyến phải có nonce.
-                 */
                 'style-src-elem': [
-                    "'self'",
-                    getCspNonce
+                    "'self'"
                 ],
 
                 /*
-                 * SweetAlert2 và Bootstrap thay đổi thuộc tính
-                 * style của phần tử trong lúc chạy.
+                 * Bootstrap, MapLibre và một số thành phần giao diện
+                 * cần thay đổi thuộc tính style trong lúc chạy.
                  */
                 'style-src-attr': [
                     "'unsafe-inline'"
@@ -164,10 +141,6 @@ app.use(
                     "'none'"
                 ],
 
-                /*
-                 * Chỉ nâng cấp HTTP lên HTTPS trên Render.
-                 * Không bật ở localhost.
-                 */
                 'upgrade-insecure-requests':
                     isProduction
                         ? []
@@ -199,7 +172,7 @@ app.use(
 app.use((req, res, next) => {
     res.setHeader(
         'X-CSP-Build',
-        'sweetalert2-static-css-v3'
+        'bootstrap-ui-v1'
     );
 
     next();
@@ -275,6 +248,7 @@ const noCachePaths = new Set([
     '/khachHangTaoTaiKhoan',
     '/thayDoiThongTin',
     '/capNhatThongTin',
+    '/lichSuDatLichKham',
     '/sitemap.xml'
 ]);
 
@@ -381,6 +355,18 @@ app.use((req, res, next) => {
 
     res.locals.page = '';
 
+    /*
+     * Thông báo một lần sau khi redirect.
+     * Controller có thể gán req.session.uiMessage.
+     */
+    res.locals.uiMessage =
+        req.session.uiMessage ||
+        null;
+
+    if (req.session.uiMessage) {
+        delete req.session.uiMessage;
+    }
+
     next();
 });
 
@@ -458,24 +444,6 @@ app.use(
             __dirname,
             'node_modules',
             'bootstrap',
-            'dist'
-        ),
-
-        vendorStaticOptions
-    )
-);
-
-/*
- * SweetAlert2
- */
-app.use(
-    '/vendor/sweetalert2',
-
-    express.static(
-        path.join(
-            __dirname,
-            'node_modules',
-            'sweetalert2',
             'dist'
         ),
 
@@ -711,6 +679,6 @@ app.listen(PORT, () => {
     );
 
     console.log(
-        'CSP sweetalert2-static-css-v3 đã được bật.'
+        'CSP bootstrap-ui-v1 đã được bật.'
     );
 });

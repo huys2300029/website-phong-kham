@@ -10,80 +10,23 @@
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
 <link rel="stylesheet" href="/css/khachHang/home.css">
 
-    <style nonce="<%= cspNonce %>">
-        body {
-            background-color: #f4f6f9;
-        }
-
-        .wrapper-page {
-            margin-top: 100px;
-            margin-bottom: 60px;
-            min-height: 60vh;
-        }
-
-        .content-container {
-            background-color: #ffffff;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-        }
-
-        .specialty-btn {
-            border-radius: 50px;
-            padding: 10px 25px;
-            font-weight: 600;
-            margin: 6px;
-            transition: all 0.3s ease;
-            border-width: 2px;
-        }
-
-        .specialty-btn:hover,
-        .specialty-btn.active {
-            background-color: #0d6efd;
-            color: white;
-            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
-            border-color: #0d6efd;
-            transform: translateY(-2px);
-        }
-
-        .doctor-card {
-            border: 1px solid #edf2f7;
-            border-radius: 15px;
-            overflow: hidden;
-            transition: box-shadow 0.3s ease;
-            background-color: #ffffff;
-        }
-
-        .doctor-card:hover {
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
-        }
-
-        .doctor-img {
-            height: 250px;
-            object-fit: cover;
-            width: 100%;
-            border-bottom: 3px solid #0d6efd;
-        }
-
-        .doctor-price {
-            font-size: 1.2rem;
-            color: #dc3545;
-            font-weight: bold;
-        }
-    
-/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
-.csp-khachhang-datlich-datlichchuyengia-ejs-3 { width: 3rem; height: 3rem; }
-.csp-khachhang-datlich-datlichchuyengia-ejs-2 { width: 160px; height: 160px; object-fit: cover; }
-.csp-khachhang-datlich-datlichchuyengia-ejs-1 { width: 60px; margin: 15px auto; border-top: 3px solid #0d6efd; opacity: 1; }
-</style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
-
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 
 <body>
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
 
     <%- include('../header') %>
 
@@ -146,7 +89,6 @@
                 </div>
             </div>
         </div>
-        <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script nonce="<%= cspNonce %>">
             document.addEventListener('DOMContentLoaded', () => {
                 const specialtyBtns = document.querySelectorAll('.specialty-btn');

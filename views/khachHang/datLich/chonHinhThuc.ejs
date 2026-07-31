@@ -13,190 +13,23 @@
 
     <link rel="stylesheet" href="/css/khachHang/home.css">
 
-    <style nonce="<%= cspNonce %>">
-        .choice-link {
-            display: block;
-            height: 100%;
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .choice-link:hover,
-        .choice-link:focus {
-            color: inherit;
-            text-decoration: none;
-        }
-
-        .choice-card {
-            height: 100%;
-            transition:
-                transform 0.3s ease,
-                box-shadow 0.3s ease;
-            cursor: pointer;
-            border-radius: 20px;
-            border: 2px solid #e9ecef;
-            background: #fff;
-            overflow: hidden;
-        }
-
-        .choice-link:hover .choice-card,
-        .choice-link:focus-visible .choice-card {
-            transform: translateY(-4px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-
-        .choice-link:focus-visible {
-            outline: 3px solid rgba(13, 110, 253, 0.35);
-            outline-offset: 4px;
-            border-radius: 20px;
-        }
-
-        .choice-link:hover .btn-outline-primary,
-        .choice-link:focus-visible .btn-outline-primary {
-            background-color: #0d6efd;
-            color: #fff;
-        }
-
-        .choice-link:hover .btn-outline-success,
-        .choice-link:focus-visible .btn-outline-success {
-            background-color: #198754;
-            color: #fff;
-        }
-
-        .container {
-            margin-top: 40px;
-        }
-
-        .icon-box {
-            width: 88px;
-            height: 88px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3.2rem;
-            margin: 0 auto 20px;
-        }
-
-        .icon-box-success {
-            background: rgba(25, 135, 84, 0.12);
-        }
-
-        .icon-box-primary {
-            background: rgba(13, 110, 253, 0.12);
-        }
-
-        .choice-title {
-            font-size: 1.45rem;
-            font-weight: 800;
-            color: #212529;
-            margin-bottom: 10px;
-        }
-
-        .choice-desc {
-            color: #6c757d;
-            line-height: 1.6;
-            min-height: 78px;
-        }
-
-        .info-list {
-            text-align: left;
-            margin-top: 20px;
-            margin-bottom: 20px;
-            padding-left: 0;
-            list-style: none;
-        }
-
-        .info-list li {
-            display: flex;
-            align-items: flex-start;
-            gap: 10px;
-            margin-bottom: 12px;
-            color: #495057;
-            font-size: 0.96rem;
-            line-height: 1.5;
-        }
-
-        .info-list i {
-            margin-top: 4px;
-            min-width: 18px;
-        }
-
-        .price-note {
-            border-radius: 14px;
-            padding: 12px 14px;
-            font-size: 0.95rem;
-            line-height: 1.5;
-            margin-top: auto;
-            margin-bottom: 18px;
-        }
-
-        .price-note-success {
-            background: rgba(25, 135, 84, 0.08);
-            color: #146c43;
-            border: 1px solid rgba(25, 135, 84, 0.18);
-        }
-
-        .price-note-primary {
-            background: rgba(13, 110, 253, 0.08);
-            color: #084298;
-            border: 1px solid rgba(13, 110, 253, 0.18);
-        }
-
-        .badge-choice {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: fit-content;
-            margin: 0 auto 15px;
-            padding: 7px 14px;
-            border-radius: 999px;
-            font-size: 0.85rem;
-            font-weight: 700;
-        }
-
-        .badge-choice-success {
-            background: rgba(25, 135, 84, 0.12);
-            color: #198754;
-        }
-
-        .badge-choice-primary {
-            background: rgba(13, 110, 253, 0.12);
-            color: #0d6efd;
-        }
-
-        .note-box {
-            max-width: 900px;
-            margin: 35px auto 0;
-            border-radius: 18px;
-            border: 1px solid rgba(13, 110, 253, 0.15);
-            background: #ffffff;
-            padding: 20px 24px;
-        }
-
-        .note-box i {
-            color: #0d6efd;
-        }
-
-        @media (max-width: 768px) {
-            .choice-desc {
-                min-height: auto;
-            }
-
-            .container {
-                margin-top: 20px;
-            }
-        }
-    </style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
-
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 
 <body class="bg-light">
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
 
     <%- include("../header") %>
 
@@ -275,9 +108,6 @@
         </main>
 
         <%- include("../footer") %>
-
-            <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
 </body>
 
 </html>

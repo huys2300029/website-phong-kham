@@ -1,0 +1,1248 @@
+/*
+ * CSS được chuyển từ các khối CSS trước đây nằm trong EJS.
+ * Không đặt CSS trực tiếp trong EJS để tương thích CSP nghiêm ngặt.
+ */
+
+/* ===== Nguồn: views/admin/dashboard.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-dashboard-ejs-5 { font-size: 2.5rem; }
+.csp-admin-dashboard-ejs-4 { font-size: 2.5rem; }
+.csp-admin-dashboard-ejs-3 { font-size: 2.5rem; }
+.csp-admin-dashboard-ejs-2 { font-size: 2.5rem; }
+.csp-admin-dashboard-ejs-1 { font-size: 2.5rem; }
+
+/* ===== Nguồn: views/admin/quanLyBacSi/quanLyBacSi.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlybacsi-quanlybacsi-ejs-11 { background-color: #f4f6f9; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-10 { color: var(--primary-color, #2c3e50); }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-9 { width: 5%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-8 { width: 20%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-7 { width: 15%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-6 { width: 20%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-5 { width: 25%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-4 { width: 15%; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-3 { color: var(--primary-color); }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-2 { max-width: 200px; }
+.csp-admin-quanlybacsi-quanlybacsi-ejs-1 { font-size: 48px; opacity: 0.2; }
+
+/* ===== Nguồn: views/admin/quanLyBacSi/suaBacSi.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlybacsi-suabacsi-ejs-9 { background-color: var(--bg-light, #f4f6f9); }
+.csp-admin-quanlybacsi-suabacsi-ejs-8 { max-width: 800px; height: fit-content; }
+.csp-admin-quanlybacsi-suabacsi-ejs-7 { color: var(--primary-color); }
+.csp-admin-quanlybacsi-suabacsi-ejs-6 { color: var(--primary-color); }
+.csp-admin-quanlybacsi-suabacsi-ejs-5 { width: 80px; height: 80px; object-fit: cover; border-radius: 8px; border: 1px solid #ccc; }
+.csp-admin-quanlybacsi-suabacsi-ejs-4 { width: 80px; height: 80px; border-radius: 8px; background-color: #e9ecef; display: flex; align-items: center; justify-content: center; border: 1px dashed #ccc; }
+.csp-admin-quanlybacsi-suabacsi-ejs-3 { font-size: 12px; }
+.csp-admin-quanlybacsi-suabacsi-ejs-2 { color: var(--primary-color); }
+.csp-admin-quanlybacsi-suabacsi-ejs-1 { background-color: #e9ecef; }
+
+/* ===== Nguồn: views/admin/quanLyBacSi/themBacSi.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlybacsi-thembacsi-ejs-6 { background-color: var(--bg-light, #f4f6f9); }
+.csp-admin-quanlybacsi-thembacsi-ejs-5 { max-width: 800px; height: fit-content; }
+.csp-admin-quanlybacsi-thembacsi-ejs-4 { color: var(--primary-color); }
+.csp-admin-quanlybacsi-thembacsi-ejs-3 { color: var(--primary-color); }
+.csp-admin-quanlybacsi-thembacsi-ejs-2 { color: var(--primary-color); }
+.csp-admin-quanlybacsi-thembacsi-ejs-1 { background-color: #e9ecef; }
+
+/* ===== Nguồn: views/admin/quanLyCaKham/quanLyCaKham.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlycakham-quanlycakham-ejs-16 { background-color: #f4f6f9; }
+.csp-admin-quanlycakham-quanlycakham-ejs-15 { padding: 6px; text-align: center; border: 1px solid #ccc; border-radius: 4px; width: 140px; cursor: pointer; }
+.csp-admin-quanlycakham-quanlycakham-ejs-14 { color: #666; font-size: 11px; margin-top: 3px; display: block; text-align: center; }
+.csp-admin-quanlycakham-quanlycakham-ejs-13 { max-width: 200px; }
+.csp-admin-quanlycakham-quanlycakham-ejs-12 { width: 15%; }
+.csp-admin-quanlycakham-quanlycakham-ejs-11 { width: 25%; }
+.csp-admin-quanlycakham-quanlycakham-ejs-10 { width: 30%; }
+.csp-admin-quanlycakham-quanlycakham-ejs-9 { width: 15%; text-align: center; }
+.csp-admin-quanlycakham-quanlycakham-ejs-8 { font-weight: 600; vertical-align: middle; background-color: #f9f9f9; border-right: 2px solid #eee; }
+.csp-admin-quanlycakham-quanlycakham-ejs-7 { font-weight: bold; color: var(--primary-color); }
+.csp-admin-quanlycakham-quanlycakham-ejs-6 { color: #999; font-size: 12px; }
+.csp-admin-quanlycakham-quanlycakham-ejs-5 { text-align: center; padding: 30px; color: #888; }
+.csp-admin-quanlycakham-quanlycakham-ejs-4 { font-size: 18px; }
+.csp-admin-quanlycakham-quanlycakham-ejs-3 { background: #f5f5f5; }
+.csp-admin-quanlycakham-quanlycakham-ejs-2 { background: #f5f5f5; }
+.csp-admin-quanlycakham-quanlycakham-ejs-1 { color: #1565c0; }
+
+/* ===== Nguồn: views/admin/quanLyNguoiDung/quanLyNguoiDung.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-10 { background-color: #f4f6f9; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-9 { color: var(--primary-color, #2c3e50); }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-8 { width: 5%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-7 { width: 20%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-6 { width: 15%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-5 { width: 20%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-4 { width: 15%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-3 { width: 15%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-2 { width: 10%; }
+.csp-admin-quanlynguoidung-quanlynguoidung-ejs-1 { font-size: 48px; opacity: 0.2; }
+
+/* ===== Nguồn: views/admin/quanLyNguoiDung/suaNguoiDung.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlynguoidung-suanguoidung-ejs-2 { background-color: #f4f6f9; }
+.csp-admin-quanlynguoidung-suanguoidung-ejs-1 { color: var(--primary-color, #2c3e50); }
+
+/* ===== Nguồn: views/admin/quanLyNguoiDung/themNguoiDung.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlynguoidung-themnguoidung-ejs-3 { background-color: var(--bg-light, #f4f6f9); }
+.csp-admin-quanlynguoidung-themnguoidung-ejs-2 { color: #1565c0; }
+
+/* ===== Nguồn: views/admin/quanLyPhongKham/quanLyPhongKham.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-10 { background-color: #f4f6f9; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-9 { width: 5%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-8 { width: 10%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-7 { width: 15%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-6 { width: 25%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-5 { width: 20%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-4 { width: 10%; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-3 { color: var(--primary-color); }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-2 { color: #999; font-style: italic; }
+.csp-admin-quanlyphongkham-quanlyphongkham-ejs-1 { color: #ccc; }
+
+/* ===== Nguồn: views/admin/quanLyPhongKham/themPhongMoi.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-quanlyphongkham-themphongmoi-ejs-3 { background-color: var(--bg-light, #f4f6f9); }
+.csp-admin-quanlyphongkham-themphongmoi-ejs-2 { max-width: 800px; height: fit-content; }
+.csp-admin-quanlyphongkham-themphongmoi-ejs-1 { background-color: #e9ecef; }
+
+/* ===== Nguồn: views/admin/thongBao.ejs - khối 1 ===== */
+.hover-notification:hover { 
+            background-color: #f8f9fa; 
+            border-left: 4px solid #0d6efd; 
+            padding-left: 1.25rem !important; 
+        }
+
+        .cursor-pointer { 
+            cursor: pointer; 
+            text-decoration: none; 
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px !important;
+            }
+
+            .notification-item {
+                padding: 16px !important;
+            }
+
+            .notification-title {
+                font-size: 16px;
+            }
+
+            .notification-content {
+                font-size: 14px !important;
+            }
+
+            .notification-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 8px;
+            }
+
+            .notification-bottom {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 10px;
+            }
+        }
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-thongbao-ejs-4 { font-size: 2rem; }
+.csp-admin-thongbao-ejs-3 { font-size: 4rem; color: #dee2e6; }
+.csp-admin-thongbao-ejs-2 { font-size: 1.05rem; }
+.csp-admin-thongbao-ejs-1 { font-size: 1.05rem; }
+
+/* ===== Nguồn: views/admin/thongKe.ejs - khối 1 ===== */
+*,
+        *::before,
+        *::after {
+            animation: none !important;
+            transition: none !important;
+            scroll-behavior: auto !important;
+        }
+
+        .tab-pane,
+        .fade,
+        .collapsing,
+        .modal.fade .modal-dialog,
+        .carousel-item,
+        .progress-bar,
+        .toast.fade {
+            transition: none !important;
+            animation: none !important;
+        }
+
+        .btn,
+        .form-control,
+        .nav-link,
+        .card,
+        .summary-card,
+        .chart-card,
+        .table-card,
+        .filter-card,
+        .badge-status {
+            transition: none !important;
+            animation: none !important;
+        }
+
+        canvas {
+            transition: none !important;
+            animation: none !important;
+        }
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-admin-thongke-ejs-2 { color: var(--primary-color, #2c3e50); border-left: 5px solid var(--primary-color); padding-left: 10px; }
+.csp-admin-thongke-ejs-1 { min-width: 180px; }
+
+/* ===== Nguồn: views/bacSi/chanDoan.ejs - khối 1 ===== */
+.patient-info-list li {
+            margin-bottom: 12px;
+            color: #374151;
+        }
+
+        .w-icon {
+            width: 24px;
+            color: #0d6efd;
+        }
+
+        .history-btn {
+            border-radius: 999px;
+            font-weight: 700;
+        }
+
+        .history-count-badge {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            border-radius: 999px;
+            padding: 5px 12px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .history-modal-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .history-modal-table thead th {
+            background-color: #0d6efd;
+            color: #fff;
+            padding: 12px;
+            font-size: 14px;
+            white-space: nowrap;
+            vertical-align: middle;
+        }
+
+        .history-modal-table tbody td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+            vertical-align: top;
+        }
+
+        .history-note-cell {
+            white-space: pre-wrap;
+            max-width: 360px;
+            color: #374151;
+        }
+
+        .history-date-badge {
+            background-color: #f3f4f6;
+            color: #111827;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-weight: 700;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .history-specialty {
+            font-weight: 700;
+            color: #0d6efd;
+        }
+
+        .history-pagination {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .history-page-btn {
+            border: 1px solid #0d6efd;
+            background: #fff;
+            color: #0d6efd;
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-weight: 700;
+        }
+
+        .history-page-btn.active {
+            background: #0d6efd;
+            color: #fff;
+        }
+
+        .history-page-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .history-mobile-card {
+            display: none;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 12px;
+            background: #fff;
+            text-align: left;
+        }
+
+        .history-mobile-label {
+            font-size: 12px;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            margin-bottom: 3px;
+        }
+
+        .history-mobile-value {
+            color: #111827;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 15px;
+            }
+
+            .history-table-wrapper {
+                display: none;
+            }
+
+            .history-mobile-card {
+                display: block;
+            }
+
+            .swal2-popup {
+                width: 95% !important;
+                padding: 16px !important;
+            }
+
+            .history-note-cell {
+                max-width: 100%;
+            }
+
+            .d-flex.justify-content-between.align-items-center.mb-4 {
+                align-items: flex-start !important;
+                gap: 12px;
+                flex-direction: column;
+            }
+        }
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-chandoan-ejs-1 { white-space: pre-wrap; }
+
+/* ===== Nguồn: views/bacSi/khamBenh.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-khambenh-ejs-2 { display: none; }
+.csp-bacsi-khambenh-ejs-1 { cursor: pointer; }
+
+/* ===== Nguồn: views/bacSi/lichSuKhamBenh.ejs - khối 1 ===== */
+body {
+            background-color: #f5f7fb;
+        }
+
+        .main-content {
+            padding: 25px;
+        }
+
+        .page-title {
+            font-weight: 800;
+            color: #1565c0;
+            position: relative;
+            padding-left: 16px;
+        }
+
+        .filter-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 18px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #eef2f7;
+        }
+
+        .table-card {
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+            border: 1px solid #eef2f7;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background: #0d6efd;
+            color: white;
+            font-size: 14px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            vertical-align: middle;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .badge-success-soft {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 7px 12px;
+            border-radius: 999px;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .patient-name {
+            font-weight: 700;
+            color: #111827;
+        }
+
+        .empty-box {
+            background: #ffffff;
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 50px 20px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .empty-box i {
+            font-size: 48px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+        }
+
+        .btn-detail {
+            border-radius: 999px;
+            font-weight: 700;
+            padding: 6px 13px;
+        }
+
+        .pagination .page-link {
+            border-radius: 10px;
+            margin: 0 3px;
+            color: #0d6efd;
+            font-weight: 600;
+        }
+
+        .pagination .active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            color: white;
+        }
+
+        .badge-id {
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 999px;
+        }
+
+        @media (max-width: 992px) {
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .page-title {
+                font-size: 22px;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+            }
+
+            .table {
+                min-width: 1100px;
+            }
+
+            .filter-actions {
+                width: 100%;
+            }
+
+            .filter-actions button,
+            .filter-actions a {
+                width: 100%;
+            }
+
+            .filter-card form .col-md-4,
+            .filter-card form .col-md-8 {
+                width: 100%;
+            }
+
+            .pagination {
+                gap: 6px;
+            }
+
+            .pagination .page-link {
+                min-width: 42px;
+                text-align: center;
+            }
+        }
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-lichsukhambenh-ejs-1 { min-height: 100px; white-space: pre-wrap; }
+
+/* ===== Nguồn: views/bacSi/sidebar.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-sidebar-ejs-1 { font-size: 0.95rem; }
+
+/* ===== Nguồn: views/bacSi/thongBao.ejs - khối 1 ===== */
+.hover-notification:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid #0d6efd;
+            padding-left: 1.25rem !important;
+        }
+
+        .cursor-pointer {
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            transition: all 0.2s;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            width: calc(100% - 250px);
+        }
+
+        .swal2-html-container {
+            margin: 1em 1.6em 0.3em !important;
+        }
+
+        @media (max-width: 992px) {
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 16px !important;
+            }
+
+            .notification-item {
+                padding: 16px !important;
+            }
+
+            .notification-header {
+                flex-direction: column;
+                align-items: flex-start !important;
+                gap: 8px;
+            }
+
+            .notification-title {
+                font-size: 16px;
+            }
+
+            .notification-content {
+                max-width: 100% !important;
+                font-size: 14px;
+            }
+        }
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-thongbao-ejs-3 { font-size: 4rem; color: #dee2e6; }
+.csp-bacsi-thongbao-ejs-2 { max-width: 90%; }
+.csp-bacsi-thongbao-ejs-1 { font-size: 1.05rem; }
+
+/* ===== Nguồn: views/bacSi/xemLich.ejs - khối 1 ===== */
+/* ép 7 cột luôn nằm 1 hàng trên màn hình lớn */
+        .row-cols-7 > * {
+            flex: 0 0 calc(100% / 7);
+            max-width: calc(100% / 7);
+        }
+
+        /* responsive mobile: chia 2 cột cho dễ nhìn với số lượng ngày lớn */
+        @media (max-width: 768px) {
+            .row-cols-7 > * {
+                flex: 0 0 calc(100% / 2);
+                max-width: calc(100% / 2);
+            }
+        }
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-bacsi-xemlich-ejs-3 { max-width: 200px; }
+.csp-bacsi-xemlich-ejs-2 { cursor: pointer; caret-color: transparent; }
+.csp-bacsi-xemlich-ejs-1 { background: transparent; border: none; box-shadow: none; }
+
+/* ===== Nguồn: views/khachHang/chiDuong.ejs - khối 1 ===== */
+body {
+      background-color: #f5f8fb;
+    }
+
+    .map-page {
+      padding: 80px 0 60px;
+      min-height: 100vh;
+    }
+
+    .map-hero {
+      background: linear-gradient(135deg, #0d6efd, #0b5ed7);
+      color: #fff;
+      border-radius: 24px;
+      padding: 36px;
+      margin-bottom: 30px;
+      box-shadow: 0 12px 30px rgba(13, 110, 253, 0.18);
+    }
+
+    .map-hero h1 {
+      font-size: 34px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .map-hero p {
+      font-size: 17px;
+      margin-bottom: 0;
+      opacity: 0.95;
+    }
+
+    .map-card {
+      background-color: #fff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
+    .map-info {
+      padding: 28px;
+    }
+
+    .map-info h3 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1f2937;
+      margin-bottom: 16px;
+    }
+
+    .info-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+      color: #374151;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+
+    .info-item i {
+      width: 22px;
+      color: #0d6efd;
+      font-size: 18px;
+      margin-top: 4px;
+    }
+
+    .map-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .btn-direction {
+      background-color: #0d6efd;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .btn-direction:hover {
+      background-color: #0b5ed7;
+      color: #fff;
+    }
+
+    .btn-direction:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .map-frame-wrapper {
+      width: 100%;
+      height: 500px;
+      background-color: #e5e7eb;
+    }
+
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+
+    .status-box {
+      display: none;
+      margin-top: 18px;
+      padding: 14px 16px;
+      border-radius: 14px;
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    .status-box.show {
+      display: block;
+    }
+
+    .status-box.info {
+      background-color: #eef5ff;
+      color: #084298;
+      border: 1px solid #cfe2ff;
+    }
+
+    .status-box.error {
+      background-color: #fff1f2;
+      color: #842029;
+      border: 1px solid #f5c2c7;
+    }
+
+    .status-box.warning {
+      background-color: #fff7e6;
+      color: #7c4a03;
+      border: 1px solid #ffe0a3;
+    }
+
+    @media (max-width: 768px) {
+      .map-page {
+        padding: 100px 12px 40px;
+      }
+
+      .map-hero {
+        padding: 26px;
+      }
+
+      .map-hero h1 {
+        font-size: 27px;
+      }
+
+      .map-frame-wrapper {
+        height: 360px;
+      }
+
+      .map-info {
+        padding: 22px;
+      }
+
+      .map-actions button,
+      .map-actions a {
+        width: 100%;
+      }
+    }
+
+/* ===== Nguồn: views/khachHang/datLich/chonHinhThuc.ejs - khối 1 ===== */
+.choice-link {
+            display: block;
+            height: 100%;
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .choice-link:hover,
+        .choice-link:focus {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .choice-card {
+            height: 100%;
+            transition:
+                transform 0.3s ease,
+                box-shadow 0.3s ease;
+            cursor: pointer;
+            border-radius: 20px;
+            border: 2px solid #e9ecef;
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .choice-link:hover .choice-card,
+        .choice-link:focus-visible .choice-card {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .choice-link:focus-visible {
+            outline: 3px solid rgba(13, 110, 253, 0.35);
+            outline-offset: 4px;
+            border-radius: 20px;
+        }
+
+        .choice-link:hover .btn-outline-primary,
+        .choice-link:focus-visible .btn-outline-primary {
+            background-color: #0d6efd;
+            color: #fff;
+        }
+
+        .choice-link:hover .btn-outline-success,
+        .choice-link:focus-visible .btn-outline-success {
+            background-color: #198754;
+            color: #fff;
+        }
+
+        .container {
+            margin-top: 40px;
+        }
+
+        .icon-box {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.2rem;
+            margin: 0 auto 20px;
+        }
+
+        .icon-box-success {
+            background: rgba(25, 135, 84, 0.12);
+        }
+
+        .icon-box-primary {
+            background: rgba(13, 110, 253, 0.12);
+        }
+
+        .choice-title {
+            font-size: 1.45rem;
+            font-weight: 800;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+
+        .choice-desc {
+            color: #6c757d;
+            line-height: 1.6;
+            min-height: 78px;
+        }
+
+        .info-list {
+            text-align: left;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .info-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 12px;
+            color: #495057;
+            font-size: 0.96rem;
+            line-height: 1.5;
+        }
+
+        .info-list i {
+            margin-top: 4px;
+            min-width: 18px;
+        }
+
+        .price-note {
+            border-radius: 14px;
+            padding: 12px 14px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-top: auto;
+            margin-bottom: 18px;
+        }
+
+        .price-note-success {
+            background: rgba(25, 135, 84, 0.08);
+            color: #146c43;
+            border: 1px solid rgba(25, 135, 84, 0.18);
+        }
+
+        .price-note-primary {
+            background: rgba(13, 110, 253, 0.08);
+            color: #084298;
+            border: 1px solid rgba(13, 110, 253, 0.18);
+        }
+
+        .badge-choice {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: fit-content;
+            margin: 0 auto 15px;
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .badge-choice-success {
+            background: rgba(25, 135, 84, 0.12);
+            color: #198754;
+        }
+
+        .badge-choice-primary {
+            background: rgba(13, 110, 253, 0.12);
+            color: #0d6efd;
+        }
+
+        .note-box {
+            max-width: 900px;
+            margin: 35px auto 0;
+            border-radius: 18px;
+            border: 1px solid rgba(13, 110, 253, 0.15);
+            background: #ffffff;
+            padding: 20px 24px;
+        }
+
+        .note-box i {
+            color: #0d6efd;
+        }
+
+        @media (max-width: 768px) {
+            .choice-desc {
+                min-height: auto;
+            }
+
+            .container {
+                margin-top: 20px;
+            }
+        }
+
+/* ===== Nguồn: views/khachHang/datLich/chonThoiGianChuyenGia.ejs - khối 1 ===== */
+.doctor-info-box {
+      background-color: #f8f9fa;
+      border-left: 4px solid #0d6efd;
+      border-radius: 8px;
+      padding: 15px 20px;
+    }
+  
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-khachhang-datlich-chonthoigianchuyengia-ejs-3 { max-width:900px; }
+.csp-khachhang-datlich-chonthoigianchuyengia-ejs-2 { width: 60px; height: 60px; object-fit: cover; }
+.csp-khachhang-datlich-chonthoigianchuyengia-ejs-1 { cursor: pointer; border: 1px solid #ccc; border-radius: 5px; }
+
+/* ===== Nguồn: views/khachHang/datLich/datLichChuyenGia.ejs - khối 1 ===== */
+body {
+            background-color: #f4f6f9;
+        }
+
+        .wrapper-page {
+            margin-top: 100px;
+            margin-bottom: 60px;
+            min-height: 60vh;
+        }
+
+        .content-container {
+            background-color: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        }
+
+        .specialty-btn {
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-weight: 600;
+            margin: 6px;
+            transition: all 0.3s ease;
+            border-width: 2px;
+        }
+
+        .specialty-btn:hover,
+        .specialty-btn.active {
+            background-color: #0d6efd;
+            color: white;
+            box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+            border-color: #0d6efd;
+            transform: translateY(-2px);
+        }
+
+        .doctor-card {
+            border: 1px solid #edf2f7;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+            background-color: #ffffff;
+        }
+
+        .doctor-card:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .doctor-img {
+            height: 250px;
+            object-fit: cover;
+            width: 100%;
+            border-bottom: 3px solid #0d6efd;
+        }
+
+        .doctor-price {
+            font-size: 1.2rem;
+            color: #dc3545;
+            font-weight: bold;
+        }
+    
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-khachhang-datlich-datlichchuyengia-ejs-3 { width: 3rem; height: 3rem; }
+.csp-khachhang-datlich-datlichchuyengia-ejs-2 { width: 160px; height: 160px; object-fit: cover; }
+.csp-khachhang-datlich-datlichchuyengia-ejs-1 { width: 60px; margin: 15px auto; border-top: 3px solid #0d6efd; opacity: 1; }
+
+/* ===== Nguồn: views/khachHang/datLich/datLichHen.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-khachhang-datlich-datlichhen-ejs-2 { max-width:900px; }
+.csp-khachhang-datlich-datlichhen-ejs-1 { padding: 10px 15px; background: #fff; border: 1px solid #ced4da; }
+
+/* ===== Nguồn: views/khachHang/datLich/lichSuDatLich.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-khachhang-datlich-lichsudatlich-ejs-1 { min-height: 100px; }
+
+/* ===== Nguồn: views/khachHang/datLich/thongTinLichKham.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-khachhang-datlich-thongtinlichkham-ejs-3 { padding-top: 100px; padding-bottom: 50px; }
+.csp-khachhang-datlich-thongtinlichkham-ejs-2 { max-width: 600px; padding: 20px; }
+.csp-khachhang-datlich-thongtinlichkham-ejs-1 { letter-spacing: 1px; }
+
+/* ===== Nguồn: views/khachHang/footer.ejs - khối 1 ===== */
+.customer-chatbot-toggle {
+    position: fixed;
+    right: 28px;
+    bottom: 28px;
+    width: 58px;
+    height: 58px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7b3ff2, #9b5cf6);
+    color: #ffffff;
+    font-size: 24px;
+    box-shadow: 0 12px 28px rgba(123, 63, 242, 0.35);
+    cursor: pointer;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.25s ease;
+  }
+
+  .customer-chatbot-toggle:hover {
+    transform: translateY(-3px);
+  }
+
+  .customer-chatbot {
+    position: fixed;
+    right: 28px;
+    bottom: 100px;
+    width: 360px;
+    height: 540px;
+    background: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 20px 45px rgba(88, 50, 160, 0.28);
+    z-index: 99998;
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+  }
+
+  .customer-chatbot.customer-chatbot--active {
+    display: flex;
+  }
+
+  .customer-chatbot__header {
+    height: 66px;
+    padding: 0 18px;
+    background: linear-gradient(135deg, #7740e8, #9a5cf6);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .customer-chatbot__title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .customer-chatbot__avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #7740e8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .customer-chatbot__name {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.1;
+  }
+
+  .customer-chatbot__status {
+    font-size: 12px;
+    opacity: 0.9;
+  }
+
+  .customer-chatbot__status::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    display: inline-block;
+    background: #35e779;
+    border-radius: 50%;
+    margin-right: 5px;
+  }
+
+  .customer-chatbot__close {
+    border: none;
+    background: transparent;
+    color: #ffffff;
+    font-size: 22px;
+    cursor: pointer;
+  }
+
+  .customer-chatbot__body {
+    flex: 1;
+    padding: 20px 16px;
+    background: #faf8ff;
+    overflow-y: auto;
+  }
+
+  .customer-chatbot__message-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  .customer-chatbot__message-row--user {
+    justify-content: flex-end;
+  }
+
+  .customer-chatbot__bot-icon {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    border-radius: 50%;
+    background: #7b3ff2;
+    color: #ffffff;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .customer-chatbot__message {
+    max-width: 78%;
+    padding: 12px 14px;
+    font-size: 14px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    white-space: pre-line;
+    text-align: left;
+  }
+
+  .customer-chatbot__message--bot {
+    background: #ffffff;
+    color: #333333;
+    border-radius: 4px 16px 16px 16px;
+    box-shadow: 0 6px 18px rgba(100, 60, 200, 0.08);
+  }
+
+  .customer-chatbot__message--user {
+    background: linear-gradient(135deg, #7740e8, #9a5cf6);
+    color: #ffffff;
+    border-radius: 16px 4px 16px 16px;
+    box-shadow: 0 6px 18px rgba(100, 60, 200, 0.18);
+  }
+
+  .customer-chatbot__form {
+    height: 70px;
+    padding: 12px 16px;
+    background: #ffffff;
+    border-top: 1px solid #eeeeee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .customer-chatbot__form input {
+    flex: 1;
+    height: 44px;
+    border: 2px solid #7b3ff2;
+    border-radius: 25px;
+    padding: 0 16px;
+    outline: none;
+    font-size: 14px;
+    color: #333333;
+  }
+
+  .customer-chatbot__form input::placeholder {
+    color: #999999;
+    font-style: italic;
+  }
+
+  .customer-chatbot__form button {
+    width: 42px;
+    height: 42px;
+    border: none;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #7740e8, #9a5cf6);
+    color: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  @media (max-width: 480px) {
+    .customer-chatbot {
+      right: 12px;
+      left: 12px;
+      bottom: 88px;
+      width: auto;
+      height: 520px;
+    }
+
+    .customer-chatbot-toggle {
+      right: 18px;
+      bottom: 18px;
+    }
+  }
+
+/* ===== Nguồn: views/khachHang/taiKhoan/login.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-khachhang-taikhoan-login-ejs-1 { min-height: 90vh; }
+
+/* ===== Nguồn: views/khachHang/taiKhoan/taoTaiKhoan.ejs - khối 1 ===== */
+/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
+.csp-khachhang-taikhoan-taotaikhoan-ejs-1 { max-width:1000px; }
+
+/* ===== Nguồn: views/khachHang/taiKhoan/thayDoiThongTin.ejs - khối 1 ===== */
+.profile-container {
+      margin-top: 100px;
+      margin-bottom: 50px;
+    }
+
+    .card-profile {
+      border: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+    }
+

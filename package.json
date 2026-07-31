@@ -33,7 +33,6 @@
     "multer": "^2.2.0",
     "mysql2": "^3.22.3",
     "nodemailer": "^8.0.7",
-    "sweetalert2": "^11.26.25",
     "xlsx": "^0.18.5"
   },
   "devDependencies": {

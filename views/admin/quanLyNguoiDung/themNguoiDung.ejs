@@ -12,19 +12,22 @@
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/quanLyNguoiDung/themNguoiDung.css">
 
-<style nonce="<%= cspNonce %>">
-/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
-.csp-admin-quanlynguoidung-themnguoidung-ejs-3 { background-color: var(--bg-light, #f4f6f9); }
-.csp-admin-quanlynguoidung-themnguoidung-ejs-2 { color: #1565c0; }
-</style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
-
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 <body class="csp-admin-quanlynguoidung-themnguoidung-ejs-3">
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
     
     <div class="d-flex vh-100 overflow-hidden">
         <%- include('../sidebar') %>
@@ -171,9 +174,7 @@
             </div>
         </div>
     </div>
-
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script nonce="<%= cspNonce %>">
+<script nonce="<%= cspNonce %>">
         document.addEventListener("DOMContentLoaded", function() {
             const selectVaiTro = document.getElementById("vaiTro");
             const formKhachHang = document.getElementById("formKhachHang");

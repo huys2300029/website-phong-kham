@@ -12,21 +12,24 @@
   <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css" />
 
   <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-<style nonce="<%= cspNonce %>">
-/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
-.csp-khachhang-datlich-datlichhen-ejs-2 { max-width:900px; }
-.csp-khachhang-datlich-datlichhen-ejs-1 { padding: 10px 15px; background: #fff; border: 1px solid #ced4da; }
-</style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
 
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 
 <body>
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
 
   <%- include('../header') %>
 
@@ -267,7 +270,7 @@
             if (!ngay) missing.push('Ngày khám');
             if (!gio) missing.push('Giờ khám');
 
-            Swal.fire({
+            AppDialog.fire({
               icon: 'warning',
               title: 'Thiếu thông tin',
               text: 'Vui lòng chọn: ' + missing.join(', ')
@@ -300,12 +303,12 @@
 
             if (data.success && data.payUrl) {
               // Hiển thị thông báo đang chuyển hướng
-              Swal.fire({
+              AppDialog.fire({
                 title: 'Đang chuyển đến trang thanh toán...',
                 text: 'Vui lòng đợi trong giây lát',
                 allowOutsideClick: false,
                 didOpen: () => {
-                  Swal.showLoading()
+                  AppDialog.showLoading()
                 }
               });
 
@@ -317,14 +320,14 @@
               }
 
             } else {
-              Swal.fire('Lỗi', data.msg || 'Đã có lỗi xảy ra, vui lòng thử lại!', 'error');
+              AppDialog.fire('Lỗi', data.msg || 'Đã có lỗi xảy ra, vui lòng thử lại!', 'error');
               submitBtn.innerText = originalText;
               submitBtn.disabled = false;
             }
 
           } catch (error) {
             console.error('Lỗi khi submit form:', error);
-            Swal.fire('Lỗi', 'Không thể kết nối đến máy chủ!', 'error');
+            AppDialog.fire('Lỗi', 'Không thể kết nối đến máy chủ!', 'error');
             submitBtn.innerText = originalText;
             submitBtn.disabled = false;
           }
@@ -336,7 +339,7 @@
 
     <% if (typeof msg !=='undefined' && msg) { %>
       <script nonce="<%= cspNonce %>">
-        Swal.fire({
+        AppDialog.fire({
           icon: 'error',
           title: 'Thông báo',
           text: '<%= msg %>',

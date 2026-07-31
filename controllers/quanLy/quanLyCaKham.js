@@ -159,7 +159,14 @@ const updateBacSiCaKham = async (req, res) => {
         res.redirect('getQuanLyCaKham');
     } catch (err) {
         console.error(err);
-        res.send("Lỗi cập nhật");
+
+        req.session.uiMessage = {
+            type: 'error',
+            title: 'Lỗi cập nhật',
+            message: 'Không thể cập nhật bác sĩ cho ca khám.'
+        };
+
+        return res.redirect('/admin/quanLyCaKham');
     }
 };
 
@@ -169,19 +176,36 @@ const postUpdateCaTruc = async (req, res) => {
         const shiftInfo = await query("SELECT ngay FROM CaKham WHERE id_caKham = ?", [id_caKham]);
 
         if (shiftInfo.length === 0) {
-            return res.send(`<script>alert('Không tìm thấy ca khám!'); window.location.href='/admin/quanLyCaKham';</script>`);
+            req.session.uiMessage = {
+                type: 'error',
+                title: 'Không tìm thấy ca khám',
+                message: 'Không tìm thấy ca khám cần cập nhật.'
+            };
+
+            return res.redirect('/admin/quanLyCaKham');
         }
 
         await query("UPDATE CaKham SET id_bacSi = ? WHERE id_caKham = ?", [id_bacSiMoi, id_caKham]);
         
         const dateOfShift = new Date(shiftInfo[0].ngay);
         const dateRedirect = formatForSQL(dateOfShift);
-        const msg = encodeURIComponent("Cập nhật thành công!");
-        
-        res.redirect(`/admin/quanLyCaKham?week=${dateRedirect}&msg=${msg}`);
+        req.session.uiMessage = {
+            type: 'success',
+            title: 'Thành công',
+            message: 'Cập nhật ca khám thành công.'
+        };
+
+        return res.redirect(`/admin/quanLyCaKham?week=${dateRedirect}`);
     } catch (err) {
         console.error(err);
-        res.send(`<script>alert('Lỗi cập nhật: ${err.message}'); window.location.href='/admin/quanLyCaKham';</script>`);
+
+        req.session.uiMessage = {
+            type: 'error',
+            title: 'Lỗi cập nhật',
+            message: `Lỗi cập nhật: ${err.message}`
+        };
+
+        return res.redirect('/admin/quanLyCaKham');
     }
 };
 

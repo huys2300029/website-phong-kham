@@ -20,191 +20,26 @@
   />
 
   <link rel="stylesheet" href="/vendor/maplibre/maplibre-gl.css" />
-
-  <script
-    src="/vendor/bootstrap/js/bootstrap.bundle.min.js"
-  ></script>
-
-  <script src="/vendor/maplibre/maplibre-gl.js"></script>
+<script src="/vendor/maplibre/maplibre-gl.js"></script>
   <script src="/vendor/polyline/polyline.js"></script>
 
-  <style nonce="<%= cspNonce %>">
-    body {
-      background-color: #f5f8fb;
-    }
-
-    .map-page {
-      padding: 80px 0 60px;
-      min-height: 100vh;
-    }
-
-    .map-hero {
-      background: linear-gradient(135deg, #0d6efd, #0b5ed7);
-      color: #fff;
-      border-radius: 24px;
-      padding: 36px;
-      margin-bottom: 30px;
-      box-shadow: 0 12px 30px rgba(13, 110, 253, 0.18);
-    }
-
-    .map-hero h1 {
-      font-size: 34px;
-      font-weight: 800;
-      margin-bottom: 12px;
-    }
-
-    .map-hero p {
-      font-size: 17px;
-      margin-bottom: 0;
-      opacity: 0.95;
-    }
-
-    .map-card {
-      background-color: #fff;
-      border-radius: 24px;
-      overflow: hidden;
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
-      border: 1px solid rgba(0, 0, 0, 0.06);
-    }
-
-    .map-info {
-      padding: 28px;
-    }
-
-    .map-info h3 {
-      font-size: 24px;
-      font-weight: 800;
-      color: #1f2937;
-      margin-bottom: 16px;
-    }
-
-    .info-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      margin-bottom: 14px;
-      color: #374151;
-      font-size: 16px;
-      line-height: 1.6;
-    }
-
-    .info-item i {
-      width: 22px;
-      color: #0d6efd;
-      font-size: 18px;
-      margin-top: 4px;
-    }
-
-    .map-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-top: 22px;
-    }
-
-    .btn-direction {
-      background-color: #0d6efd;
-      color: #fff;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 12px;
-      font-weight: 700;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      cursor: pointer;
-    }
-
-    .btn-direction:hover {
-      background-color: #0b5ed7;
-      color: #fff;
-    }
-
-    .btn-direction:disabled {
-      opacity: 0.7;
-      cursor: not-allowed;
-    }
-
-    .map-frame-wrapper {
-      width: 100%;
-      height: 500px;
-      background-color: #e5e7eb;
-    }
-
-    #map {
-      width: 100%;
-      height: 100%;
-    }
-
-    .status-box {
-      display: none;
-      margin-top: 18px;
-      padding: 14px 16px;
-      border-radius: 14px;
-      line-height: 1.6;
-      font-size: 15px;
-    }
-
-    .status-box.show {
-      display: block;
-    }
-
-    .status-box.info {
-      background-color: #eef5ff;
-      color: #084298;
-      border: 1px solid #cfe2ff;
-    }
-
-    .status-box.error {
-      background-color: #fff1f2;
-      color: #842029;
-      border: 1px solid #f5c2c7;
-    }
-
-    .status-box.warning {
-      background-color: #fff7e6;
-      color: #7c4a03;
-      border: 1px solid #ffe0a3;
-    }
-
-    @media (max-width: 768px) {
-      .map-page {
-        padding: 100px 12px 40px;
-      }
-
-      .map-hero {
-        padding: 26px;
-      }
-
-      .map-hero h1 {
-        font-size: 27px;
-      }
-
-      .map-frame-wrapper {
-        height: 360px;
-      }
-
-      .map-info {
-        padding: 22px;
-      }
-
-      .map-actions button,
-      .map-actions a {
-        width: 100%;
-      }
-    }
-  </style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
-
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 
 <body>
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
   <main class="main">
 
     <%- include('./header') %>

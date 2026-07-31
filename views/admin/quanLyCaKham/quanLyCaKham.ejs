@@ -15,33 +15,22 @@
     <link rel="stylesheet" href="/css/admin/style.css">
     <link rel="stylesheet" href="/css/admin/quanLyCaKham/quanLyCaKham.css">
 
-<style nonce="<%= cspNonce %>">
-/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
-.csp-admin-quanlycakham-quanlycakham-ejs-16 { background-color: #f4f6f9; }
-.csp-admin-quanlycakham-quanlycakham-ejs-15 { padding: 6px; text-align: center; border: 1px solid #ccc; border-radius: 4px; width: 140px; cursor: pointer; }
-.csp-admin-quanlycakham-quanlycakham-ejs-14 { color: #666; font-size: 11px; margin-top: 3px; display: block; text-align: center; }
-.csp-admin-quanlycakham-quanlycakham-ejs-13 { max-width: 200px; }
-.csp-admin-quanlycakham-quanlycakham-ejs-12 { width: 15%; }
-.csp-admin-quanlycakham-quanlycakham-ejs-11 { width: 25%; }
-.csp-admin-quanlycakham-quanlycakham-ejs-10 { width: 30%; }
-.csp-admin-quanlycakham-quanlycakham-ejs-9 { width: 15%; text-align: center; }
-.csp-admin-quanlycakham-quanlycakham-ejs-8 { font-weight: 600; vertical-align: middle; background-color: #f9f9f9; border-right: 2px solid #eee; }
-.csp-admin-quanlycakham-quanlycakham-ejs-7 { font-weight: bold; color: var(--primary-color); }
-.csp-admin-quanlycakham-quanlycakham-ejs-6 { color: #999; font-size: 12px; }
-.csp-admin-quanlycakham-quanlycakham-ejs-5 { text-align: center; padding: 30px; color: #888; }
-.csp-admin-quanlycakham-quanlycakham-ejs-4 { font-size: 18px; }
-.csp-admin-quanlycakham-quanlycakham-ejs-3 { background: #f5f5f5; }
-.csp-admin-quanlycakham-quanlycakham-ejs-2 { background: #f5f5f5; }
-.csp-admin-quanlycakham-quanlycakham-ejs-1 { color: #1565c0; }
-</style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
-
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 <body>
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
 
     <div class="d-flex vh-100 overflow-hidden csp-admin-quanlycakham-quanlycakham-ejs-16">
         
@@ -189,10 +178,7 @@
             </div>
         </div>
     </div>
-
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-
-    <script nonce="<%= cspNonce %>">
+<script nonce="<%= cspNonce %>">
         document.addEventListener("DOMContentLoaded", function() {
             document.querySelectorAll('.js-change-week').forEach(function (button) {
                 button.addEventListener('click', function () {
@@ -286,7 +272,7 @@
                               messageContent.toLowerCase().includes("không thể") ||
                               messageContent.toLowerCase().includes("error");
 
-                Swal.fire({
+                AppDialog.fire({
                     icon: isError ? 'error' : 'success',
                     title: isError ? 'Thông báo' : 'Thành công',
                     text: messageContent,

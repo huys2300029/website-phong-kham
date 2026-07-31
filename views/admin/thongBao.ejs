@@ -11,64 +11,24 @@
     <link rel="stylesheet" href="/css/admin/style.css">
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/dashboard.css">
-    
-    <style nonce="<%= cspNonce %>">
-        .hover-notification:hover { 
-            background-color: #f8f9fa; 
-            border-left: 4px solid #0d6efd; 
-            padding-left: 1.25rem !important; 
-        }
 
-        .cursor-pointer { 
-            cursor: pointer; 
-            text-decoration: none; 
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 15px !important;
-            }
-
-            .notification-item {
-                padding: 16px !important;
-            }
-
-            .notification-title {
-                font-size: 16px;
-            }
-
-            .notification-content {
-                font-size: 14px !important;
-            }
-
-            .notification-header {
-                flex-direction: column;
-                align-items: flex-start !important;
-                gap: 8px;
-            }
-
-            .notification-bottom {
-                flex-direction: column;
-                align-items: flex-start !important;
-                gap: 10px;
-            }
-        }
-    
-/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
-.csp-admin-thongbao-ejs-4 { font-size: 2rem; }
-.csp-admin-thongbao-ejs-3 { font-size: 4rem; color: #dee2e6; }
-.csp-admin-thongbao-ejs-2 { font-size: 1.05rem; }
-.csp-admin-thongbao-ejs-1 { font-size: 1.05rem; }
-</style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
-
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 
 <body>
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
 
     <audio id="sound-notification" src="/sounds/thongBao.mp3" preload="auto"></audio>
 
@@ -181,8 +141,6 @@
             
         </div>
     </div>
-
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script nonce="<%= cspNonce %>">
         let currentAdminUnreadCount = document.querySelectorAll('[id^="badge-"]').length;
 
@@ -307,7 +265,7 @@
             if (!idYeuCau || idYeuCau === 'undefined' || idYeuCau === 'null') {
                 await danhDauDaDocServer(idThongBao);
 
-                return Swal.fire({
+                return AppDialog.fire({
                     title: 'Thông báo',
                     text: 'Thông báo này không có yêu cầu đổi lịch đi kèm.',
                     icon: 'info',
@@ -315,11 +273,11 @@
                 }).then(() => window.location.reload());
             }
 
-            Swal.fire({ 
+            AppDialog.fire({ 
                 title: 'Đang tải...', 
                 allowOutsideClick: false,
                 didOpen: () => { 
-                    Swal.showLoading(); 
+                    AppDialog.showLoading(); 
                 } 
             });
 
@@ -329,7 +287,7 @@
 
                 if (!data.success) {
                     await danhDauDaDocServer(idThongBao);
-                    return Swal.fire('Lỗi', 'Không tìm thấy yêu cầu', 'error')
+                    return AppDialog.fire('Lỗi', 'Không tìm thấy yêu cầu', 'error')
                         .then(() => window.location.reload());
                 }
 
@@ -389,7 +347,7 @@
                         `;
                     }
 
-                    return Swal.fire({
+                    return AppDialog.fire({
                         title: 'Chi tiết đổi lịch',
                         html: thongTinChungHtml + statusHtml,
                         icon: 'info',
@@ -406,7 +364,7 @@
                         </div>
                     `;
 
-                    return Swal.fire({
+                    return AppDialog.fire({
                         title: 'Yêu cầu đã quá hạn',
                         html: expiredHtml,
                         icon: 'warning',
@@ -419,7 +377,7 @@
                     });
                 }
 
-                Swal.fire({
+                AppDialog.fire({
                     title: 'Duyệt yêu cầu đổi lịch',
                     html: thongTinChungHtml,
                     icon: 'question',
@@ -441,16 +399,16 @@
                 });
 
             } catch (e) {
-                Swal.fire('Lỗi mạng', 'Không thể kết nối đến máy chủ.', 'error');
+                AppDialog.fire('Lỗi mạng', 'Không thể kết nối đến máy chủ.', 'error');
             }
         }
 
         function xuLyYeuCau(idYeuCau, hanhDong, idThongBao, isSilent = false) {
-            Swal.fire({ 
+            AppDialog.fire({ 
                 title: 'Đang xử lý...', 
                 allowOutsideClick: false, 
                 didOpen: () => { 
-                    Swal.showLoading(); 
+                    AppDialog.showLoading(); 
                 }
             });
             
@@ -471,16 +429,16 @@
                         if (isSilent) {
                             window.location.reload();
                         } else {
-                            Swal.fire('Thành công', data.message, 'success')
+                            AppDialog.fire('Thành công', data.message, 'success')
                                 .then(() => window.location.reload());
                         }
                     });
                 } else {
-                    Swal.fire('Lỗi', data.message, 'error');
+                    AppDialog.fire('Lỗi', data.message, 'error');
                 }
             })
             .catch(() => {
-                Swal.fire('Lỗi', 'Đã xảy ra lỗi trong quá trình xử lý.', 'error');
+                AppDialog.fire('Lỗi', 'Đã xảy ra lỗi trong quá trình xử lý.', 'error');
             });
         }
     </script>

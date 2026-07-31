@@ -10,35 +10,24 @@
     <link rel="stylesheet" href="/css/bacSi/xemLich.css">
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
-<style nonce="<%= cspNonce %>">
-        /* ép 7 cột luôn nằm 1 hàng trên màn hình lớn */
-        .row-cols-7 > * {
-            flex: 0 0 calc(100% / 7);
-            max-width: calc(100% / 7);
-        }
 
-        /* responsive mobile: chia 2 cột cho dễ nhìn với số lượng ngày lớn */
-        @media (max-width: 768px) {
-            .row-cols-7 > * {
-                flex: 0 0 calc(100% / 2);
-                max-width: calc(100% / 2);
-            }
-        }
-    
-/* Các lớp thay thế thuộc tính style nội tuyến để tương thích CSP. */
-.csp-bacsi-xemlich-ejs-3 { max-width: 200px; }
-.csp-bacsi-xemlich-ejs-2 { cursor: pointer; caret-color: transparent; }
-.csp-bacsi-xemlich-ejs-1 { background: transparent; border: none; box-shadow: none; }
-</style>
-    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
-    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css?v=11.26.25">
-
-<script src="/vendor/sweetalert2/sweetalert2.min.js?v=11.26.25"></script>
-<script src="/js/sweetalert-global.js?v=4"></script>
-    
+    <!-- Giao diện thông báo Bootstrap dùng chung -->
+    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/bootstrap-ui.js?v=1"></script>
 </head>
 
 <body>
+    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
+      <div
+        class="d-none"
+        data-app-message="<%= uiMessage.message %>"
+        data-app-type="<%= uiMessage.type || 'info' %>"
+        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
+      </div>
+    <% } %>
+
 
     <%- include('sidebar', { page: page }) %>
 
@@ -127,9 +116,7 @@
         </div>
 
     </div>
-
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script nonce="<%= cspNonce %>">
+<script nonce="<%= cspNonce %>">
         document.getElementById('btnMoPopupDoiLich')?.addEventListener('click', moPopupDoiLich);
 
         const monthInput = document.getElementById('monthInput');
@@ -147,7 +134,7 @@
 
         async function moPopupDoiLich() {
             // 1. Hiện loading và gọi API lấy data
-            Swal.fire({ title: 'Đang tải dữ liệu...', didOpen: () => { Swal.showLoading(); } });
+            AppDialog.fire({ title: 'Đang tải dữ liệu...', didOpen: () => { AppDialog.showLoading(); } });
 
             try {
                 const response = await fetch('/bacsi/thongTinDoiLich');
@@ -157,10 +144,10 @@
 
                 // 2. Kiểm tra nếu không có lịch trực tương lai
                 if (data.lichTruc.length === 0) {
-                    return Swal.fire('Thông báo', 'Bạn không có lịch trực nào trong tương lai để đổi.', 'info');
+                    return AppDialog.fire('Thông báo', 'Bạn không có lịch trực nào trong tương lai để đổi.', 'info');
                 }
                 if (data.bacSiCungKhoa.length === 0) {
-                    return Swal.fire('Thông báo', 'Khoa của bạn hiện không có bác sĩ nào khác để đổi lịch.', 'info');
+                    return AppDialog.fire('Thông báo', 'Khoa của bạn hiện không có bác sĩ nào khác để đổi lịch.', 'info');
                 }
 
                 // 3. Tạo HTML cho các thẻ Select
@@ -191,7 +178,7 @@
                 `;
 
                 // 4. Hiển thị Popup xịn xò
-                const { value: formValues } = await Swal.fire({
+                const { value: formValues } = await AppDialog.fire({
                     title: 'Đăng ký đổi lịch',
                     html: htmlForm,
                     focusConfirm: false,
@@ -205,7 +192,7 @@
                         const ngayDisplay = document.getElementById('swal-ngay-doi').options[document.getElementById('swal-ngay-doi').selectedIndex]?.text;
 
                         if (!ngay || !idBs) {
-                            Swal.showValidationMessage('Vui lòng chọn ngày và bác sĩ thay thế!');
+                            AppDialog.showValidationMessage('Vui lòng chọn ngày và bác sĩ thay thế!');
                             return false;
                         }
                         return { ngay, idBs, ngayDisplay, tenBsThayThe };
@@ -214,7 +201,7 @@
 
                 // 5. Nếu điền đủ form và bấm Tiếp tục
                 if (formValues) {
-                    Swal.fire({
+                    AppDialog.fire({
                         title: 'Xác nhận yêu cầu',
                         html: `Bạn muốn xin đổi lịch trực ngày <b>${formValues.ngayDisplay}</b> <br>Người thay thế: <b>Bs. ${formValues.tenBsThayThe}</b>?`,
                         icon: 'question',
@@ -231,13 +218,13 @@
                 }
 
             } catch (error) {
-                Swal.fire('Lỗi!', 'Không thể lấy dữ liệu, vui lòng thử lại sau.', 'error');
+                AppDialog.fire('Lỗi!', 'Không thể lấy dữ liệu, vui lòng thử lại sau.', 'error');
             }
         }
 
         // Hàm gọi API gửi về backend (đã cập nhật)
         function guiYeuCauDoiLich(ngay, idBsThayThe) {
-            Swal.fire({ title: 'Đang gửi yêu cầu...', allowOutsideClick: false, didOpen: () => { Swal.showLoading(); } });
+            AppDialog.fire({ title: 'Đang gửi yêu cầu...', allowOutsideClick: false, didOpen: () => { AppDialog.showLoading(); } });
 
             fetch('/bacsi/yeuCauDoiLich', {
                 method: 'POST',
@@ -247,18 +234,18 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    Swal.fire('Thành công!', 'Yêu cầu đổi lịch của bạn đã được gửi cho Quản lý.', 'success');
+                    AppDialog.fire('Thành công!', 'Yêu cầu đổi lịch của bạn đã được gửi cho Quản lý.', 'success');
                 } else {
-                    Swal.fire('Lỗi!', data.message, 'error');
+                    AppDialog.fire('Lỗi!', data.message, 'error');
                 }
             });
         }
         // Hàm gọi API gửi về backend
         function guiYeuCauDoiLich(ngay, idBsThayThe) {
-            Swal.fire({ 
+            AppDialog.fire({ 
                 title: 'Đang gửi yêu cầu...', 
                 allowOutsideClick: false, 
-                didOpen: () => { Swal.showLoading(); } 
+                didOpen: () => { AppDialog.showLoading(); } 
             });
 
             fetch('/bacsi/yeuCauDoiLich', {
@@ -269,15 +256,15 @@
             .then(res => res.json())
             .then(data => {
                 if(data.success) {
-                    Swal.fire('Thành công!', 'Yêu cầu đổi lịch của bạn đã được gửi cho Quản lý.', 'success');
+                    AppDialog.fire('Thành công!', 'Yêu cầu đổi lịch của bạn đã được gửi cho Quản lý.', 'success');
                 } else {
-                    Swal.fire('Lỗi!', data.message, 'error');
+                    AppDialog.fire('Lỗi!', data.message, 'error');
                 }
             })
             .catch(err => {
                 // THÊM ĐOẠN NÀY ĐỂ TRÁNH BỊ TREO POPUP
                 console.error(err);
-                Swal.fire('Lỗi mạng!', 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.', 'error');
+                AppDialog.fire('Lỗi mạng!', 'Không thể kết nối đến máy chủ. Vui lòng thử lại sau.', 'error');
             });
         }
     </script>
