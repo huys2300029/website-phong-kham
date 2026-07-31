@@ -476,66 +476,106 @@ const getLichSu = async (req, res) => {
 /* ================= HỦY LỊCH & HOÀN TIỀN ================= */
 const huyLichHen = async (req, res) => {
     try {
-        const { id_lichHen } = req.body;
-
-        if (!id_lichHen) {
+        if (!req.session || !req.session.user ||!req.session.user.id) {
             return res.json({
                 success: false,
-                msg: 'Thiếu mã lịch hẹn!'
+                msg: 'Hết phiên làm việc, vui lòng đăng nhập lại!'
             });
         }
 
+        const id_khachHang = Number(req.session.user.id);
+        const id_lichHen = req.body && req.body.id_lichHen;
+
         const lichHenList = await query(
             `
-            SELECT lh.*, c.ngay 
-            FROM LichHen lh 
-            JOIN CaKham c ON lh.id_caKham = c.id_caKham 
-            WHERE lh.id_lichHen = ?
+            SELECT
+                lh.*,
+                c.ngay
+            FROM LichHen lh
+            JOIN CaKham c
+                ON lh.id_caKham = c.id_caKham
+            WHERE lh.id_lichHen = ? AND lh.id_khachHang = ?
+            LIMIT 1
             `,
-            [id_lichHen]
+            [
+                id_lichHen,
+                id_khachHang
+            ]
         );
 
         if (lichHenList.length === 0) {
             return res.json({
                 success: false,
-                msg: 'Không tìm thấy lịch hẹn!'
+                msg: 'Không tìm thấy lịch hẹn của bạn!'
             });
         }
 
-        const lichHen = lichHenList[0];
+        const lichHen =
+            lichHenList[0];
 
-        if (lichHen.trangThai === 'Huy') {
+        if (
+            lichHen.trangThai === 'Huy'
+        ) {
             return res.json({
                 success: false,
                 msg: 'Lịch hẹn này đã được hủy trước đó!'
             });
         }
 
-        if (lichHen.trangThai === 'HoanThanh') {
+        if (
+            lichHen.trangThai === 'HoanThanh'
+        ) {
             return res.json({
                 success: false,
                 msg: 'Không thể hủy lịch đã khám hoàn thành!'
             });
         }
 
-        if (lichHen.trangThai === 'DenTre') {
+        if (
+            lichHen.trangThai === 'DenTre'
+        ) {
             return res.json({
                 success: false,
                 msg: 'Không thể hủy lịch đã bị đánh dấu đến trễ!'
             });
         }
+        /*
+         * LỊCH CHƯA THANH TOÁN:
+         */
+        if (
+            lichHen.trangThaiThanhToan === 'ChuaThanhToan'
+        ) {
+            const deleteResult =
+                await query(
+                    `
+                    DELETE FROM LichHen
+                    WHERE id_lichHen = ?
+                      AND id_khachHang = ?
+                      AND trangThaiThanhToan = 'ChuaThanhToan'
+                      AND trangThai NOT IN (
+                          'Huy',
+                          'HoanThanh',
+                          'DenTre'
+                      )
+                    `,
+                    [
+                        id_lichHen,
+                        id_khachHang
+                    ]
+                );
 
-        // Trường hợp chưa thanh toán thì chỉ cần xóa lịch, không gọi hoàn tiền
-        if (lichHen.trangThaiThanhToan === 'ChuaThanhToan') {
-            await query(
-                `
-                DELETE FROM LichHen 
-                WHERE id_lichHen = ?
-                `,
-                [id_lichHen]
+            if ( deleteResult.affectedRows !== 1) {
+                return res.json({
+                    success: false,
+                    msg: 'Lịch hẹn đã thay đổi trạng thái. Vui lòng tải lại trang!'
+                });
+            }
+
+            console.log(
+                `[HUY LICH] KH-${id_khachHang} ` +
+                `đã xóa lịch chưa thanh toán ` +
+                `LH-${id_lichHen}`
             );
-
-            console.log(`[HUY LICH] Đã xóa lịch chưa thanh toán LH-${id_lichHen}`);
 
             return res.json({
                 success: true,
@@ -550,109 +590,261 @@ const huyLichHen = async (req, res) => {
             });
         }
 
-        if (lichHen.trangThaiThanhToan !== 'DaThanhToan') {
+        if (lichHen.trangThaiThanhToan !=='DaThanhToan') {
             return res.json({
                 success: false,
                 msg: 'Trạng thái thanh toán không hợp lệ để hủy lịch!'
             });
         }
 
-        // Kiểm tra chỉ cho hủy trước ngày khám tối thiểu 2 ngày
+        /*
+         * Lịch đã thanh toán chỉ được hủy
+         * trước ngày khám tối thiểu 2 ngày.
+         */
         const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+        const today = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate()
+            );
 
         const dateObj = new Date(lichHen.ngay);
-        dateObj.setHours(0, 0, 0, 0);
+        dateObj.setHours(
+            0,
+            0,
+            0,
+            0
+        );
 
-        const diffDays = Math.ceil((dateObj - today) / (1000 * 60 * 60 * 24));
+        const diffDays =
+            Math.ceil(
+                (dateObj - today) /
+                (
+                    1000 *
+                    60 *
+                    60 *
+                    24
+                )
+            );
 
-        if (diffDays < 2) {
+        if (
+            diffDays < 2
+        ) {
             return res.json({
                 success: false,
                 msg: 'Không thể hủy lịch đã thanh toán khi thời gian khám còn dưới 2 ngày!'
             });
         }
 
-        if (!lichHen.maZalopay) {
+        if (
+            !lichHen.maZalopay
+        ) {
             return res.json({
                 success: false,
                 msg: 'Không thể hoàn tiền do thiếu mã giao dịch ZaloPay.'
             });
         }
 
-        const app_id = String(configZaloPay.app_id);
+        /*
+         * Chỉ cần key1 khi thực sự thực hiện hoàn tiền.
+         */
+        damBaoCoKey1ZaloPay();
+
+        const app_id = String( configZaloPay.app_id);
+
         const zp_trans_id = String(lichHen.maZalopay);
-        const amount = String(Math.round(Number(lichHen.donGia)));
-        const timestamp = String(Date.now());
 
-        const m_refund_id = `${moment().format('YYMMDD')}_${app_id}_${Date.now()}`;
-        const description = `Hoan tien lich hen LH-${id_lichHen}`;
+        const amount = String(
+                Math.round(
+                    Number(
+                        lichHen.donGia
+                    )
+                )
+            );
 
-        // Chuỗi MAC đúng chuẩn khi KHÔNG dùng refund_fee_amount:
-        // app_id|zp_trans_id|amount|description|timestamp
-        const hmacInput = `${app_id}|${zp_trans_id}|${amount}|${description}|${timestamp}`;
-        const mac = CryptoJS.HmacSHA256(hmacInput, configZaloPay.key1).toString();
+        const timestamp =
+            String(
+                Date.now()
+            );
+
+        const m_refund_id =
+            `${moment().format('YYMMDD')}_` +
+            `${app_id}_` +
+            `${Date.now()}`;
+
+        const description =
+            `Hoan tien lich hen ` +
+            `LH-${id_lichHen}`;
+
+        /*
+         * Chuỗi ký MAC hoàn tiền:
+         *
+         * app_id|zp_trans_id|amount|description|timestamp
+         */
+        const hmacInput =
+            `${app_id}|` +
+            `${zp_trans_id}|` +
+            `${amount}|` +
+            `${description}|` +
+            `${timestamp}`;
+
+        const mac =
+            CryptoJS
+                .HmacSHA256(
+                    hmacInput,
+                    configZaloPay.key1
+                )
+                .toString();
 
         const params = new URLSearchParams();
-        params.append('app_id', app_id);
-        params.append('m_refund_id', m_refund_id);
-        params.append('zp_trans_id', zp_trans_id);
-        params.append('amount', amount);
-        params.append('timestamp', timestamp);
-        params.append('description', description);
-        params.append('mac', mac);
 
-        console.log(`[HOAN TIEN] Gửi refund LH-${id_lichHen}, zp_trans_id=${zp_trans_id}, amount=${amount}`);
-
-        const refundResponse = await axios.post(
-            'https://sb-openapi.zalopay.vn/v2/refund',
-            params.toString(),
-            {
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                }
-            }
+        params.append(
+            'app_id',
+            app_id
         );
 
-        const refundData = refundResponse.data;
+        params.append(
+            'm_refund_id',
+            m_refund_id
+        );
 
-        console.log(`[HOAN TIEN] Kết quả refund LH-${id_lichHen}:`, refundData);
+        params.append(
+            'zp_trans_id',
+            zp_trans_id
+        );
 
-        if (refundData.return_code === 1 || refundData.return_code === 3) {
-            await query(
-                `
-                UPDATE LichHen 
-                SET trangThai = 'Huy', 
-                    trangThaiThanhToan = 'DaHoanTien'
-                WHERE id_lichHen = ?
-                `,
-                [id_lichHen]
+        params.append(
+            'amount',
+            amount
+        );
+
+        params.append(
+            'timestamp',
+            timestamp
+        );
+
+        params.append(
+            'description',
+            description
+        );
+
+        params.append(
+            'mac',
+            mac
+        );
+
+        console.log(
+            `[HOAN TIEN] KH-${id_khachHang} ` +
+            `gửi refund LH-${id_lichHen}, ` +
+            `zp_trans_id=${zp_trans_id}, ` +
+            `amount=${amount}`
+        );
+
+        const refundResponse =
+            await axios.post(
+                configZaloPay.refundEndpoint,
+                params.toString(),
+                {
+                    headers: {
+                        'Content-Type':
+                            'application/x-www-form-urlencoded'
+                    }
+                }
             );
+
+        const refundData =
+            refundResponse.data;
+
+        console.log(
+            `[HOAN TIEN] Kết quả refund ` +
+            `LH-${id_lichHen}:`,
+            refundData
+        );
+
+        if (
+            refundData.return_code === 1 ||
+            refundData.return_code === 3
+        ) {
+            /*
+             * Tiếp tục kiểm tra chủ sở hữu ở câu UPDATE.
+             *
+             * Không UPDATE theo id_lichHen,
+             * vì request có thể đã bị sửa ID.
+             */
+            const updateResult =
+                await query(
+                    `
+                    UPDATE LichHen
+                    SET
+                        trangThai = 'Huy',
+                        trangThaiThanhToan = 'DaHoanTien'
+                    WHERE id_lichHen = ?
+                      AND id_khachHang = ?
+                      AND trangThaiThanhToan = 'DaThanhToan'
+                      AND trangThai NOT IN (
+                          'Huy',
+                          'HoanThanh',
+                          'DenTre'
+                      )
+                    `,
+                    [
+                        id_lichHen,
+                        id_khachHang
+                    ]
+                );
+
+            if (updateResult.affectedRows !== 1) {
+                logLoi(
+                    `ZaloPay đã nhận refund ` +
+                    `nhưng không thể cập nhật TiDB ` +
+                    `cho LH-${id_lichHen}, ` +
+                    `KH-${id_khachHang}.`
+                );
+
+                return res.json({
+                    success: false,
+                    msg: 'Yêu cầu hoàn tiền đã được gửi nhưng hệ thống chưa cập nhật được trạng thái. Vui lòng liên hệ hỗ trợ!'
+                });
+            }
 
             return res.json({
                 success: true,
-                msg: refundData.return_code === 1
-                    ? 'Hủy lịch và hoàn tiền thành công!'
-                    : 'Đã gửi yêu cầu hoàn tiền. ZaloPay đang xử lý giao dịch hoàn tiền!'
+
+                msg:
+                    refundData.return_code === 1
+                        ? 'Hủy lịch và hoàn tiền thành công!'
+                        : 'Đã gửi yêu cầu hoàn tiền. ZaloPay đang xử lý giao dịch hoàn tiền!'
             });
         }
 
         return res.json({
             success: false,
-            msg: 'Lỗi hoàn tiền: ' + (
-                refundData.sub_return_message ||
-                refundData.return_message ||
-                'Không rõ nguyên nhân'
-            )
+
+            msg:
+                'Lỗi hoàn tiền: ' +
+                (
+                    refundData.sub_return_message ||
+                    refundData.return_message ||
+                    'Không rõ nguyên nhân'
+                )
         });
-
     } catch (error) {
-        console.error('[LOI] Lỗi khi hủy lịch và hoàn tiền');
+        console.error(
+            '[LOI] Lỗi khi hủy lịch và hoàn tiền'
+        );
 
-        if (error.response && error.response.data) {
-            console.error(error.response.data);
+        if (
+            error.response &&
+            error.response.data
+        ) {
+            console.error(
+                error.response.data
+            );
         } else {
-            console.error(error.message);
+            console.error(
+                error.message
+            );
         }
 
         return res.json({
