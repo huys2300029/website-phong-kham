@@ -1,4 +1,6 @@
-// Đọc biến môi trường trước khi sử dụng
+'use strict';
+
+// Đọc biến môi trường trước khi sử dụng.
 require('dotenv').config();
 
 const express = require('express');
@@ -11,10 +13,13 @@ const crypto = require('crypto');
 
 const app = express();
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction =
+    process.env.NODE_ENV === 'production';
 
 /*
- * Kiểm tra biến môi trường quan trọng.
+ * =====================================================
+ * KIỂM TRA BIẾN MÔI TRƯỜNG
+ * =====================================================
  */
 if (!process.env.SESSION_SECRET) {
     throw new Error(
@@ -25,46 +30,46 @@ if (!process.env.SESSION_SECRET) {
 
 /*
  * Render chạy phía sau reverse proxy.
- * Cần đặt trước express-session để Express nhận biết HTTPS.
  */
 app.set('trust proxy', 1);
 
 /*
- * Không để Express tiết lộ công nghệ đang sử dụng
- * qua header X-Powered-By.
+ * Không để Express tiết lộ công nghệ.
  */
 app.disable('x-powered-by');
 
 /*
  * =====================================================
- * TẠO CSP NONCE CHO MỖI PHẢN HỒI
+ * TẠO CSP NONCE CHO MỖI RESPONSE
  * =====================================================
- *
- * Sử dụng trong EJS:
- *
- * <script nonce="<%= cspNonce %>">
- *     // JavaScript nội tuyến
- * </script>
- *
- * <style nonce="<%= cspNonce %>">
- *     // CSS nội tuyến
- * </style>
  */
 app.use((req, res, next) => {
-    res.locals.cspNonce = crypto
-        .randomBytes(32)
-        .toString('base64');
+    res.locals.cspNonce =
+        crypto
+            .randomBytes(32)
+            .toString('base64');
 
     next();
 });
 
 /*
+ * Hàm tạo nonce tương ứng với từng response.
+ */
+const getCspNonce = (req, res) =>
+    `'nonce-${res.locals.cspNonce}'`;
+
+/*
  * =====================================================
- * CẤU HÌNH HTTP SECURITY HEADERS
+ * CẤU HÌNH HELMET VÀ CSP
  * =====================================================
  *
- * useDefaults: false để Helmet không tự bổ sung
- * style-src 'unsafe-inline' từ chính sách mặc định.
+ * SweetAlert2 sử dụng:
+ *
+ * /vendor/sweetalert2/sweetalert2.min.css
+ * /vendor/sweetalert2/sweetalert2.min.js
+ *
+ * Không dùng sweetalert2.all.min.js vì bản đó tự chèn
+ * thẻ <style> không có nonce và sẽ bị CSP chặn.
  */
 app.use(
     helmet({
@@ -76,36 +81,46 @@ app.use(
                     "'self'"
                 ],
 
+                /*
+                 * Cho phép JavaScript từ website hiện tại.
+                 * Script nội tuyến phải có nonce.
+                 */
                 'script-src': [
                     "'self'",
-
-                    (req, res) =>
-                        `'nonce-${res.locals.cspNonce}'`
+                    getCspNonce
                 ],
 
+                /*
+                 * Không cho phép onclick="", onerror=""...
+                 */
                 'script-src-attr': [
                     "'none'"
                 ],
 
                 /*
-                * CSS bên ngoài được phép tải từ chính website.
-                *
-                * SweetAlert2 bản all.min.js tự tạo một thẻ <style>
-                * trong trình duyệt, vì vậy style-src-elem cần
-                * cho phép style nội tuyến.
-                *
-                * script-src vẫn được bảo vệ bằng nonce,
-                * không mở unsafe-inline cho JavaScript.
-                */
+                 * Cho phép file CSS của chính website.
+                 * Style nội tuyến phải có nonce.
+                 */
                 'style-src': [
-                    "'self'"
+                    "'self'",
+                    getCspNonce
                 ],
 
+                /*
+                 * Áp dụng cho <link> và <style>.
+                 *
+                 * File CSS ngoài được phép từ 'self'.
+                 * Thẻ <style> nội tuyến phải có nonce.
+                 */
                 'style-src-elem': [
                     "'self'",
-                    "'unsafe-inline'"
+                    getCspNonce
                 ],
 
+                /*
+                 * SweetAlert2 và Bootstrap thay đổi thuộc tính
+                 * style của phần tử trong lúc chạy.
+                 */
                 'style-src-attr': [
                     "'unsafe-inline'"
                 ],
@@ -149,6 +164,10 @@ app.use(
                     "'none'"
                 ],
 
+                /*
+                 * Chỉ nâng cấp HTTP lên HTTPS trên Render.
+                 * Không bật ở localhost.
+                 */
                 'upgrade-insecure-requests':
                     isProduction
                         ? []
@@ -159,51 +178,36 @@ app.use(
         strictTransportSecurity:
             isProduction
                 ? {
-                    maxAge: 31536000,
-                    includeSubDomains: true,
-                    preload: false
-                }
+                      maxAge: 31536000,
+                      includeSubDomains: true,
+                      preload: false
+                  }
                 : false
     })
 );
 
 /*
- * =====================================================
- * CHỐNG MIME SNIFFING
- * =====================================================
- *
- * Buộc mọi phản hồi có header:
- *
- * X-Content-Type-Options: nosniff
- *
- * Helmet mặc định đã thiết lập header này.
- * Khai báo riêng để bảo đảm nó vẫn được áp dụng
- * nếu cấu hình Helmet thay đổi về sau.
+ * Chống trình duyệt đoán sai MIME type.
  */
 app.use(
     helmet.xContentTypeOptions()
 );
 
 /*
- * Header tạm dùng để xác nhận Render đang chạy
- * đúng bản app.js này.
- *
- * Sau khi kiểm tra xong có thể xóa middleware này.
+ * Header dùng để kiểm tra server đã chạy bản mới.
  */
 app.use((req, res, next) => {
     res.setHeader(
         'X-CSP-Build',
-        'sweetalert2-csp-v2'
+        'sweetalert2-static-css-v3'
     );
-    console.log(
-        'CSP sweetalert2-csp-v2 và MIME nosniff đã được bật.'
-    );
+
     next();
 });
 
 /*
  * =====================================================
- * ĐỌC DỮ LIỆU REQUEST
+ * ĐỌC REQUEST BODY
  * =====================================================
  */
 app.use(
@@ -221,14 +225,15 @@ app.use(
 
 /*
  * =====================================================
- * CẤU HÌNH SESSION
+ * SESSION
  * =====================================================
  */
 app.use(
     session({
         name: 'connect.sid',
 
-        secret: process.env.SESSION_SECRET,
+        secret:
+            process.env.SESSION_SECRET,
 
         proxy: true,
 
@@ -239,7 +244,8 @@ app.use(
         cookie: {
             httpOnly: true,
 
-            secure: isProduction,
+            secure:
+                isProduction,
 
             sameSite: 'lax',
 
@@ -257,7 +263,7 @@ app.use(
 
 /*
  * =====================================================
- * KHÔNG CACHE CÁC TRANG NHẠY CẢM
+ * KHÔNG CACHE TRANG NHẠY CẢM
  * =====================================================
  */
 const noCachePaths = new Set([
@@ -314,7 +320,7 @@ app.use((req, res, next) => {
 
 /*
  * =====================================================
- * GIỚI HẠN SỐ LƯỢNG REQUEST
+ * RATE LIMIT
  * =====================================================
  */
 const limiter = rateLimit({
@@ -325,9 +331,6 @@ const limiter = rateLimit({
 
     max: 10000,
 
-    /*
-     * Đặt rõ Content-Type cho phản hồi 429.
-     */
     handler: (req, res) => {
         return res
             .status(429)
@@ -347,7 +350,7 @@ app.use(limiter);
 
 /*
  * =====================================================
- * CẤU HÌNH MULTER
+ * MULTER
  * =====================================================
  */
 const storage =
@@ -383,7 +386,7 @@ app.use((req, res, next) => {
 
 /*
  * =====================================================
- * CẤU HÌNH VIEW ENGINE
+ * VIEW ENGINE
  * =====================================================
  */
 app.set(
@@ -403,11 +406,6 @@ app.set(
  * =====================================================
  * HEADER CHO FILE TĨNH
  * =====================================================
- *
- * express.static tự xác định Content-Type dựa trên
- * phần mở rộng của file.
- *
- * Middleware này bổ sung nosniff cho mọi file tĩnh.
  */
 const secureStaticHeaders = (res) => {
     res.setHeader(
@@ -418,7 +416,7 @@ const secureStaticHeaders = (res) => {
 
 /*
  * =====================================================
- * PHỤC VỤ FILE TRONG PUBLIC
+ * PUBLIC
  * =====================================================
  */
 app.use(
@@ -436,7 +434,7 @@ app.use(
 
 /*
  * =====================================================
- * PHỤC VỤ THƯ VIỆN NỘI BỘ
+ * NODE_MODULES VENDOR
  * =====================================================
  */
 const vendorStaticOptions = {
@@ -595,7 +593,7 @@ app.use(
 );
 
 /*
- * Axios dành cho JavaScript trình duyệt
+ * Axios
  */
 app.use(
     '/vendor/axios',
@@ -614,7 +612,7 @@ app.use(
 
 /*
  * =====================================================
- * KHAI BÁO ROUTER
+ * ROUTER
  * =====================================================
  */
 const adminRoute =
@@ -651,10 +649,8 @@ app.use(
 
 /*
  * =====================================================
- * XỬ LÝ ROUTE KHÔNG TỒN TẠI
+ * 404
  * =====================================================
- *
- * Đặt rõ Content-Type là text/plain.
  */
 app.use((req, res) => {
     return res
@@ -667,10 +663,8 @@ app.use((req, res) => {
 
 /*
  * =====================================================
- * XỬ LÝ LỖI CHUNG
+ * ERROR HANDLER
  * =====================================================
- *
- * Đặt rõ Content-Type là text/plain.
  */
 app.use((error, req, res, next) => {
     console.error(
@@ -706,8 +700,9 @@ app.listen(PORT, () => {
     );
 
     console.log(
-        `NODE_ENV: ${process.env.NODE_ENV ||
-        'development'
+        `NODE_ENV: ${
+            process.env.NODE_ENV ||
+            'development'
         }`
     );
 
@@ -716,6 +711,6 @@ app.listen(PORT, () => {
     );
 
     console.log(
-        'CSP sweetalert2-csp-v1 và MIME nosniff đã được bật.'
+        'CSP sweetalert2-static-css-v3 đã được bật.'
     );
 });
