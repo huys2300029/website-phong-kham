@@ -476,7 +476,7 @@ const getLichSu = async (req, res) => {
 /* ================= HỦY LỊCH & HOÀN TIỀN ================= */
 const huyLichHen = async (req, res) => {
     try {
-        if (!req.session || !req.session.user ||!req.session.user.id) {
+        if (!req.session || !req.session.user || !req.session.user.id) {
             return res.json({
                 success: false,
                 msg: 'Hết phiên làm việc, vui lòng đăng nhập lại!'
@@ -564,7 +564,7 @@ const huyLichHen = async (req, res) => {
                     ]
                 );
 
-            if ( deleteResult.affectedRows !== 1) {
+            if (deleteResult.affectedRows !== 1) {
                 return res.json({
                     success: false,
                     msg: 'Lịch hẹn đã thay đổi trạng thái. Vui lòng tải lại trang!'
@@ -590,7 +590,7 @@ const huyLichHen = async (req, res) => {
             });
         }
 
-        if (lichHen.trangThaiThanhToan !=='DaThanhToan') {
+        if (lichHen.trangThaiThanhToan !== 'DaThanhToan') {
             return res.json({
                 success: false,
                 msg: 'Trạng thái thanh toán không hợp lệ để hủy lịch!'
@@ -604,10 +604,10 @@ const huyLichHen = async (req, res) => {
         const now = new Date();
 
         const today = new Date(
-                now.getFullYear(),
-                now.getMonth(),
-                now.getDate()
-            );
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
 
         const dateObj = new Date(lichHen.ngay);
         dateObj.setHours(
@@ -651,17 +651,17 @@ const huyLichHen = async (req, res) => {
          */
         damBaoCoKey1ZaloPay();
 
-        const app_id = String( configZaloPay.app_id);
+        const app_id = String(configZaloPay.app_id);
 
         const zp_trans_id = String(lichHen.maZalopay);
 
         const amount = String(
-                Math.round(
-                    Number(
-                        lichHen.donGia
-                    )
+            Math.round(
+                Number(
+                    lichHen.donGia
                 )
-            );
+            )
+        );
 
         const timestamp =
             String(
@@ -1233,8 +1233,12 @@ const getThongTinLichKham = async (req, res) => {
 /* ================= CRONJOB DỌN DẸP ================= */
 setInterval(async () => {
     try {
-        // ZaloPay khuyến nghị query lại trạng thái khi callback bị mất.
-        // Vì vậy không xóa hàng loạt ngay; kiểm tra từng đơn trước.
+        /*
+         * Lấy các lịch hẹn chưa thanh toán đã được tạo quá 5 phút.
+         *
+         * Trước khi xóa, hệ thống vẫn hỏi lại ZaloPay để tránh trường hợp
+         * khách hàng đã thanh toán nhưng callback chưa cập nhật database.
+         */
         const pendingRows = await query(
             `
             SELECT
@@ -1245,58 +1249,87 @@ setInterval(async () => {
                 created_at
             FROM LichHen
             WHERE trangThaiThanhToan = 'ChuaThanhToan'
-              AND created_at <= (NOW() - INTERVAL 15 MINUTE)
+              AND created_at <= (NOW() - INTERVAL 5 MINUTE)
             ORDER BY created_at ASC
             LIMIT 100
             `
         );
 
         for (const lichHen of pendingRows) {
-            let duocPhepXoa = !lichHen.maZalo;
+            let duocPhepXoa =
+                !lichHen.maZalo;
 
+            /*
+             * Nếu lịch có mã giao dịch ZaloPay,
+             * phải kiểm tra lại trạng thái trước khi xóa.
+             */
             if (lichHen.maZalo) {
                 try {
-                    const daThanhToan = await dongBoTrangThaiThanhToan(lichHen);
+                    const daThanhToan =
+                        await dongBoTrangThaiThanhToan(
+                            lichHen
+                        );
 
+                    /*
+                     * Nếu ZaloPay xác nhận đã thanh toán,
+                     * trạng thái đã được đồng bộ và lịch không bị xóa.
+                     */
                     if (daThanhToan) {
                         continue;
                     }
 
-                    // Query thành công nhưng ZaloPay chưa ghi nhận thanh toán.
+                    /*
+                     * Query ZaloPay thành công nhưng giao dịch
+                     * chưa được ghi nhận thanh toán.
+                     */
                     duocPhepXoa = true;
                 } catch (queryError) {
-                    // Không xóa khi không kết nối/query được ZaloPay,
-                    // tránh xóa nhầm một lịch thực tế đã trả tiền.
+                    /*
+                     * Nếu không kết nối được ZaloPay thì không xóa,
+                     * tránh xóa nhầm lịch thực tế đã thanh toán.
+                     */
                     duocPhepXoa = false;
+
                     logLoi(
-                        `Cronjob không query được ZaloPay LH-${lichHen.id_lichHen}`,
+                        `Cronjob không query được ZaloPay ` +
+                        `LH-${lichHen.id_lichHen}`,
                         queryError
                     );
                 }
             }
 
-            if (duocPhepXoa) {
-                const deleteResult = await query(
-                    `
-                    DELETE FROM LichHen
-                    WHERE id_lichHen = ?
-                      AND trangThaiThanhToan = 'ChuaThanhToan'
-                      AND created_at <= (NOW() - INTERVAL 20 MINUTE)
-                    `,
-                    [lichHen.id_lichHen]
-                );
+            if (!duocPhepXoa) {
+                continue;
+            }
 
-                if (deleteResult.affectedRows > 0) {
-                    console.log(
-                        `[DON DEP] Đã xóa lịch chưa thanh toán quá 20 phút ` +
-                        `LH-${lichHen.id_lichHen}`
-                    );
-                }
+            /*
+             * Kiểm tra lại điều kiện ngay trong câu DELETE
+             * để tránh xóa lịch vừa được thanh toán trong lúc cronjob chạy.
+             */
+            const deleteResult = await query(
+                `
+                DELETE FROM LichHen
+                WHERE id_lichHen = ?
+                  AND trangThaiThanhToan = 'ChuaThanhToan'
+                  AND created_at <= (NOW() - INTERVAL 5 MINUTE)
+                `,
+                [
+                    lichHen.id_lichHen
+                ]
+            );
+
+            if (deleteResult.affectedRows > 0) {
+                console.log(
+                    `[DON DEP] Đã xóa lịch chưa thanh toán ` +
+                    `quá 5 phút LH-${lichHen.id_lichHen}`
+                );
             }
         }
-
     } catch (error) {
-        logLoi('Lỗi cronjob dọn dẹp lịch chưa thanh toán', error);
+        logLoi(
+            'Lỗi cronjob dọn dẹp lịch chưa thanh toán',
+            error
+        );
     }
 }, 60000);
 
