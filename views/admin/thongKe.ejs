@@ -61,6 +61,10 @@
 .csp-admin-thongke-ejs-2 { color: var(--primary-color, #2c3e50); border-left: 5px solid var(--primary-color); padding-left: 10px; }
 .csp-admin-thongke-ejs-1 { min-width: 180px; }
 </style>
+    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
+    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css">
+    <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+    <script src="/js/sweetalert-global.js"></script>
 </head>
 
 <body>

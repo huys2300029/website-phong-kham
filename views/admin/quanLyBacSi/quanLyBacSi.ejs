@@ -26,6 +26,10 @@
 .csp-admin-quanlybacsi-quanlybacsi-ejs-2 { max-width: 200px; }
 .csp-admin-quanlybacsi-quanlybacsi-ejs-1 { font-size: 48px; opacity: 0.2; }
 </style>
+    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
+    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css">
+    <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+    <script src="/js/sweetalert-global.js"></script>
 </head>
 <body>
     
@@ -124,17 +128,6 @@
             </div> 
         </div> 
     </div> 
-
-    <script nonce="<%= cspNonce %>">
-        document.querySelectorAll('.js-confirm-link').forEach(function (link) {
-            link.addEventListener('click', function (event) {
-                if (!window.confirm(this.dataset.confirmMessage || 'Bạn có chắc chắn?')) {
-                    event.preventDefault();
-                }
-            });
-        });
-    </script>
-
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

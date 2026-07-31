@@ -25,6 +25,10 @@
 .csp-admin-quanlyphongkham-quanlyphongkham-ejs-2 { color: #999; font-style: italic; }
 .csp-admin-quanlyphongkham-quanlyphongkham-ejs-1 { color: #ccc; }
 </style>
+    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
+    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css">
+    <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+    <script src="/js/sweetalert-global.js"></script>
 </head>
 <body>
 
@@ -105,17 +109,6 @@
             
         </div>
     </div>
-
-    <script nonce="<%= cspNonce %>">
-        document.querySelectorAll('.js-confirm-link').forEach(function (link) {
-            link.addEventListener('click', function (event) {
-                if (!window.confirm(this.dataset.confirmMessage || 'Bạn có chắc chắn?')) {
-                    event.preventDefault();
-                }
-            });
-        });
-    </script>
-
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

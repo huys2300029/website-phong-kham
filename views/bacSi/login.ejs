@@ -13,6 +13,10 @@
 <link rel="stylesheet" href="/css/style.css">
 <link rel="stylesheet" href="/css/admin/login.css">
 
+    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
+    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css">
+    <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+    <script src="/js/sweetalert-global.js"></script>
 </head>
 
 <body class="d-flex justify-content-center align-items-center vh-100 bg-gradient-primary">
@@ -54,8 +58,6 @@
 </div>
 
 <!-- SweetAlert -->
-<script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
-
 <script nonce="<%= cspNonce %>">
     // Nhận message từ server
     const serverMessage = "<%= typeof message !== 'undefined' ? message : '' %>";

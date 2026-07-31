@@ -18,6 +18,10 @@
 .csp-khachhang-datlich-thongtinlichkham-ejs-2 { max-width: 600px; padding: 20px; }
 .csp-khachhang-datlich-thongtinlichkham-ejs-1 { letter-spacing: 1px; }
 </style>
+    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
+    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css">
+    <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+    <script src="/js/sweetalert-global.js"></script>
 </head>
 <body>
 
@@ -89,8 +93,6 @@
 <%- include('../footer') %>
 <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script src="/vendor/html2canvas/html2canvas.min.js"></script>
-<script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
-
 <script nonce="<%= cspNonce %>">
     document.getElementById('btnDownload').addEventListener('click', function() {
         const ticketElement = document.getElementById('ticket-container');

@@ -101,8 +101,13 @@ app.use(
                         `'nonce-${res.locals.cspNonce}'`
                 ],
 
+                /*
+                 * SweetAlert2 và Bootstrap cần cập nhật một số thuộc tính
+                 * style động trên phần tử. Chỉ nới lỏng style attribute;
+                 * script nội tuyến vẫn bắt buộc có nonce.
+                 */
                 'style-src-attr': [
-                    "'none'"
+                    "'unsafe-inline'"
                 ],
 
                 'font-src': [
@@ -188,7 +193,7 @@ app.use(
 app.use((req, res, next) => {
     res.setHeader(
         'X-CSP-Build',
-        'strict-style-v3'
+        'sweetalert2-csp-v1'
     );
 
     next();
@@ -710,6 +715,6 @@ app.listen(PORT, () => {
     );
 
     console.log(
-        'CSP strict-style-v3 và MIME nosniff đã được bật.'
+        'CSP sweetalert2-csp-v1 và MIME nosniff đã được bật.'
     );
 });

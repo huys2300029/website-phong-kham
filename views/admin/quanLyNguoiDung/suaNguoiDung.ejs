@@ -16,6 +16,10 @@
 .csp-admin-quanlynguoidung-suanguoidung-ejs-2 { background-color: #f4f6f9; }
 .csp-admin-quanlynguoidung-suanguoidung-ejs-1 { color: var(--primary-color, #2c3e50); }
 </style>
+    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
+    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css">
+    <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+    <script src="/js/sweetalert-global.js"></script>
 </head>
 <body>
     
@@ -40,13 +44,15 @@
                 <div class="mb-4">
                     <p class="text-muted">Cập nhật thông tin tài khoản cho: <strong class="text-dark fs-5"><%= user.hoTen %></strong></p>
                 </div>
-
                 <% if (typeof msg !== 'undefined' && msg) { %>
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="fas fa-exclamation-triangle me-2"></i> <%= msg %>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div
+                        class="d-none"
+                        data-swal-message="<%= msg %>"
+                        data-swal-icon="error"
+                        data-swal-title="Không thể cập nhật người dùng">
                     </div>
                 <% } %>
+
 
                 <form action="/admin/quanLyNguoiDung/suaNguoiDung/<%= user.id %>" method="POST">
                     <div class="row g-4">

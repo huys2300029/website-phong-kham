@@ -12,9 +12,7 @@
 
   <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-  <script src="/vendor/sweetalert2/sweetalert2.all.min.js"></script>
-
-  <style nonce="<%= cspNonce %>">
+<style nonce="<%= cspNonce %>">
     .doctor-info-box {
       background-color: #f8f9fa;
       border-left: 4px solid #0d6efd;
@@ -27,6 +25,10 @@
 .csp-khachhang-datlich-chonthoigianchuyengia-ejs-2 { width: 60px; height: 60px; object-fit: cover; }
 .csp-khachhang-datlich-chonthoigianchuyengia-ejs-1 { cursor: pointer; border: 1px solid #ccc; border-radius: 5px; }
 </style>
+    <!-- SweetAlert2: tải CSS tĩnh để không bị CSP chặn style do JS chèn vào -->
+    <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css">
+    <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+    <script src="/js/sweetalert-global.js"></script>
 </head>
 
 <body>
