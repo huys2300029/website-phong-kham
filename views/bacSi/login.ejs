@@ -15,19 +15,17 @@
 
     <!-- Giao diện thông báo Bootstrap dùng chung -->
     <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
-    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=2">
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/bootstrap-ui.js?v=1"></script>
+    <script src="/js/bootstrap-ui.js?v=2"></script>
 </head>
 
 <body class="d-flex justify-content-center align-items-center vh-100 bg-gradient-primary">
     <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <div
-        class="d-none"
+      <template
         data-app-message="<%= uiMessage.message %>"
-        data-app-type="<%= uiMessage.type || 'info' %>"
-        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
-      </div>
+                data-app-type="<%= uiMessage.type || 'info' %>"
+                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
     <% } %>
 
 
@@ -67,25 +65,15 @@
     </div>
 </div>
 
-<!-- SweetAlert -->
-<script nonce="<%= cspNonce %>">
-    // Nhận message từ server
-    const serverMessage = "<%= typeof message !== 'undefined' ? message : '' %>";
-
-    if (serverMessage.trim() !== "") {
-
-        const lowerMsg = serverMessage.toLowerCase();
-        const isError = lowerMsg.includes("lỗi") || lowerMsg.includes("error");
-
-        AppDialog.fire({
-            icon: isError ? 'error' : 'success',
-            title: isError ? 'Đăng nhập thất bại' : 'Thành công',
-            text: serverMessage,
-            confirmButtonColor: '#667eea',
-            confirmButtonText: 'OK'
-        });
-    }
-</script>
+<% if (typeof message !== 'undefined' && message) { %>
+    <% const doctorLoginIsError = message.toLowerCase().includes('lỗi') || message.toLowerCase().includes('error'); %>
+    <template
+        data-app-message="<%= message %>"
+        data-app-type="<%= doctorLoginIsError ? 'error' : 'success' %>"
+        data-app-title="<%= doctorLoginIsError ? 'Đăng nhập thất bại' : 'Thành công' %>"
+        data-app-mode="dialog"
+        data-app-confirm-text="OK"></template>
+<% } %>
 
 </body>
 </html>

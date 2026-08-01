@@ -172,7 +172,7 @@ app.use(
 app.use((req, res, next) => {
     res.setHeader(
         'X-CSP-Build',
-        'bootstrap-ui-v1'
+        'bootstrap-ui-v2'
     );
 
     next();
@@ -249,6 +249,7 @@ const noCachePaths = new Set([
     '/thayDoiThongTin',
     '/capNhatThongTin',
     '/lichSuDatLichKham',
+    '/thongTinLichKham',
     '/sitemap.xml'
 ]);
 
@@ -354,18 +355,7 @@ app.use((req, res, next) => {
         null;
 
     res.locals.page = '';
-
-    /*
-     * Thông báo một lần sau khi redirect.
-     * Controller có thể gán req.session.uiMessage.
-     */
-    res.locals.uiMessage =
-        req.session.uiMessage ||
-        null;
-
-    if (req.session.uiMessage) {
-        delete req.session.uiMessage;
-    }
+    res.locals.uiMessage = null;
 
     next();
 });
@@ -399,6 +389,48 @@ const secureStaticHeaders = (res) => {
         'nosniff'
     );
 };
+
+/*
+ * =====================================================
+ * TƯƠNG THÍCH ĐƯỜNG DẪN SWEETALERT2 CŨ
+ * =====================================================
+ *
+ * Một số HTML cũ hoặc bộ nhớ đệm của trình duyệt có thể vẫn yêu cầu
+ * sweetalert2.all.min.js. Trả về lớp tương thích Bootstrap để không còn
+ * chèn thẻ <style> nội tuyến và không vi phạm CSP.
+ */
+const legacySweetAlertScript = path.join(
+    __dirname,
+    'Public',
+    'js',
+    'sweetalert-global.js'
+);
+
+app.get(
+    [
+        '/vendor/sweetalert2/sweetalert2.all.min.js',
+        '/vendor/sweetalert2/sweetalert2.min.js'
+    ],
+    (req, res) => {
+        res.setHeader('Cache-Control', 'no-store');
+        return res.sendFile(legacySweetAlertScript);
+    }
+);
+
+app.get(
+    [
+        '/vendor/sweetalert2/sweetalert2.min.css',
+        '/vendor/sweetalert2/sweetalert2.all.min.css'
+    ],
+    (req, res) => {
+        res.setHeader('Cache-Control', 'no-store');
+        return res
+            .type('text/css')
+            .send(
+                '/* SweetAlert2 đã được thay bằng Bootstrap UI. */'
+            );
+    }
+);
 
 /*
  * =====================================================
@@ -577,6 +609,42 @@ app.use(
         vendorStaticOptions
     )
 );
+
+/*
+ * =====================================================
+ * FLASH MESSAGE CHỈ BỊ LẤY KHI EJS THỰC SỰ RENDER
+ * =====================================================
+ *
+ * Không xóa req.session.uiMessage khi trình duyệt tải ảnh, CSS, JS,
+ * favicon, gọi API hoặc đi qua một redirect. Điều này tránh thông báo
+ * thanh toán bị request phụ lấy mất trước trang kết quả.
+ */
+app.use((req, res, next) => {
+    const originalRender = res.render.bind(res);
+
+    res.render = (view, options, callback) => {
+        res.setHeader(
+            'Cache-Control',
+            'no-store, no-cache, must-revalidate, private'
+        );
+
+        res.locals.uiMessage =
+            req.session.uiMessage ||
+            null;
+
+        if (req.session.uiMessage) {
+            delete req.session.uiMessage;
+        }
+
+        return originalRender(
+            view,
+            options,
+            callback
+        );
+    };
+
+    next();
+});
 
 /*
  * =====================================================

@@ -20,19 +20,17 @@
 
     <!-- Giao diện thông báo Bootstrap dùng chung -->
     <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
-    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=2">
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/bootstrap-ui.js?v=1"></script>
+    <script src="/js/bootstrap-ui.js?v=2"></script>
 </head>
 
 <body class="bg-gradient-primary">
     <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <div
-        class="d-none"
+      <template
         data-app-message="<%= uiMessage.message %>"
-        data-app-type="<%= uiMessage.type || 'info' %>"
-        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
-      </div>
+                data-app-type="<%= uiMessage.type || 'info' %>"
+                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
     <% } %>
 
 
@@ -104,32 +102,15 @@
 
         </div>
 
-        <script nonce="<%= cspNonce %>">
-            const serverMessage = JSON.parse(
-                '<%- JSON.stringify(typeof msg !== "undefined" ? msg : "") %>'
-            );
-
-            const messageType = JSON.parse(
-                '<%- JSON.stringify(typeof type !== "undefined" ? type : "") %>'
-            );
-
-            if (
-                typeof serverMessage === 'string' &&
-                serverMessage.trim() !== ''
-            ) {
-                const isError = messageType === 'error';
-
-                AppDialog.fire({
-                    icon: isError ? 'error' : 'success',
-                    title: isError
-                        ? 'Đăng nhập thất bại'
-                        : 'Thành công',
-                    text: serverMessage,
-                    confirmButtonColor: '#667eea',
-                    confirmButtonText: 'OK'
-                });
-            }
-        </script>
+        <% if (typeof msg !== 'undefined' && msg) { %>
+            <% const loginIsError = typeof type !== 'undefined' && type === 'error'; %>
+            <template
+                data-app-message="<%= msg %>"
+                data-app-type="<%= loginIsError ? 'error' : 'success' %>"
+                data-app-title="<%= loginIsError ? 'Đăng nhập thất bại' : 'Thành công' %>"
+                data-app-mode="dialog"
+                data-app-confirm-text="OK"></template>
+        <% } %>
 
 </body>
 

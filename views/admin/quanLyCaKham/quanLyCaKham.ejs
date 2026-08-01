@@ -17,18 +17,16 @@
 
     <!-- Giao diện thông báo Bootstrap dùng chung -->
     <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
-    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=2">
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/bootstrap-ui.js?v=1"></script>
+    <script src="/js/bootstrap-ui.js?v=2"></script>
 </head>
 <body>
     <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <div
-        class="d-none"
+      <template
         data-app-message="<%= uiMessage.message %>"
-        data-app-type="<%= uiMessage.type || 'info' %>"
-        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
-      </div>
+                data-app-type="<%= uiMessage.type || 'info' %>"
+                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
     <% } %>
 
 
@@ -265,21 +263,13 @@
     </script>
 
     <% if (typeof msg !== 'undefined' && msg) { %>
-        <script nonce="<%= cspNonce %>">
-            document.addEventListener("DOMContentLoaded", function() {
-                var messageContent = decodeURIComponent("<%= msg %>");
-                var isError = messageContent.toLowerCase().includes("lỗi") || 
-                              messageContent.toLowerCase().includes("không thể") ||
-                              messageContent.toLowerCase().includes("error");
-
-                AppDialog.fire({
-                    icon: isError ? 'error' : 'success',
-                    title: isError ? 'Thông báo' : 'Thành công',
-                    text: messageContent,
-                    confirmButtonColor: '#1565c0'
-                });
-            });
-        </script>
+        <% const decodedMsg = (() => { try { return decodeURIComponent(msg); } catch (error) { return msg; } })(); %>
+        <% const isErrorMessage = decodedMsg.toLowerCase().includes('lỗi') || decodedMsg.toLowerCase().includes('không thể') || decodedMsg.toLowerCase().includes('error'); %>
+        <template
+            data-app-message="<%= decodedMsg %>"
+            data-app-type="<%= isErrorMessage ? 'error' : 'success' %>"
+            data-app-title="<%= isErrorMessage ? 'Thông báo' : 'Thành công' %>"
+            data-app-mode="dialog"></template>
     <% } %>
 </body>
 </html>

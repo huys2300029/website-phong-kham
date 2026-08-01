@@ -27,6 +27,9 @@
 
     let activeDialog = null;
 
+    const nativeAlert = window.alert.bind(window);
+    const nativeConfirm = window.confirm.bind(window);
+
     function normalizeType(type) {
         return VALID_TYPES.has(type)
             ? type
@@ -40,16 +43,11 @@
     }
 
     function ensureBootstrap() {
-        if (
-            typeof window.bootstrap === 'undefined' ||
-            typeof window.bootstrap.Modal !== 'function' ||
-            typeof window.bootstrap.Toast !== 'function'
-        ) {
-            throw new Error(
-                'Bootstrap JavaScript chưa được tải. ' +
-                'Hãy tải bootstrap.bundle.min.js trước bootstrap-ui.js.'
-            );
-        }
+        return Boolean(
+            typeof window.bootstrap !== 'undefined' &&
+            typeof window.bootstrap.Modal === 'function' &&
+            typeof window.bootstrap.Toast === 'function'
+        );
     }
 
     function ensureToastContainer() {
@@ -112,25 +110,49 @@
         const container = ensureToastContainer();
         container.appendChild(toast);
 
-        const instance = window.bootstrap.Toast.getOrCreateInstance(
-            toast,
-            {
-                autohide: options.autohide !== false,
-                delay
-            }
-        );
+        if (ensureBootstrap()) {
+            const instance = window.bootstrap.Toast.getOrCreateInstance(
+                toast,
+                {
+                    autohide: options.autohide !== false,
+                    delay
+                }
+            );
 
-        toast.addEventListener(
-            'hidden.bs.toast',
-            () => {
-                instance.dispose();
-                toast.remove();
-            },
-            { once: true }
-        );
+            toast.addEventListener(
+                'hidden.bs.toast',
+                () => {
+                    instance.dispose();
+                    toast.remove();
+                },
+                { once: true }
+            );
 
-        instance.show();
-        return instance;
+            instance.show();
+            return instance;
+        }
+
+        /*
+         * Phương án dự phòng: nếu bootstrap.bundle.min.js tải lỗi,
+         * thông báo vẫn hiện đúng vị trí thay vì để lại thẻ dữ liệu cuối trang.
+         */
+        toast.classList.add('show');
+
+        const removeToast = () => {
+            toast.classList.remove('show');
+            toast.remove();
+        };
+
+        closeButton.addEventListener('click', removeToast, { once: true });
+
+        if (options.autohide !== false) {
+            window.setTimeout(removeToast, delay);
+        }
+
+        return {
+            hide: removeToast,
+            dispose: removeToast
+        };
     }
 
     window.AppNotify = Object.freeze({
@@ -337,11 +359,41 @@
         activeDialog.cancelButton.disabled = false;
     }
 
-    async function fire(first, second, third) {
-        ensureBootstrap();
-        await closeActiveDialog();
+    async function fallbackDialog(options) {
+        const title = text(options.title, 'Thông báo').trim();
+        const message = text(options.text).trim();
+        const content = [title, message].filter(Boolean).join('\n\n');
 
+        if (options.showCancelButton === true) {
+            const confirmed = nativeConfirm(content || 'Bạn có đồng ý không?');
+
+            return {
+                isConfirmed: confirmed,
+                isDenied: false,
+                isDismissed: !confirmed,
+                dismiss: confirmed ? undefined : 'cancel',
+                value: confirmed
+            };
+        }
+
+        nativeAlert(content || 'Thông báo');
+
+        return {
+            isConfirmed: true,
+            isDenied: false,
+            isDismissed: false,
+            value: true
+        };
+    }
+
+    async function fire(first, second, third) {
         const options = normalizeDialogOptions(first, second, third);
+
+        if (!ensureBootstrap()) {
+            return fallbackDialog(options);
+        }
+
+        await closeActiveDialog();
         const type = normalizeType(options.icon);
         const element = ensureDialogElement();
         const dialog = element.querySelector('.modal-dialog');
@@ -574,9 +626,30 @@
         }
     });
 
+    /*
+     * Tương thích tạm thời với mã cũ còn gọi Swal.fire(), nhưng không tải
+     * SweetAlert2 và không chèn thẻ <style> vi phạm CSP.
+     */
+    window.Swal = window.AppDialog;
+
     window.alert = function bootstrapAlert(message) {
         window.AppNotify.info(message);
     };
+
+    function decodeEmbeddedMessage(element) {
+        const rawMessage = text(element.dataset.appMessage);
+
+        if (element.dataset.appEncoded !== 'uri') {
+            return rawMessage;
+        }
+
+        try {
+            return decodeURIComponent(rawMessage);
+        } catch (error) {
+            console.warn('[Bootstrap UI] Không thể giải mã thông báo URI.', error);
+            return rawMessage;
+        }
+    }
 
     function showEmbeddedMessages() {
         const elements = Array.from(
@@ -584,23 +657,37 @@
         );
 
         for (const element of elements) {
-            const message = text(element.dataset.appMessage).trim();
+            const message = decodeEmbeddedMessage(element).trim();
+
+            /* Xóa thẻ dữ liệu trước để nó không thể lộ ra cuối trang. */
+            element.remove();
 
             if (!message) {
-                element.remove();
                 continue;
             }
 
             const type = normalizeType(element.dataset.appType);
             const title = text(element.dataset.appTitle, 'Thông báo');
+            const mode = text(element.dataset.appMode, 'toast').toLowerCase();
+
+            if (mode === 'dialog') {
+                void window.AppDialog.fire({
+                    icon: type,
+                    title,
+                    text: message,
+                    confirmButtonText: text(
+                        element.dataset.appConfirmText,
+                        'Đồng ý'
+                    )
+                });
+                continue;
+            }
 
             window.AppNotify.show(message, {
                 type,
                 title,
                 autohide: type !== 'error'
             });
-
-            element.remove();
         }
     }
 
@@ -635,9 +722,12 @@
     }
 
     function initialize() {
-        ensureBootstrap();
-        showEmbeddedMessages();
-        showQueryMessage();
+        try {
+            showEmbeddedMessages();
+            showQueryMessage();
+        } catch (error) {
+            console.error('[Bootstrap UI] Không thể khởi tạo thông báo.', error);
+        }
     }
 
     if (document.readyState === 'loading') {

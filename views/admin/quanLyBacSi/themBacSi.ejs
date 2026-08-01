@@ -11,18 +11,16 @@
 
     <!-- Giao diện thông báo Bootstrap dùng chung -->
     <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
-    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=2">
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/bootstrap-ui.js?v=1"></script>
+    <script src="/js/bootstrap-ui.js?v=2"></script>
 </head>
 <body>
     <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <div
-        class="d-none"
+      <template
         data-app-message="<%= uiMessage.message %>"
-        data-app-type="<%= uiMessage.type || 'info' %>"
-        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
-      </div>
+                data-app-type="<%= uiMessage.type || 'info' %>"
+                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
     <% } %>
 
     <div class="d-flex vh-100 overflow-hidden csp-admin-quanlybacsi-thembacsi-ejs-6">
@@ -117,11 +115,12 @@
     </div>
 
     <% if (typeof msg !== 'undefined' && msg) { %>
-        <script nonce="<%= cspNonce %>">
-            document.addEventListener('DOMContentLoaded', function() {
-                AppDialog.fire({ icon: 'error', title: 'Thông báo', text: '<%= msg %>', confirmButtonText: 'Đã hiểu', confirmButtonColor: '#1565C0' });
-            });
-        </script>
+        <template
+            data-app-message="<%= msg %>"
+            data-app-type="error"
+            data-app-title="Thông báo"
+            data-app-mode="dialog"
+            data-app-confirm-text="Đã hiểu"></template>
     <% } %>
 </body>
 </html>

@@ -14,18 +14,16 @@
 
     <!-- Giao diện thông báo Bootstrap dùng chung -->
     <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
-    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=1">
+    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=2">
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/bootstrap-ui.js?v=1"></script>
+    <script src="/js/bootstrap-ui.js?v=2"></script>
 </head>
 <body class="csp-admin-quanlynguoidung-themnguoidung-ejs-3">
     <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <div
-        class="d-none"
+      <template
         data-app-message="<%= uiMessage.message %>"
-        data-app-type="<%= uiMessage.type || 'info' %>"
-        data-app-title="<%= uiMessage.title || 'Thông báo' %>">
-      </div>
+                data-app-type="<%= uiMessage.type || 'info' %>"
+                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
     <% } %>
 
     
@@ -42,12 +40,11 @@
                     <p class="text-muted mb-0">Nhập thông tin chi tiết để tạo tài khoản mới vào hệ thống.</p>
                 </div>
                 <% if (typeof msg !== 'undefined' && msg) { %>
-                    <div
-                        class="d-none"
-                        data-swal-message="<%= msg %>"
-                        data-swal-icon="error"
-                        data-swal-title="Không thể thêm người dùng">
-                    </div>
+                    <template
+                        data-app-message="<%= msg %>"
+                                                data-app-type="error"
+                                                data-app-title="Không thể thêm người dùng"
+                        data-app-mode="dialog"></template>
                 <% } %>
 
 
