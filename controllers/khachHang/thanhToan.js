@@ -494,12 +494,12 @@ const huyLichHen = async (req, res) => {
             FROM LichHen lh
             JOIN CaKham c
                 ON lh.id_caKham = c.id_caKham
-            WHERE lh.id_lichHen = ?
+            WHERE lh.id_lichHen = ? AND lh.id_khachHang = ?
             LIMIT 1
             `,
             [
                 id_lichHen,
-                // id_khachHang
+                id_khachHang
             ]
         );
 
@@ -542,9 +542,7 @@ const huyLichHen = async (req, res) => {
         /*
          * LỊCH CHƯA THANH TOÁN:
          */
-        if (
-            lichHen.trangThaiThanhToan === 'ChuaThanhToan'
-        ) {
+        if (lichHen.trangThaiThanhToan === 'ChuaThanhToan') {
             const deleteResult =
                 await query(
                     `
@@ -579,7 +577,7 @@ const huyLichHen = async (req, res) => {
 
             return res.json({
                 success: true,
-                msg: 'Đã hủy bỏ lịch hẹn chưa thanh toán!'
+                msg: 'Đã hủy bỏ lịch hẹn'
             });
         }
 
