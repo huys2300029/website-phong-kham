@@ -494,12 +494,12 @@ const huyLichHen = async (req, res) => {
             FROM LichHen lh
             JOIN CaKham c
                 ON lh.id_caKham = c.id_caKham
-            WHERE lh.id_lichHen = ? AND lh.id_khachHang = ?
+            WHERE lh.id_lichHen = ?
             LIMIT 1
             `,
             [
                 id_lichHen,
-                id_khachHang
+                // id_khachHang
             ]
         );
 
@@ -1256,8 +1256,7 @@ setInterval(async () => {
         );
 
         for (const lichHen of pendingRows) {
-            let duocPhepXoa =
-                !lichHen.maZalo;
+            let duocPhepXoa = !lichHen.maZalo;
 
             /*
              * Nếu lịch có mã giao dịch ZaloPay,
