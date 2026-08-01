@@ -12,7 +12,7 @@ const moment = require('moment');
 
 /* ================= CẤU HÌNH URL HỆ THỐNG ================= */
 // Render tự cung cấp RENDER_EXTERNAL_URL, ví dụ:
-// https://benhviendakhoa.onrender.com
+// https://phongkhambenh.onrender.com
 // Khi chạy local, hệ thống tự dùng http://localhost:3000.
 const APP_URL = (
     process.env.APP_URL ||
