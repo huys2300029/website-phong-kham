@@ -2,7 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 
-// Tạo ra một đối tượng "Router"
+// Tạo ra đối tượng "Router"
 const router = express.Router();
 
 // Import file controller vao

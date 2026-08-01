@@ -93,8 +93,7 @@ const renderAdminLogin = (
 const getLoginAdmin = (req, res) => {
     // Nếu đã đăng nhập đúng vai trò admin thì chuyển vào dashboard
     if (
-        req.session.user &&
-        req.session.user.vaiTro === "NguoiQuanLy"
+        req.session.user && req.session.user.vaiTro === "NguoiQuanLy"
     ) {
         return res.redirect("/admin/trangchu");
     }
@@ -108,13 +107,9 @@ const getLoginAdmin = (req, res) => {
 // ======================================================
 
 const postLoginAdmin = async (req, res) => {
-    const tenDangNhap = String(
-        req.body.username || ""
-    ).trim();
+    const tenDangNhap = String(req.body.username || "").trim();
 
-    const matKhau = String(
-        req.body.password || ""
-    );
+    const matKhau = String(req.body.password || "");
 
     try {
         // ----------------------------------------------
@@ -130,14 +125,14 @@ const postLoginAdmin = async (req, res) => {
 
                 coTokenTrongSession: Boolean(
                     req.session.csrfTokens?.[
-                        CSRF_TOKEN_NAME
+                    CSRF_TOKEN_NAME
                     ]
                 ),
 
                 tokenTrungKhop:
                     req.body._csrf ===
                     req.session.csrfTokens?.[
-                        CSRF_TOKEN_NAME
+                    CSRF_TOKEN_NAME
                     ]
             });
 
@@ -229,48 +224,47 @@ const postLoginAdmin = async (req, res) => {
         // Bước 5: Tạo session ID mới
         // Chống Session Fixation
         // ----------------------------------------------
-        return req.session.regenerate(
-            (regenerateError) => {
-                if (regenerateError) {
-                    console.error(
-                        "Lỗi tạo session admin:",
-                        regenerateError
-                    );
-
-                    return renderAdminLogin(req, res, {
-                        statusCode: 500,
-
-                        message:
-                            "Không thể tạo phiên đăng nhập. " +
-                            "Vui lòng thử lại.",
-
-                        username: tenDangNhap
-                    });
-                }
-
-                req.session.user = adminSession;
-
-                return req.session.save(
-                    (saveError) => {
-                        if (saveError) {
-                            console.error(
-                                "Lỗi lưu session admin:",
-                                saveError
-                            );
-
-                            return res
-                                .status(500)
-                                .send(
-                                    "Không thể lưu phiên đăng nhập."
-                                );
-                        }
-
-                        return res.redirect(
-                            "/admin/trangchu"
-                        );
-                    }
+        return req.session.regenerate((regenerateError) => {
+            if (regenerateError) {
+                console.error(
+                    "Lỗi tạo session admin:",
+                    regenerateError
                 );
+
+                return renderAdminLogin(req, res, {
+                    statusCode: 500,
+
+                    message:
+                        "Không thể tạo phiên đăng nhập. " +
+                        "Vui lòng thử lại.",
+
+                    username: tenDangNhap
+                });
             }
+
+            req.session.user = adminSession;
+
+            return req.session.save(
+                (saveError) => {
+                    if (saveError) {
+                        console.error(
+                            "Lỗi lưu session admin:",
+                            saveError
+                        );
+
+                        return res
+                            .status(500)
+                            .send(
+                                "Không thể lưu phiên đăng nhập."
+                            );
+                    }
+
+                    return res.redirect(
+                        "/admin/trangchu"
+                    );
+                }
+            );
+        }
         );
     } catch (error) {
         console.error(
@@ -342,10 +336,7 @@ const getLogoutAdmin = (req, res) => {
 // ======================================================
 
 const kiemTraDangNhap = (req, res, next) => {
-    if (
-        req.session.user &&
-        req.session.user.vaiTro === "NguoiQuanLy"
-    ) {
+    if (req.session.user && req.session.user.vaiTro === "NguoiQuanLy") {
         return next();
     }
 
