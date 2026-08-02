@@ -18,6 +18,8 @@
     <script src="/js/bootstrap-ui.js?v=2"></script>
 </head>
   <body>
+    <input type="hidden" id="csrf-token" name="_csrf" value="<%= typeof csrfToken !== 'undefined' ? csrfToken : '' %>">
+
     <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
       <template
         data-app-message="<%= uiMessage.message %>"
@@ -229,6 +231,8 @@
       <%- include('../footer') %>
     </main>
     <script nonce="<%= cspNonce %>">
+      const csrfToken = document.getElementById('csrf-token').value;
+
       function decodeData(value) {
         try {
           return decodeURIComponent(value || '');
@@ -276,7 +280,7 @@
       async function thanhToanLai(id_lichHen, donGia, id_chuyenKhoa) {
         try {
           const res = await axios.post('/thanhToanLai', {
-            id_lichHen, donGia, id_chuyenKhoa
+            id_lichHen, donGia, id_chuyenKhoa, _csrf: csrfToken
           });
           
           if (res.data.success) {
@@ -312,7 +316,7 @@
 
         if (result.isConfirmed) {
           try {
-            const res = await axios.post('/huyLich', { id_lichHen });
+            const res = await axios.post('/huyLich', { id_lichHen, _csrf: csrfToken });
             
             if (res.data.success) {
               await AppDialog.fire({

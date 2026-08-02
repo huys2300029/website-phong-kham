@@ -8,7 +8,30 @@ const query = async (sql, params = []) => {
 const nodemailer = require('nodemailer');
 const axios = require('axios');
 const CryptoJS = require('crypto-js');
+const crypto = require('crypto');
 const moment = require('moment');
+
+/* ================= CSRF TOKEN ================= */
+const createCsrfToken = (req, tokenName) => {
+    if (!req.session.csrfTokens) req.session.csrfTokens = {};
+
+    const token = crypto.randomBytes(32).toString('hex');
+    req.session.csrfTokens[tokenName] = token;
+    return token;
+};
+
+const verifyCsrfToken = (req, tokenName) => {
+    const submittedToken = req.body?._csrf;
+    const sessionToken = req.session?.csrfTokens?.[tokenName];
+
+    if (typeof submittedToken !== 'string' || typeof sessionToken !== 'string') return false;
+
+    const submittedBuffer = Buffer.from(submittedToken, 'utf8');
+    const sessionBuffer = Buffer.from(sessionToken, 'utf8');
+
+    if (submittedBuffer.length !== sessionBuffer.length) return false;
+    return crypto.timingSafeEqual(submittedBuffer, sessionBuffer);
+};
 
 /* ================= CẤU HÌNH URL HỆ THỐNG ================= */
 // Render tự cung cấp RENDER_EXTERNAL_URL, ví dụ:
@@ -344,6 +367,7 @@ const getLichSu = async (req, res) => {
         }
 
         const id_khachHang = req.session.user.id;
+        const csrfToken = createCsrfToken(req, 'lichSuDatLich');
 
         const limit = 10;
         const page = parseInt(req.query.page) || 1;
@@ -461,6 +485,7 @@ const getLichSu = async (req, res) => {
             page: 'lichSuDatLich',
             lichSu: lichSuFormat,
             user: req.session.user,
+            csrfToken,
             pagination: {
                 currentPage: page,
                 totalPages: totalPages
@@ -481,6 +506,10 @@ const huyLichHen = async (req, res) => {
                 success: false,
                 msg: 'Hết phiên làm việc, vui lòng đăng nhập lại!'
             });
+        }
+
+        if (!verifyCsrfToken(req, 'lichSuDatLich')) {
+            return res.status(403).json({ success: false, msg: 'CSRF detected' });
         }
 
         const id_khachHang = Number(req.session.user.id);
@@ -860,6 +889,10 @@ const thanhToanLai = async (req, res) => {
                 success: false,
                 msg: 'Hết phiên làm việc, vui lòng đăng nhập lại!'
             });
+        }
+
+        if (!verifyCsrfToken(req, 'lichSuDatLich')) {
+            return res.status(403).json({ success: false, msg: 'CSRF detected' });
         }
 
         damBaoCoKey1ZaloPay();
