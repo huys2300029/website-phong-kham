@@ -418,10 +418,7 @@ const getLichSu = async (req, res) => {
         for (let item of rows) {
             // Nếu callback ZaloPay bị mất, trang lịch sử sẽ tự kiểm tra lại
             // và cập nhật TiDB trước khi hiển thị trạng thái.
-            if (
-                item.trangThaiThanhToan === 'ChuaThanhToan' &&
-                item.maZalo
-            ) {
+            if (item.trangThaiThanhToan === 'ChuaThanhToan' && item.maZalo) {
                 try {
                     await dongBoTrangThaiThanhToan(item);
                 } catch (syncError) {
