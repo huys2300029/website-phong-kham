@@ -12,9 +12,7 @@ const helmet = require('helmet');
 const crypto = require('crypto');
 
 const app = express();
-
-const isProduction =
-    process.env.NODE_ENV === 'production';
+const isProduction = process.env.NODE_ENV === 'production';
 
 /*
  * =====================================================
@@ -22,10 +20,7 @@ const isProduction =
  * =====================================================
  */
 if (!process.env.SESSION_SECRET) {
-    throw new Error(
-        'Thiếu biến môi trường SESSION_SECRET. ' +
-        'Hãy thêm SESSION_SECRET vào file .env và Render.'
-    );
+    throw new Error('Thiếu biến môi trường SESSION_SECRET. Hãy thêm SESSION_SECRET vào file .env và Render.');
 }
 
 /*
@@ -44,19 +39,14 @@ app.disable('x-powered-by');
  * =====================================================
  */
 app.use((req, res, next) => {
-    res.locals.cspNonce =
-        crypto
-            .randomBytes(32)
-            .toString('base64');
-
+    res.locals.cspNonce = crypto.randomBytes(32).toString('base64');
     next();
 });
 
 /*
  * Hàm tạo nonce tương ứng với từng response.
  */
-const getCspNonce = (req, res) =>
-    `'nonce-${res.locals.cspNonce}'`;
+const getCspNonce = (req, res) => `'nonce-${res.locals.cspNonce}'`;
 
 /*
  * =====================================================
@@ -71,110 +61,45 @@ app.use(
     helmet({
         contentSecurityPolicy: {
             useDefaults: false,
-
             directives: {
-                'default-src': [
-                    "'self'"
-                ],
-
-                'script-src': [
-                    "'self'",
-                    getCspNonce
-                ],
-
-                'script-src-attr': [
-                    "'none'"
-                ],
-
-                'style-src': [
-                    "'self'"
-                ],
-
-                'style-src-elem': [
-                    "'self'"
-                ],
+                'default-src': ["'self'"],
+                'script-src': ["'self'", getCspNonce],
+                'script-src-attr': ["'none'"],
+                'style-src': ["'self'"],
+                'style-src-elem': ["'self'"],
 
                 /*
                  * Bootstrap, MapLibre và một số thành phần giao diện
                  * cần thay đổi thuộc tính style trong lúc chạy.
                  */
-                'style-src-attr': [
-                    "'unsafe-inline'"
-                ],
-
-                'font-src': [
-                    "'self'",
-                    'data:'
-                ],
-
-                'img-src': [
-                    "'self'",
-                    'data:',
-                    'blob:',
-                    'https://tiles.goong.io'
-                ],
-
-                'connect-src': [
-                    "'self'",
-                    'https://tiles.goong.io',
-                    'https://rsapi.goong.io'
-                ],
-
-                'worker-src': [
-                    "'self'",
-                    'blob:'
-                ],
-
-                'object-src': [
-                    "'none'"
-                ],
-
-                'base-uri': [
-                    "'self'"
-                ],
-
-                'form-action': [
-                    "'self'"
-                ],
-
-                'frame-ancestors': [
-                    "'none'"
-                ],
-
-                'upgrade-insecure-requests':
-                    isProduction
-                        ? []
-                        : null
+                'style-src-attr': ["'unsafe-inline'"],
+                'font-src': ["'self'", 'data:'],
+                'img-src': ["'self'", 'data:', 'blob:', 'https://tiles.goong.io'],
+                'connect-src': ["'self'", 'https://tiles.goong.io', 'https://rsapi.goong.io'],
+                'worker-src': ["'self'", 'blob:'],
+                'object-src': ["'none'"],
+                'base-uri': ["'self'"],
+                'form-action': ["'self'"],
+                'frame-ancestors': ["'none'"],
+                'upgrade-insecure-requests': isProduction ? [] : null
             }
         },
-
-        strictTransportSecurity:
-            isProduction
-                ? {
-                      maxAge: 31536000,
-                      includeSubDomains: true,
-                      preload: false
-                  }
-                : false
+        strictTransportSecurity: isProduction
+            ? { maxAge: 31536000, includeSubDomains: true, preload: false }
+            : false
     })
 );
 
 /*
  * Chống trình duyệt đoán sai MIME type.
  */
-app.use(
-    helmet.xContentTypeOptions()
-);
+app.use(helmet.xContentTypeOptions());
 
 /*
  * Header dùng để kiểm tra server đã chạy bản mới.
  */
 app.use((req, res, next) => {
-    res.setHeader(
-        'X-CSP-Build',
-        'bootstrap-ui-v2'
-    );
-
+    res.setHeader('X-CSP-Build', 'bootstrap-ui-v2');
     next();
 });
 
@@ -183,18 +108,8 @@ app.use((req, res, next) => {
  * ĐỌC REQUEST BODY
  * =====================================================
  */
-app.use(
-    express.json({
-        limit: '1mb'
-    })
-);
-
-app.use(
-    express.urlencoded({
-        extended: true,
-        limit: '1mb'
-    })
-);
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 
 /*
  * =====================================================
@@ -204,32 +119,16 @@ app.use(
 app.use(
     session({
         name: 'connect.sid',
-
-        secret:
-            process.env.SESSION_SECRET,
-
+        secret: process.env.SESSION_SECRET,
         proxy: true,
-
         resave: false,
-
         saveUninitialized: false,
-
         cookie: {
             httpOnly: true,
-
-            secure:
-                isProduction,
-
+            secure: isProduction,
             sameSite: 'lax',
-
             path: '/',
-
-            maxAge:
-                1000 *
-                60 *
-                60 *
-                24 *
-                7
+            maxAge: 1000 * 60 * 60 * 24 * 7
         }
     })
 );
@@ -255,25 +154,10 @@ const noCachePaths = new Set([
 
 app.use((req, res, next) => {
     if (noCachePaths.has(req.path)) {
-        res.setHeader(
-            'Cache-Control',
-            'no-store, no-cache, must-revalidate, private'
-        );
-
-        res.setHeader(
-            'Pragma',
-            'no-cache'
-        );
-
-        res.setHeader(
-            'Expires',
-            '0'
-        );
-
-        res.setHeader(
-            'Surrogate-Control',
-            'no-store'
-        );
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        res.setHeader('Pragma', 'no-cache');
+        res.setHeader('Expires', '0');
+        res.setHeader('Surrogate-Control', 'no-store');
     }
 
     next();
@@ -285,11 +169,7 @@ app.use((req, res, next) => {
  * =====================================================
  */
 app.use((req, res, next) => {
-    res.setHeader(
-        'X-Frame-Options',
-        'DENY'
-    );
-
+    res.setHeader('X-Frame-Options', 'DENY');
     next();
 });
 
@@ -299,25 +179,10 @@ app.use((req, res, next) => {
  * =====================================================
  */
 const limiter = rateLimit({
-    windowMs:
-        15 *
-        60 *
-        1000,
-
-    max: 10000,
-
-    handler: (req, res) => {
-        return res
-            .status(429)
-            .type('text/plain')
-            .send(
-                'Bạn gửi quá nhiều yêu cầu, ' +
-                'vui lòng thử lại sau.'
-            );
-    },
-
+    windowMs: 1 * 60 * 1000,
+    max: 500,
+    handler: (req, res) => res.status(429).type('text/plain').send('Bạn gửi quá nhiều yêu cầu, vui lòng thử lại sau.'),
     standardHeaders: true,
-
     legacyHeaders: false
 });
 
@@ -328,20 +193,8 @@ app.use(limiter);
  * MULTER
  * =====================================================
  */
-const storage =
-    multer.memoryStorage();
-
-const upload = multer({
-    storage,
-
-    limits: {
-        fileSize:
-            5 *
-            1024 *
-            1024
-    }
-});
-
+const storage = multer.memoryStorage();
+const upload = multer({ storage, limits: { fileSize: 5 * 1024 * 1024 } });
 app.locals.upload = upload;
 
 /*
@@ -350,13 +203,9 @@ app.locals.upload = upload;
  * =====================================================
  */
 app.use((req, res, next) => {
-    res.locals.user =
-        req.session.user ||
-        null;
-
+    res.locals.user = req.session.user || null;
     res.locals.page = '';
     res.locals.uiMessage = null;
-
     next();
 });
 
@@ -365,18 +214,8 @@ app.use((req, res, next) => {
  * VIEW ENGINE
  * =====================================================
  */
-app.set(
-    'view engine',
-    'ejs'
-);
-
-app.set(
-    'views',
-    path.join(
-        __dirname,
-        'views'
-    )
-);
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
 
 /*
  * =====================================================
@@ -384,10 +223,7 @@ app.set(
  * =====================================================
  */
 const secureStaticHeaders = (res) => {
-    res.setHeader(
-        'X-Content-Type-Options',
-        'nosniff'
-    );
+    res.setHeader('X-Content-Type-Options', 'nosniff');
 };
 
 /*
@@ -399,18 +235,10 @@ const secureStaticHeaders = (res) => {
  * sweetalert2.all.min.js. Trả về lớp tương thích Bootstrap để không còn
  * chèn thẻ <style> nội tuyến và không vi phạm CSP.
  */
-const legacySweetAlertScript = path.join(
-    __dirname,
-    'Public',
-    'js',
-    'sweetalert-global.js'
-);
+const legacySweetAlertScript = path.join(__dirname, 'Public', 'js', 'sweetalert-global.js');
 
 app.get(
-    [
-        '/vendor/sweetalert2/sweetalert2.all.min.js',
-        '/vendor/sweetalert2/sweetalert2.min.js'
-    ],
+    ['/vendor/sweetalert2/sweetalert2.all.min.js', '/vendor/sweetalert2/sweetalert2.min.js'],
     (req, res) => {
         res.setHeader('Cache-Control', 'no-store');
         return res.sendFile(legacySweetAlertScript);
@@ -418,17 +246,10 @@ app.get(
 );
 
 app.get(
-    [
-        '/vendor/sweetalert2/sweetalert2.min.css',
-        '/vendor/sweetalert2/sweetalert2.all.min.css'
-    ],
+    ['/vendor/sweetalert2/sweetalert2.min.css', '/vendor/sweetalert2/sweetalert2.all.min.css'],
     (req, res) => {
         res.setHeader('Cache-Control', 'no-store');
-        return res
-            .type('text/css')
-            .send(
-                '/* SweetAlert2 đã được thay bằng Bootstrap UI. */'
-            );
+        return res.type('text/css').send('/* SweetAlert2 đã được thay bằng Bootstrap UI. */');
     }
 );
 
@@ -437,18 +258,7 @@ app.get(
  * PUBLIC
  * =====================================================
  */
-app.use(
-    express.static(
-        path.join(
-            __dirname,
-            'Public'
-        ),
-        {
-            setHeaders:
-                secureStaticHeaders
-        }
-    )
-);
+app.use(express.static(path.join(__dirname, 'Public'), { setHeaders: secureStaticHeaders }));
 
 /*
  * =====================================================
@@ -456,159 +266,49 @@ app.use(
  * =====================================================
  */
 const vendorStaticOptions = {
-    maxAge:
-        isProduction
-            ? '7d'
-            : 0,
-
-    setHeaders:
-        secureStaticHeaders
+    maxAge: isProduction ? '7d' : 0,
+    setHeaders: secureStaticHeaders
 };
 
 /*
  * Bootstrap
  */
-app.use(
-    '/vendor/bootstrap',
-
-    express.static(
-        path.join(
-            __dirname,
-            'node_modules',
-            'bootstrap',
-            'dist'
-        ),
-
-        vendorStaticOptions
-    )
-);
+app.use('/vendor/bootstrap', express.static(path.join(__dirname, 'node_modules', 'bootstrap', 'dist'), vendorStaticOptions));
 
 /*
  * Font Awesome
  */
-app.use(
-    '/vendor/fontawesome',
-
-    express.static(
-        path.join(
-            __dirname,
-            'node_modules',
-            '@fortawesome',
-            'fontawesome-free'
-        ),
-
-        vendorStaticOptions
-    )
-);
+app.use('/vendor/fontawesome', express.static(path.join(__dirname, 'node_modules', '@fortawesome', 'fontawesome-free'), vendorStaticOptions));
 
 /*
  * MapLibre GL
  */
-app.use(
-    '/vendor/maplibre',
-
-    express.static(
-        path.join(
-            __dirname,
-            'node_modules',
-            'maplibre-gl',
-            'dist'
-        ),
-
-        vendorStaticOptions
-    )
-);
+app.use('/vendor/maplibre', express.static(path.join(__dirname, 'node_modules', 'maplibre-gl', 'dist'), vendorStaticOptions));
 
 /*
  * Mapbox Polyline
  */
-app.use(
-    '/vendor/polyline',
-
-    express.static(
-        path.join(
-            __dirname,
-            'node_modules',
-            '@mapbox',
-            'polyline',
-            'src'
-        ),
-
-        vendorStaticOptions
-    )
-);
+app.use('/vendor/polyline', express.static(path.join(__dirname, 'node_modules', '@mapbox', 'polyline', 'src'), vendorStaticOptions));
 
 /*
  * Flatpickr
  */
-app.use(
-    '/vendor/flatpickr',
-
-    express.static(
-        path.join(
-            __dirname,
-            'node_modules',
-            'flatpickr',
-            'dist'
-        ),
-
-        vendorStaticOptions
-    )
-);
+app.use('/vendor/flatpickr', express.static(path.join(__dirname, 'node_modules', 'flatpickr', 'dist'), vendorStaticOptions));
 
 /*
  * Chart.js
  */
-app.use(
-    '/vendor/chartjs',
-
-    express.static(
-        path.join(
-            __dirname,
-            'node_modules',
-            'chart.js',
-            'dist'
-        ),
-
-        vendorStaticOptions
-    )
-);
+app.use('/vendor/chartjs', express.static(path.join(__dirname, 'node_modules', 'chart.js', 'dist'), vendorStaticOptions));
 
 /*
  * html2canvas
  */
-app.use(
-    '/vendor/html2canvas',
-
-    express.static(
-        path.join(
-            __dirname,
-            'node_modules',
-            'html2canvas',
-            'dist'
-        ),
-
-        vendorStaticOptions
-    )
-);
+app.use('/vendor/html2canvas', express.static(path.join(__dirname, 'node_modules', 'html2canvas', 'dist'), vendorStaticOptions));
 
 /*
  * Axios
  */
-app.use(
-    '/vendor/axios',
-
-    express.static(
-        path.join(
-            __dirname,
-            'node_modules',
-            'axios',
-            'dist'
-        ),
-
-        vendorStaticOptions
-    )
-);
+app.use('/vendor/axios', express.static(path.join(__dirname, 'node_modules', 'axios', 'dist'), vendorStaticOptions));
 
 /*
  * =====================================================
@@ -623,24 +323,12 @@ app.use((req, res, next) => {
     const originalRender = res.render.bind(res);
 
     res.render = (view, options, callback) => {
-        res.setHeader(
-            'Cache-Control',
-            'no-store, no-cache, must-revalidate, private'
-        );
+        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
+        res.locals.uiMessage = req.session.uiMessage || null;
 
-        res.locals.uiMessage =
-            req.session.uiMessage ||
-            null;
+        if (req.session.uiMessage) delete req.session.uiMessage;
 
-        if (req.session.uiMessage) {
-            delete req.session.uiMessage;
-        }
-
-        return originalRender(
-            view,
-            options,
-            callback
-        );
+        return originalRender(view, options, callback);
     };
 
     next();
@@ -651,51 +339,22 @@ app.use((req, res, next) => {
  * ROUTER
  * =====================================================
  */
-const adminRoute =
-    require('./routes/admin');
+const adminRoute = require('./routes/admin');
+const chatbotRoute = require('./routes/chatbot');
+const homeRoute = require('./routes/khachHang');
+const bacSiRoute = require('./routes/bacSi');
 
-const chatbotRoute =
-    require('./routes/chatbot');
-
-const homeRoute =
-    require('./routes/khachHang');
-
-const bacSiRoute =
-    require('./routes/bacSi');
-
-app.use(
-    '/admin',
-    adminRoute
-);
-
-app.use(
-    '/chatbot',
-    chatbotRoute
-);
-
-app.use(
-    '/',
-    homeRoute
-);
-
-app.use(
-    '/bacSi',
-    bacSiRoute
-);
+app.use('/admin', adminRoute);
+app.use('/chatbot', chatbotRoute);
+app.use('/', homeRoute);
+app.use('/bacSi', bacSiRoute);
 
 /*
  * =====================================================
  * 404
  * =====================================================
  */
-app.use((req, res) => {
-    return res
-        .status(404)
-        .type('text/plain')
-        .send(
-            'Không tìm thấy trang.'
-        );
-});
+app.use((req, res) => res.status(404).type('text/plain').send('Không tìm thấy trang.'));
 
 /*
  * =====================================================
@@ -703,22 +362,9 @@ app.use((req, res) => {
  * =====================================================
  */
 app.use((error, req, res, next) => {
-    console.error(
-        'Lỗi ứng dụng:',
-        error
-    );
-
-    if (res.headersSent) {
-        return next(error);
-    }
-
-    return res
-        .status(500)
-        .type('text/plain')
-        .send(
-            'Lỗi Server. ' +
-            'Vui lòng thử lại sau.'
-        );
+    console.error('Lỗi ứng dụng:', error);
+    if (res.headersSent) return next(error);
+    return res.status(500).type('text/plain').send('Lỗi Server. Vui lòng thử lại sau.');
 });
 
 /*
@@ -726,27 +372,11 @@ app.use((error, req, res, next) => {
  * KHỞI ĐỘNG SERVER
  * =====================================================
  */
-const PORT =
-    process.env.PORT ||
-    3000;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-    console.log(
-        `Server đang chạy tại cổng ${PORT}`
-    );
-
-    console.log(
-        `NODE_ENV: ${
-            process.env.NODE_ENV ||
-            'development'
-        }`
-    );
-
-    console.log(
-        `Secure cookie: ${isProduction}`
-    );
-
-    console.log(
-        'CSP bootstrap-ui-v1 đã được bật.'
-    );
+    console.log(`Server đang chạy tại cổng ${PORT}`);
+    console.log(`NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`Secure cookie: ${isProduction}`);
+    console.log('CSP bootstrap-ui-v1 đã được bật.');
 });
