@@ -180,7 +180,7 @@ app.use((req, res, next) => {
  */
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000,
-    max: 500,
+    max: 100,
     handler: (req, res) => res.status(429).type('text/plain').send('Bạn gửi quá nhiều yêu cầu, vui lòng thử lại sau.'),
     standardHeaders: true,
     legacyHeaders: false
