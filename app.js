@@ -219,19 +219,21 @@ app.set('views', path.join(__dirname, 'views'));
 
 /*
  * =====================================================
- * PUBLIC
- * =====================================================
- */
-app.use(express.static(path.join(__dirname, 'Public'), { setHeaders: secureStaticHeaders }));
-
-/*
- * =====================================================
  * HEADER CHO FILE TĨNH
  * =====================================================
  */
 const secureStaticHeaders = (res) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
 };
+
+/*
+ * =====================================================
+ * PUBLIC
+ * =====================================================
+ */
+app.use(express.static(path.join(__dirname, 'Public'), { setHeaders: secureStaticHeaders }));
+
+
 
 /*
  * =====================================================
