@@ -9,367 +9,324 @@
 
   <link rel="stylesheet" href="/css/khachHang/home.css" />
 
-  <link
-    rel="stylesheet"
-    href="/vendor/fontawesome/css/all.min.css"
-  />
+  <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css" />
 
-  <link
-    href="/vendor/bootstrap/css/bootstrap.min.css"
-    rel="stylesheet"
-  />
+  <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
 
   <link rel="stylesheet" href="/vendor/maplibre/maplibre-gl.css" />
-<script src="/vendor/maplibre/maplibre-gl.js"></script>
+  <script src="/vendor/maplibre/maplibre-gl.js"></script>
   <script src="/vendor/polyline/polyline.js"></script>
 
-    <!-- Giao diện thông báo Bootstrap dùng chung -->
-    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
-    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=2">
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/bootstrap-ui.js?v=2"></script>
+  <!-- Giao diện thông báo Bootstrap dùng chung -->
+  <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+  <link rel="stylesheet" href="/css/bootstrap-ui.css?v=2">
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/bootstrap-ui.js?v=2"></script>
 </head>
 
 <body>
-    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <template
-        data-app-message="<%= uiMessage.message %>"
-                data-app-type="<%= uiMessage.type || 'info' %>"
-                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
+  <% if (typeof uiMessage !=='undefined' && uiMessage && uiMessage.message) { %>
+    <template data-app-message="<%= uiMessage.message %>" data-app-type="<%= uiMessage.type || 'info' %>"
+      data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
     <% } %>
 
-  <main class="main">
+      <main class="main">
 
-    <%- include('./header') %>
+        <%- include('./header') %>
 
-    <div class="container map-page">
+          <div class="container map-page">
 
-      <section class="map-hero">
-        <h1>
-          <i class="fa-solid fa-location-dot"></i>
-          Địa chỉ khám bệnh
-        </h1>
-      </section>
+            <section class="map-hero">
+              <h1>
+                <i class="fa-solid fa-location-dot"></i>
+                Địa chỉ khám bệnh
+              </h1>
+            </section>
 
-      <section class="map-card">
+            <section class="map-card">
 
-        <div class="row g-0">
+              <div class="row g-0">
 
-          <div class="col-12 col-lg-5">
-            <div class="map-info">
+                <div class="col-12 col-lg-5">
+                  <div class="map-info">
 
-              <h3>Bệnh Viện Đa Khoa Thành Phố Cần Thơ</h3>
+                    <h3>Bệnh Viện Đa Khoa Thành Phố Cần Thơ</h3>
 
-              <div class="info-item">
-                <i class="fa-solid fa-map-location-dot"></i>
-                <div>
-                  <strong>Địa chỉ:</strong><br />
-                  Số 04 Châu Văn Liêm, An Lạc, Ninh Kiều, Thành phố Cần Thơ
+                    <div class="info-item">
+                      <i class="fa-solid fa-map-location-dot"></i>
+                      <div>
+                        <strong>Địa chỉ:</strong><br />
+                        Số 04 Châu Văn Liêm, An Lạc, Ninh Kiều, Thành phố Cần Thơ
+                      </div>
+                    </div>
+
+                    <div class="info-item">
+                      <i class="fa-solid fa-clock"></i>
+                      <div>
+                        <strong>Thời gian khám:</strong><br />
+                        Từ 07:00 đến 17:00
+                      </div>
+                    </div>
+
+                    <div class="map-actions">
+                      <button type="button" class="btn-direction" id="btnChiDuong">
+                        <i class="fa-solid fa-route"></i>
+                        Chỉ đường từ vị trí của tôi
+                      </button>
+                    </div>
+
+                    <div id="locationStatus" class="status-box"></div>
+
+                  </div>
                 </div>
-              </div>
 
-              <div class="info-item">
-                <i class="fa-solid fa-clock"></i>
-                <div>
-                  <strong>Thời gian khám:</strong><br />
-                  Từ 07:00 đến 17:00
+                <div class="col-12 col-lg-7">
+                  <div class="map-frame-wrapper">
+                    <div id="map"></div>
+                  </div>
                 </div>
+
               </div>
 
-              <div class="map-actions">
-                <button type="button" class="btn-direction" id="btnChiDuong">
-                  <i class="fa-solid fa-route"></i>
-                  Chỉ đường từ vị trí của tôi
-                </button>
-              </div>
+            </section>
 
-              <div id="locationStatus" class="status-box"></div>
-
-            </div>
           </div>
 
-          <div class="col-12 col-lg-7">
-            <div class="map-frame-wrapper">
-              <div id="map"></div>
-            </div>
-          </div>
+          <%- include('./footer') %>
 
-        </div>
+      </main>
 
-      </section>
+      <script nonce="<%= cspNonce %>">
+        const header = document.querySelector(".header");
 
-    </div>
-
-    <%- include('./footer') %>
-
-  </main>
-
-  <script nonce="<%= cspNonce %>">
-    const header = document.querySelector(".header");
-
-    function keepHeaderColored() {
-      if (header) {
-        header.classList.add("header--scrolled");
-      }
-    }
-
-    window.addEventListener("scroll", keepHeaderColored);
-
-    window.addEventListener("load", () => {
-      keepHeaderColored();
-    });
-
-    document.addEventListener("DOMContentLoaded", () => {
-      keepHeaderColored();
-    });
-  </script>
-
-  <script nonce="<%= cspNonce %>">
-    const mapKey = "<%= goongMapKey %>";
-    const apiKey = "<%= goongApiKey %>";
-
-    const hospital = {
-      name: "Bệnh viện Đa khoa Thành phố Cần Thơ",
-      address: "Số 04 Châu Văn Liêm, An Lạc, Ninh Kiều, Thành phố Cần Thơ",
-      lat: 10.0309038,
-      lng: 105.7824343
-    };
-
-    const center = [hospital.lng, hospital.lat];
-    const zoom = 15;
-
-    let userMarker = null;
-
-    const btnChiDuong = document.getElementById("btnChiDuong");
-    const locationStatus = document.getElementById("locationStatus");
-
-    const map = new maplibregl.Map({
-      container: "map",
-      style: `https://tiles.goong.io/assets/goong_map_web.json?api_key=${mapKey}`,
-      zoom: zoom,
-      center: center
-    });
-
-    map.on("load", () => {
-      new maplibregl.Marker({
-        color: "red"
-      })
-        .setLngLat(center)
-        .setPopup(
-          new maplibregl.Popup().setHTML(`
-            <strong>${hospital.name}</strong><br>
-            ${hospital.address}
-          `)
-        )
-        .addTo(map);
-    });
-
-    function showLocationStatus(message, type) {
-      if (!locationStatus) {
-        return;
-      }
-
-      locationStatus.innerHTML = message;
-      locationStatus.className = "status-box show " + type;
-    }
-
-    function resetDirectionButton() {
-      if (!btnChiDuong) {
-        return;
-      }
-
-      btnChiDuong.disabled = false;
-      btnChiDuong.innerHTML = '<i class="fa-solid fa-route"></i> Chỉ đường từ vị trí của tôi';
-    }
-
-    function clearOldRoute() {
-      if (map.getLayer("route-layer")) {
-        map.removeLayer("route-layer");
-      }
-
-      if (map.getSource("route-source")) {
-        map.removeSource("route-source");
-      }
-    }
-
-    function drawRoute(encodedPolyline) {
-      clearOldRoute();
-
-      const routeGeoJson = polyline.toGeoJSON(encodedPolyline);
-
-      map.addSource("route-source", {
-        type: "geojson",
-        data: routeGeoJson
-      });
-
-      map.addLayer({
-        id: "route-layer",
-        type: "line",
-        source: "route-source",
-        layout: {
-          "line-join": "round",
-          "line-cap": "round"
-        },
-        paint: {
-          "line-color": "#0d6efd",
-          "line-width": 6
+        function keepHeaderColored() {
+          if (header) {
+            header.classList.add("header--scrolled");
+          }
         }
-      });
-    }
 
-    function fitMapToRoute(userLngLat) {
-      const bounds = new maplibregl.LngLatBounds();
+        window.addEventListener("scroll", keepHeaderColored);
 
-      bounds.extend(userLngLat);
-      bounds.extend(center);
-
-      map.fitBounds(bounds, {
-        padding: 70,
-        maxZoom: 16
-      });
-    }
-
-    function getRouteFromGoong(latitude, longitude) {
-      const origin = latitude + "," + longitude;
-      const destination = hospital.lat + "," + hospital.lng;
-
-      const apiLink =
-        "https://rsapi.goong.io/v2/direction" +
-        "?origin=" + encodeURIComponent(origin) +
-        "&destination=" + encodeURIComponent(destination) +
-        "&vehicle=car" +
-        "&api_key=" + apiKey;
-
-      fetch(apiLink)
-        .then(response => response.json())
-        .then(data => {
-          if (!data.routes || data.routes.length === 0) {
-            showLocationStatus("Không tìm thấy tuyến đường phù hợp.", "error");
-            resetDirectionButton();
-            return;
-          }
-
-          const route = data.routes[0];
-          const encodedPolyline = route.overview_polyline && route.overview_polyline.points;
-
-          if (!encodedPolyline) {
-            showLocationStatus("Không có dữ liệu đường đi để hiển thị.", "error");
-            resetDirectionButton();
-            return;
-          }
-
-          drawRoute(encodedPolyline);
-
-          const userLngLat = [longitude, latitude];
-
-          if (userMarker) {
-            userMarker.remove();
-          }
-
-          userMarker = new maplibregl.Marker({
-            color: "blue"
-          })
-            .setLngLat(userLngLat)
-            .setPopup(
-              new maplibregl.Popup().setHTML("<strong>Vị trí hiện tại của bạn</strong>")
-            )
-            .addTo(map);
-
-          fitMapToRoute(userLngLat);
-
-          let distanceText = "";
-          let durationText = "";
-
-          if (route.legs && route.legs[0]) {
-            if (route.legs[0].distance && route.legs[0].distance.text) {
-              distanceText = route.legs[0].distance.text;
-            }
-
-            if (route.legs[0].duration && route.legs[0].duration.text) {
-              durationText = route.legs[0].duration.text;
-            }
-          }
-
-          let message = "";
-
-          if (distanceText || durationText) {
-
-            if (distanceText) {
-              message += "Khoảng cách: " + distanceText + ". ";
-            }
-
-            if (durationText) {
-              message += "Thời gian dự kiến: " + durationText + ".";
-            }
-          }
-
-          showLocationStatus(message, "info");
-          resetDirectionButton();
-        })
-        .catch(error => {
-          console.error("Lỗi lấy chỉ đường:", error);
-          showLocationStatus("Không thể lấy chỉ đường từ Goong Map. Vui lòng thử lại.", "error");
-          resetDirectionButton();
+        window.addEventListener("load", () => {
+          keepHeaderColored();
         });
-    }
 
-    function handleDirectionClick() {
-      if (!navigator.geolocation) {
-        showLocationStatus(
-          "Trình duyệt của bạn không hỗ trợ lấy vị trí hiện tại.",
-          "warning"
-        );
+        document.addEventListener("DOMContentLoaded", () => {
+          keepHeaderColored();
+        });
+      </script>
 
-        return;
-      }
+      <script nonce="<%= cspNonce %>">
+        // Nhận khóa Goong từ server
+        const mapKey = "<%= goongMapKey %>";
+        const apiKey = "<%= goongApiKey %>";
 
-      btnChiDuong.disabled = true;
-      btnChiDuong.innerHTML = '<i class="fa-solid fa-spinner"></i> Đang lấy vị trí...';
+        // Thông tin bệnh viện
+        const hospital = {
+          name: "Bệnh viện Đa khoa Thành phố Cần Thơ",
+          address: "Số 04 Châu Văn Liêm, An Lạc, Ninh Kiều, Thành phố Cần Thơ",
+          lat: 10.0309038,
+          lng: 105.7824343
+        };
 
-      showLocationStatus(
-        "Đang lấy vị trí hiện tại. Nếu trình duyệt hỏi quyền truy cập vị trí, bạn hãy chọn “Cho phép”.",
-        "info"
-      );
+        // Cấu hình vị trí ban đầu
+        const center = [hospital.lng, hospital.lat];
+        const zoom = 15;
 
-      navigator.geolocation.getCurrentPosition(
-        function(position) {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
+        // Marker vị trí người dùng
+        let userMarker = null;
 
-          btnChiDuong.innerHTML = '<i class="fa-solid fa-spinner"></i> Đang tìm đường...';
+        // Thành phần giao diện
+        const btnChiDuong = document.getElementById("btnChiDuong");
+        const locationStatus = document.getElementById("locationStatus");
 
-          getRouteFromGoong(latitude, longitude);
-        },
-        function(error) {
-          let message = "Không thể lấy vị trí hiện tại của bạn.";
+        // Khởi tạo bản đồ
+        const map = new maplibregl.Map({
+          container: "map",
+          style: `https://tiles.goong.io/assets/goong_map_web.json?api_key=${mapKey}`,
+          zoom,
+          center
+        });
 
-          if (error.code === error.PERMISSION_DENIED) {
-            message = "Bạn đã từ chối quyền truy cập vị trí. Vui lòng cấp quyền vị trí cho trình duyệt rồi thử lại.";
-          }
+        // Đánh dấu bệnh viện khi bản đồ tải xong
+        map.on("load", () => {
+          new maplibregl.Marker({ color: "red" })
+            .setLngLat(center)
+            .setPopup(new maplibregl.Popup().setHTML(`<strong>${hospital.name}</strong><br>${hospital.address}`))
+            .addTo(map);
+        });
 
-          if (error.code === error.POSITION_UNAVAILABLE) {
-            message = "Không thể xác định vị trí hiện tại. Nếu bạn đang dùng máy tính bàn/laptop, vị trí có thể không chính xác do không có GPS.";
-          }
-
-          if (error.code === error.TIMEOUT) {
-            message = "Quá thời gian lấy vị trí. Vui lòng thử lại.";
-          }
-
-          showLocationStatus(message, "error");
-          resetDirectionButton();
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 0
+        // Hiển thị thông báo
+        function showLocationStatus(message, type) {
+          if (!locationStatus) return;
+          locationStatus.innerHTML = message;
+          locationStatus.className = "status-box show " + type;
         }
-      );
-    }
 
-    if (btnChiDuong) {
-      btnChiDuong.addEventListener("click", handleDirectionClick);
-    }
-  </script>
+        // Đặt lại nút chỉ đường
+        function resetDirectionButton() {
+          if (!btnChiDuong) return;
+          btnChiDuong.disabled = false;
+          btnChiDuong.innerHTML = '<i class="fa-solid fa-route"></i> Chỉ đường từ vị trí của tôi';
+        }
+
+        // Xóa tuyến đường cũ
+        function clearOldRoute() {
+          if (map.getLayer("route-layer")) map.removeLayer("route-layer");
+          if (map.getSource("route-source")) map.removeSource("route-source");
+        }
+
+        // Vẽ tuyến đường mới
+        function drawRoute(encodedPolyline) {
+          clearOldRoute();
+
+          const routeGeoJson = polyline.toGeoJSON(encodedPolyline);
+
+          map.addSource("route-source", { type: "geojson", data: routeGeoJson });
+
+          map.addLayer({
+            id: "route-layer",
+            type: "line",
+            source: "route-source",
+            layout: { "line-join": "round", "line-cap": "round" },
+            paint: { "line-color": "#0d6efd", "line-width": 6 }
+          });
+        }
+
+        // Hiển thị toàn bộ tuyến đường
+        function fitMapToRoute(userLngLat) {
+          const bounds = new maplibregl.LngLatBounds();
+
+          bounds.extend(userLngLat);
+          bounds.extend(center);
+
+          map.fitBounds(bounds, { padding: 70, maxZoom: 16 });
+        }
+
+        // Gọi Goong để lấy tuyến đường
+        function getRouteFromGoong(latitude, longitude) {
+          const origin = latitude + "," + longitude;
+          const destination = hospital.lat + "," + hospital.lng;
+
+          const apiLink = "https://rsapi.goong.io/v2/direction" +
+            "?origin=" + encodeURIComponent(origin) +
+            "&destination=" + encodeURIComponent(destination) +
+            "&vehicle=car" +
+            "&api_key=" + apiKey;
+
+          fetch(apiLink)
+            .then(response => response.json())
+            .then(data => {
+              // Không tìm thấy tuyến đường
+              if (!data.routes || data.routes.length === 0) {
+                showLocationStatus("Không tìm thấy tuyến đường phù hợp.", "error");
+                resetDirectionButton();
+                return;
+              }
+
+              // Lấy tuyến đường đầu tiên
+              const route = data.routes[0];
+              const encodedPolyline = route.overview_polyline && route.overview_polyline.points;
+
+              // Không có dữ liệu để vẽ
+              if (!encodedPolyline) {
+                showLocationStatus("Không có dữ liệu đường đi để hiển thị.", "error");
+                resetDirectionButton();
+                return;
+              }
+
+              // Vẽ tuyến đường
+              drawRoute(encodedPolyline);
+
+              const userLngLat = [longitude, latitude];
+
+              // Xóa Marker cũ
+              if (userMarker) userMarker.remove();
+
+              // Đánh dấu vị trí người dùng
+              userMarker = new maplibregl.Marker({ color: "blue" })
+                .setLngLat(userLngLat)
+                .setPopup(new maplibregl.Popup().setHTML("<strong>Vị trí hiện tại của bạn</strong>"))
+                .addTo(map);
+
+              // Căn chỉnh bản đồ
+              fitMapToRoute(userLngLat);
+
+              // Lấy khoảng cách và thời gian
+              let distanceText = "";
+              let durationText = "";
+
+              if (route.legs && route.legs[0]) {
+                if (route.legs[0].distance && route.legs[0].distance.text) distanceText = route.legs[0].distance.text;
+                if (route.legs[0].duration && route.legs[0].duration.text) durationText = route.legs[0].duration.text;
+              }
+
+              // Tạo nội dung thông báo
+              let message = "";
+
+              if (distanceText || durationText) {
+                if (distanceText) message += "Khoảng cách: " + distanceText + ". ";
+                if (durationText) message += "Thời gian dự kiến: " + durationText + ".";
+              }
+
+              showLocationStatus(message, "info");
+              resetDirectionButton();
+            })
+            .catch(error => {
+              console.error("Lỗi lấy chỉ đường:", error);
+              showLocationStatus("Không thể lấy chỉ đường từ Goong Map. Vui lòng thử lại.", "error");
+              resetDirectionButton();
+            });
+        }
+
+        // Xử lý khi nhấn chỉ đường
+        function handleDirectionClick() {
+          // Kiểm tra hỗ trợ vị trí
+          if (!navigator.geolocation) {
+            showLocationStatus("Trình duyệt của bạn không hỗ trợ lấy vị trí hiện tại.", "warning");
+            return;
+          }
+
+          // Khóa nút trong lúc xử lý
+          btnChiDuong.disabled = true;
+          btnChiDuong.innerHTML = '<i class="fa-solid fa-spinner"></i> Đang lấy vị trí...';
+
+          showLocationStatus(
+            "Đang lấy vị trí hiện tại. Nếu trình duyệt hỏi quyền truy cập vị trí, bạn hãy chọn “Cho phép”.",
+            "info"
+          );
+
+          // Lấy vị trí hiện tại
+          navigator.geolocation.getCurrentPosition(
+            function (position) {
+              const latitude = position.coords.latitude;
+              const longitude = position.coords.longitude;
+
+              btnChiDuong.innerHTML = '<i class="fa-solid fa-spinner"></i> Đang tìm đường...';
+
+              getRouteFromGoong(latitude, longitude);
+            },
+            function (error) {
+              let message = "Không thể lấy vị trí hiện tại của bạn.";
+
+              if (error.code === error.PERMISSION_DENIED) message = "Bạn đã từ chối quyền truy cập vị trí. Vui lòng cấp quyền vị trí cho trình duyệt rồi thử lại.";
+              if (error.code === error.POSITION_UNAVAILABLE) message = "Không thể xác định vị trí hiện tại. Nếu bạn đang dùng máy tính bàn/laptop, vị trí có thể không chính xác do không có GPS.";
+              if (error.code === error.TIMEOUT) message = "Quá thời gian lấy vị trí. Vui lòng thử lại.";
+
+              showLocationStatus(message, "error");
+              resetDirectionButton();
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 15000,
+              maximumAge: 0
+            }
+          );
+        }
+
+        // Gắn sự kiện cho nút
+        if (btnChiDuong) btnChiDuong.addEventListener("click", handleDirectionClick);
+      </script>
 </body>
 
 </html>
