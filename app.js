@@ -180,7 +180,7 @@ app.use((req, res, next) => {
  */
 const limiter = rateLimit({
     windowMs: 1 * 60 * 1000,
-    max: 100,
+    max: 1000,
     handler: (req, res) => res.status(429).type('text/plain').send('Bạn gửi quá nhiều yêu cầu, vui lòng thử lại sau.'),
     standardHeaders: true,
     legacyHeaders: false
@@ -351,7 +351,5 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
     console.log(`Server đang chạy tại cổng ${PORT}`);
-    console.log(`NODE_ENV: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`Secure cookie: ${isProduction}`);
-    console.log('CSP bootstrap-ui-v1 đã được bật.');
+    console.log(`NODE_ENV: ${process.env.NODE_ENV}`);
 });
