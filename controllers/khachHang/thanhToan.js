@@ -1,17 +1,28 @@
 const con = require('../../config/connectDatabase');
 
-// Tạo hàm query dùng Promise từ biến con
+// Hàm dùng chung để chạy câu SQL và lấy kết quả từ TiDB.
 const query = async (sql, params = []) => {
     const [rows] = await con.promise().query(sql, params);
     return rows;
 };
+// Thư viện gửi email xác nhận cho khách hàng.
 const nodemailer = require('nodemailer');
+
+// Thư viện dùng để gọi API của ZaloPay.
 const axios = require('axios');
+
+// Dùng để tạo mã MAC theo đúng yêu cầu của ZaloPay.
 const CryptoJS = require('crypto-js');
+
+// Dùng để tạo token ngẫu nhiên cho CSRF.
 const crypto = require('crypto');
+
+// Dùng để xử lý ngày, giờ theo định dạng dễ dùng.
 const moment = require('moment');
 
 /* ================= CSRF TOKEN ================= */
+// Có thể hiểu CSRF token như một "tấm vé" riêng cho mỗi form.
+// Form gửi lên phải có đúng vé thì server mới cho xử lý.
 const createCsrfToken = (req, tokenName) => {
     if (!req.session.csrfTokens) req.session.csrfTokens = {};
 
@@ -20,6 +31,7 @@ const createCsrfToken = (req, tokenName) => {
     return token;
 };
 
+// So sánh token từ form với token đã cất trong session.
 const verifyCsrfToken = (req, tokenName) => {
     const submittedToken = req.body?._csrf;
     const sessionToken = req.session?.csrfTokens?.[tokenName];
@@ -34,6 +46,7 @@ const verifyCsrfToken = (req, tokenName) => {
 };
 
 /* ================= CẤU HÌNH URL HỆ THỐNG ================= */
+// URL này được gắn vào đường dẫn quay lại website và địa chỉ callback của ZaloPay.
 // Render tự cung cấp RENDER_EXTERNAL_URL, ví dụ:
 // https://phongkhambenh.onrender.com
 // Khi chạy local, hệ thống tự dùng http://localhost:3000.
@@ -44,6 +57,8 @@ const APP_URL = (
 ).replace(/\/+$/, '');
 
 /* ================= CẤU HÌNH ZALOPAY ================= */
+// app_id, key1 và key2 lấy từ biến môi trường.
+// Ba endpoint bên dưới lần lượt dùng để tạo đơn, hoàn tiền và hỏi trạng thái giao dịch.
 const configZaloPay = {
     app_id: process.env.ZALOPAY_APP_ID || '2553',
     key1: process.env.ZALOPAY_KEY1,
@@ -55,6 +70,8 @@ const configZaloPay = {
 };
 
 /* ================= CẤU HÌNH GỬI MAIL ================= */
+// Có đủ tài khoản Gmail và App Password thì mới tạo bộ gửi mail.
+// Thiếu một trong hai thì hệ thống vẫn chạy, chỉ bỏ qua bước gửi email.
 const gmailUser = process.env.GMAIL_USER;
 const gmailAppPassword = process.env.GMAIL_APP_PASSWORD;
 
@@ -69,6 +86,7 @@ const transporter = gmailUser && gmailAppPassword
     : null;
 
 /* ================= HELPER LOG NGẮN GỌN ================= */
+// Gom cách in thông báo ra terminal để lúc kiểm tra lỗi dễ nhìn hơn.
 const logThanhToan = (message) => {
     console.log(`[THANH TOAN] ${message}`);
 };
@@ -87,12 +105,14 @@ const logLoi = (message, error = null) => {
     }
 };
 
+// Những chức năng tạo đơn, hỏi trạng thái và hoàn tiền đều cần key1.
 const damBaoCoKey1ZaloPay = () => {
     if (!configZaloPay.key1) {
         throw new Error('Thiếu biến môi trường ZALOPAY_KEY1 trên Render.');
     }
 };
 
+// Callback dùng key2 để kiểm tra dữ liệu có thật sự do ZaloPay gửi hay không.
 const damBaoCoKey2ZaloPay = () => {
     if (!configZaloPay.key2) {
         throw new Error('Thiếu biến môi trường ZALOPAY_KEY2 trên Render.');
@@ -101,6 +121,8 @@ const damBaoCoKey2ZaloPay = () => {
 
 // ZaloPay yêu cầu phần ngày trong app_trans_id theo múi giờ Việt Nam GMT+7.
 const taoTienToNgayVietNam = () => moment().utcOffset(7).format('YYMMDD');
+
+// Đánh dấu lịch hẹn đã thanh toán và lưu mã giao dịch thật do ZaloPay cấp.
 const capNhatThanhToanThanhCong = async (app_trans_id, zp_trans_id) => {
     const updateResult = await query(
         `
@@ -116,6 +138,7 @@ const capNhatThanhToanThanhCong = async (app_trans_id, zp_trans_id) => {
     return updateResult.affectedRows;
 };
 
+// Chủ động hỏi ZaloPay xem một mã đơn hiện đã thanh toán hay chưa.
 const queryTrangThaiDonHangZaloPay = async (app_trans_id) => {
     damBaoCoKey1ZaloPay();
 
@@ -126,11 +149,13 @@ const queryTrangThaiDonHangZaloPay = async (app_trans_id) => {
     const hmacInput = `${app_id}|${app_trans_id}|${configZaloPay.key1}`;
     const mac = CryptoJS.HmacSHA256(hmacInput, configZaloPay.key1).toString();
 
+    // Gom dữ liệu thành dạng form để gửi sang API ZaloPay.
     const params = new URLSearchParams();
     params.append('app_id', app_id);
     params.append('app_trans_id', app_trans_id);
     params.append('mac', mac);
 
+    // Gửi yêu cầu hỏi trạng thái giao dịch sang ZaloPay Sandbox.
     const response = await axios.post(
         configZaloPay.queryEndpoint,
         params.toString(),
@@ -177,12 +202,14 @@ const dongBoTrangThaiThanhToan = async (lichHen) => {
 };
 
 /* ================= HELPER: TẠO LỊCH HẸN & THANH TOÁN ================= */
+// Đây là hàm chính khi khách vừa đặt lịch và muốn chuyển sang thanh toán.
 const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gioHen, id_khachHang, loaiKham = 'Thuong') => {
     try {
         damBaoCoKey1ZaloPay();
 
         let donGia = 0;
 
+        // Lấy đúng giá đang áp dụng cho chuyên khoa và loại khám đã chọn.
         const giaKhamData = await query(
             `
             SELECT donGia 
@@ -209,6 +236,7 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
             });
         }
 
+        // Ví dụ khách chọn 08 giờ thì tìm các lịch đã đặt trong khoảng 08:00 - 08:59.
         const gioHenPrefix = gioHen.substring(0, 2) + '%';
 
         const bookedData = await query(
@@ -222,11 +250,13 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
             [id_ca, gioHenPrefix]
         );
 
+        // Chỉ lấy phần phút của các lịch đã đặt, ví dụ 08:20 thì lấy số 20.
         const bookedMinutes = bookedData.map(row => {
             const timeStr = typeof row.gioHen === 'string' ? row.gioHen : String(row.gioHen);
             return parseInt(timeStr.split(':')[1], 10);
         });
 
+        // Mỗi bệnh nhân cách nhau 10 phút, hệ thống tìm phút trống đầu tiên.
         const possibleMinutes = [0, 10, 20, 30, 40, 50];
         let availableMinute = -1;
 
@@ -254,6 +284,7 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
 
         const gioHenThucTe = exactTimeObj.format('HH:mm');
 
+        // Giữ chỗ lịch hẹn trước, lúc này trạng thái thanh toán vẫn là chưa thanh toán.
         const insertResult = await query(
             `
             INSERT INTO LichHen(
@@ -273,9 +304,11 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
 
         const id_lichHen_new = insertResult.insertId;
 
+        // Tạo mã đơn riêng để website và ZaloPay cùng nhận biết đúng lịch hẹn.
         const transID = Math.floor(Math.random() * 1000000);
         const app_trans_id = `${taoTienToNgayVietNam()}_${transID}_${id_lichHen_new}`;
 
+        // Lưu mã đơn ZaloPay vào lịch hẹn để dùng lại khi callback hoặc kiểm tra trạng thái.
         await query(
             `
             UPDATE LichHen 
@@ -285,6 +318,7 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
             [app_trans_id, id_lichHen_new]
         );
 
+        // Gói toàn bộ thông tin cần thiết để ZaloPay tạo trang thanh toán.
         const order = {
             app_id: Number(configZaloPay.app_id),
             app_trans_id: app_trans_id,
@@ -306,6 +340,7 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
             callback_url: `${APP_URL}/callback`
         };
 
+        // Ghép dữ liệu theo đúng thứ tự ZaloPay quy định rồi tạo MAC bằng key1.
         const dataMac =
             configZaloPay.app_id + "|" +
             order.app_trans_id + "|" +
@@ -319,11 +354,13 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
 
         logThanhToan(`Tạo đơn LH-${id_lichHen_new}, mã ZaloPay ${app_trans_id}`);
 
+        // Gửi đơn sang ZaloPay Sandbox để lấy đường dẫn thanh toán.
         const response = await axios.post(configZaloPay.endpoint, order);
 
         if (response.data.return_code === 1) {
             logThanhToan(`Khởi tạo thanh toán thành công LH-${id_lichHen_new}`);
 
+            // Frontend nhận payUrl rồi chuyển khách sang trang thanh toán ZaloPay.
             return res.json({
                 success: true,
                 payUrl: response.data.order_url
@@ -336,6 +373,7 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
             }
         });
 
+        // ZaloPay không tạo được đơn thì xóa lịch vừa giữ chỗ để không chiếm suất.
         await query(
             `
             DELETE FROM LichHen 
@@ -360,6 +398,7 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
 };
 
 /* ================= LỊCH SỬ KHÁM ================= */
+// Lấy danh sách các lịch đã đặt của đúng khách hàng đang đăng nhập.
 const getLichSu = async (req, res) => {
     try {
         if (!req.session || !req.session.user) {
@@ -369,6 +408,7 @@ const getLichSu = async (req, res) => {
         const id_khachHang = req.session.user.id;
         const csrfToken = createCsrfToken(req, 'lichSuDatLich');
 
+        // Mỗi trang hiển thị tối đa 10 lịch hẹn.
         const limit = 10;
         const page = parseInt(req.query.page) || 1;
         const offset = (page - 1) * limit;
@@ -408,8 +448,10 @@ const getLichSu = async (req, res) => {
             LIMIT ? OFFSET ?
         `;
 
+        // Lấy dữ liệu lịch hẹn kèm chuyên khoa, bác sĩ và trạng thái thanh toán.
         const rows = await query(sql, [id_khachHang, limit, offset]);
 
+        // Tính còn bao nhiêu ngày nữa đến lịch khám.
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -443,6 +485,7 @@ const getLichSu = async (req, res) => {
 
             const diffDays = Math.ceil((dateObj - today) / (1000 * 60 * 60 * 24));
 
+            // Quyết định giao diện có hiện nút Hủy lịch hay không.
             let isCoTheHuy = false;
 
             if (item.trangThai === 'Huy' || item.trangThai === 'HoanThanh' || item.trangThai === 'DenTre') {
@@ -458,6 +501,7 @@ const getLichSu = async (req, res) => {
             const exactDateTime = new Date(item.ngay);
             exactDateTime.setHours(hh, mm, 0, 0);
 
+            // Chỉ hiện nút Xem vé khi đã trả tiền, lịch chưa bị hủy và chưa quá giờ khám.
             let isCoTheXemVe = false;
 
             if (
@@ -478,6 +522,7 @@ const getLichSu = async (req, res) => {
             });
         }
 
+        // Gửi dữ liệu đã xử lý sang trang lịch sử đặt lịch.
         res.render('khachHang/datLich/lichSuDatLich', {
             page: 'lichSuDatLich',
             lichSu: lichSuFormat,
@@ -496,6 +541,9 @@ const getLichSu = async (req, res) => {
 };
 
 /* ================= HỦY LỊCH & HOÀN TIỀN ================= */
+// Một hàm xử lý cả hai trường hợp:
+// - Chưa thanh toán: xóa lịch luôn.
+// - Đã thanh toán: gửi yêu cầu hoàn tiền sang ZaloPay rồi mới cập nhật trạng thái.
 const huyLichHen = async (req, res) => {
     try {
         if (!req.session || !req.session.user || !req.session.user.id) {
@@ -509,9 +557,11 @@ const huyLichHen = async (req, res) => {
             return res.status(403).json({ success: false, msg: 'CSRF detected' });
         }
 
+        // Luôn lấy mã khách hàng từ session, không lấy từ dữ liệu người dùng tự gửi lên.
         const id_khachHang = Number(req.session.user.id);
         const id_lichHen = req.body && req.body.id_lichHen;
 
+        // Chỉ lấy lịch nếu lịch đó thật sự thuộc về khách hàng đang đăng nhập.
         const lichHenList = await query(
             `
             SELECT
@@ -536,6 +586,7 @@ const huyLichHen = async (req, res) => {
             });
         }
 
+        // Lấy lịch hẹn duy nhất vừa tìm được để kiểm tra tiếp.
         const lichHen =
             lichHenList[0];
 
@@ -567,6 +618,7 @@ const huyLichHen = async (req, res) => {
         }
         /*
          * LỊCH CHƯA THANH TOÁN:
+         * Chưa có tiền đi qua ZaloPay nên chỉ cần xóa lịch hẹn khỏi database.
          */
         if (lichHen.trangThaiThanhToan === 'ChuaThanhToan') {
             const deleteResult =
@@ -692,6 +744,7 @@ const huyLichHen = async (req, res) => {
                 Date.now()
             );
 
+        // Tạo mã riêng cho yêu cầu hoàn tiền này.
         const m_refund_id =
             `${moment().format('YYMMDD')}_` +
             `${app_id}_` +
@@ -721,6 +774,7 @@ const huyLichHen = async (req, res) => {
                 )
                 .toString();
 
+        // Gom các thông tin hoàn tiền thành dạng form để gửi cho ZaloPay.
         const params = new URLSearchParams();
 
         params.append(
@@ -765,6 +819,7 @@ const huyLichHen = async (req, res) => {
             `amount=${amount}`
         );
 
+        // Gửi yêu cầu hoàn tiền sang ZaloPay Sandbox.
         const refundResponse =
             await axios.post(
                 configZaloPay.refundEndpoint,
@@ -796,6 +851,7 @@ const huyLichHen = async (req, res) => {
              * Không UPDATE theo id_lichHen,
              * vì request có thể đã bị sửa ID.
              */
+            // ZaloPay đã nhận yêu cầu thì mới đổi lịch thành Đã hủy và Đã hoàn tiền.
             const updateResult =
                 await query(
                     `
@@ -879,6 +935,7 @@ const huyLichHen = async (req, res) => {
 };
 
 /* ================= THANH TOÁN LẠI ZALOPAY ================= */
+// Dùng khi lịch hẹn đã tồn tại nhưng lần thanh toán trước chưa hoàn tất.
 const thanhToanLai = async (req, res) => {
     try {
         if (!req.session || !req.session.user) {
@@ -894,6 +951,7 @@ const thanhToanLai = async (req, res) => {
 
         damBaoCoKey1ZaloPay();
 
+        // Trình duyệt chỉ gửi mã lịch hẹn; giá tiền sẽ được lấy lại từ database.
         const { id_lichHen } = req.body;
         const id_khachHang = req.session.user.id;
 
@@ -933,6 +991,7 @@ const thanhToanLai = async (req, res) => {
             });
         }
 
+        // Mỗi lần thanh toán lại sẽ tạo một mã đơn ZaloPay mới.
         const transID = Math.floor(Math.random() * 1000000);
         const app_trans_id = `${taoTienToNgayVietNam()}_${transID}_${id_lichHen}`;
 
@@ -946,6 +1005,7 @@ const thanhToanLai = async (req, res) => {
             [app_trans_id, id_lichHen, id_khachHang]
         );
 
+        // Tạo lại đơn thanh toán từ dữ liệu thật vừa lấy trong database.
         const order = {
             app_id: Number(configZaloPay.app_id),
             app_trans_id: app_trans_id,
@@ -1016,12 +1076,14 @@ const thanhToanLai = async (req, res) => {
 };
 
 /* ================= CALLBACK ZALOPAY ================= */
+// Sau khi khách thanh toán, ZaloPay tự gọi vào hàm này để báo kết quả cho server.
 const callbackZaloPay = async (req, res) => {
     let result = {};
 
     try {
         damBaoCoKey2ZaloPay();
 
+        // data là nội dung giao dịch, mac là mã để kiểm tra dữ liệu có bị giả hay sửa hay không.
         const dataStr = req.body && req.body.data;
         const reqMac = req.body && req.body.mac;
 
@@ -1031,6 +1093,7 @@ const callbackZaloPay = async (req, res) => {
             return res.json(result);
         }
 
+        // Server tự tính lại MAC bằng key2 rồi so với MAC ZaloPay gửi đến.
         const mac = CryptoJS.HmacSHA256(dataStr, configZaloPay.key2).toString();
 
         if (reqMac !== mac) {
@@ -1042,6 +1105,7 @@ const callbackZaloPay = async (req, res) => {
             return res.json(result);
         }
 
+        // MAC hợp lệ thì mới mở dữ liệu giao dịch ra để xử lý.
         const dataJson = JSON.parse(dataStr);
 
         const app_trans_id = dataJson.app_trans_id;
@@ -1049,11 +1113,13 @@ const callbackZaloPay = async (req, res) => {
 
         const idLichHen = app_trans_id.split('_').pop();
 
+        // Cập nhật lịch hẹn sang Đã thanh toán; câu UPDATE chỉ đổi đơn còn Chưa thanh toán.
         const affectedRows = await capNhatThanhToanThanhCong(app_trans_id, zp_trans_id);
 
         if (affectedRows > 0) {
             logThanhToan(`Thanh toán thành công LH-${idLichHen}, ZP-${zp_trans_id}`);
 
+            // Lấy thông tin lịch và email để gửi thư xác nhận cho khách.
             const infoRows = await query(
                 `
                 SELECT lh.*, nd.email, nd.hoTen, ck.tenChuyenKhoa, ca.ngay
@@ -1081,6 +1147,7 @@ const callbackZaloPay = async (req, res) => {
             logThanhToan(`Callback hợp lệ nhưng đơn đã được cập nhật trước đó hoặc không còn ChuaThanhToan: ${app_trans_id}`);
         }
 
+        // Báo ngược lại cho ZaloPay rằng server đã nhận và xử lý callback.
         result.return_code = 1;
         result.return_message = "success";
 
@@ -1095,6 +1162,7 @@ const callbackZaloPay = async (req, res) => {
 };
 
 /* ================= GỬI EMAIL THÔNG BÁO ================= */
+// Soạn email chứa mã lịch, chuyên khoa, ngày giờ và số tiền đã thanh toán.
 const sendSuccessEmail = async (email, details) => {
     const mailOptions = {
         from: `"Phòng Khám Đa Khoa" <${gmailUser}>`,
@@ -1151,6 +1219,7 @@ const sendSuccessEmail = async (email, details) => {
     }
 
     try {
+        // Gửi email xác nhận đến địa chỉ của khách hàng.
         await transporter.sendMail(mailOptions);
         console.log(`[MAIL] Đã gửi xác nhận đến ${email}`);
     } catch (error) {
@@ -1159,12 +1228,14 @@ const sendSuccessEmail = async (email, details) => {
 };
 
 /* ================= THÔNG TIN LỊCH KHÁM ================= */
+// Trang này chính là "vé khám" mà khách được xem sau khi thanh toán thành công.
 const getThongTinLichKham = async (req, res) => {
     try {
         if (!req.session || !req.session.user) {
             return res.redirect('/login');
         }
 
+        // id khách lấy từ session, còn id lịch hẹn lấy trên đường dẫn quay về từ ZaloPay.
         const id_khachHang = req.session.user.id;
         const id_lichHen = req.query.id;
         const statusZalo = req.query.status;
@@ -1179,6 +1250,7 @@ const getThongTinLichKham = async (req, res) => {
             return res.redirect('/lichSuDatLichKham');
         }
 
+        // Chỉ lấy vé nếu lịch đó thuộc đúng khách hàng đang đăng nhập.
         const infoRows = await query(
             `
             SELECT
@@ -1233,6 +1305,7 @@ const getThongTinLichKham = async (req, res) => {
             }
         }
 
+        // Sau khi kiểm tra lại mà vẫn chưa thanh toán thì không cho xem vé.
         if (data.trangThaiThanhToan !== 'DaThanhToan') {
             logThanhToan(`Chặn xem vé chưa thanh toán LH-${id_lichHen}`);
             return res.redirect('/lichSuDatLichKham');
@@ -1246,6 +1319,7 @@ const getThongTinLichKham = async (req, res) => {
 
         logThanhToan(`Hiển thị vé khám LH-${id_lichHen}`);
 
+        // Thanh toán đã được xác nhận, lúc này mới hiển thị vé khám.
         return res.render('khachHang/datLich/thongTinLichKham', {
             page: 'thongTinLichKham',
             user: req.session.user,
@@ -1259,6 +1333,7 @@ const getThongTinLichKham = async (req, res) => {
 };
 
 /* ================= CRONJOB DỌN DẸP ================= */
+// Cứ mỗi 60 giây, hệ thống dọn các lịch giữ chỗ quá lâu nhưng chưa thanh toán.
 setInterval(async () => {
     try {
         /*
@@ -1283,6 +1358,7 @@ setInterval(async () => {
             `
         );
 
+        // Xử lý lần lượt từng lịch đang chờ thanh toán.
         for (const lichHen of pendingRows) {
             let duocPhepXoa = !lichHen.maZalo;
 
@@ -1325,6 +1401,7 @@ setInterval(async () => {
                 }
             }
 
+            // Chưa chắc chắn thì giữ nguyên, thà không xóa còn hơn xóa nhầm lịch đã trả tiền.
             if (!duocPhepXoa) {
                 continue;
             }
@@ -1361,6 +1438,7 @@ setInterval(async () => {
 }, 60000);
 
 /* ================= EXPORT MODULES ================= */
+// Đưa các hàm này ra ngoài để file route/controller khác gọi được.
 module.exports = {
     handleBookingAndPayment,
     getLichSu,

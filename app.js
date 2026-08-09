@@ -118,7 +118,7 @@ app.use(express.urlencoded({ extended: true, limit: '1mb' }));
  */
 app.use(
     session({
-        name: 'connect.sid',
+        name: 'app_session_id',
         secret: process.env.SESSION_SECRET,
         proxy: true,
         resave: false,
@@ -326,7 +326,7 @@ app.use('/bacSi', bacSiRoute);
 
 /*
  * =====================================================
- * 404
+ * 404 khong tim thay trang
  * =====================================================
  */
 app.use((req, res) => res.status(404).type('text/plain').send('Không tìm thấy trang.'));
