@@ -210,7 +210,7 @@
                                                             <tr>
                                                                 <th>Ngày</th>
                                                                 <th class="text-center">Tổng lượt</th>
-                                                                <th class="text-center">Chờ khám</th>
+                                                                <!-- Đã xóa: <th class="text-center">Chờ khám</th> -->
                                                                 <th class="text-center">Hoàn thành</th>
                                                                 <th class="text-center">Hủy</th>
                                                                 <th class="text-center">Đến trễ</th>
@@ -226,10 +226,7 @@
                                                                     <td class="text-center fw-bold">
                                                                         <%= item.tongLuot || 0 %>
                                                                     </td>
-                                                                    <td class="text-center"><span
-                                                                            class="badge-status badge-wait">
-                                                                            <%= item.choKham || 0 %>
-                                                                        </span></td>
+                                                                    <!-- Đã xóa thẻ <td> hiển thị item.choKham -->
                                                                     <td class="text-center"><span
                                                                             class="badge-status badge-complete">
                                                                             <%= item.hoanThanh || 0 %>
