@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -15,128 +16,147 @@
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/js/bootstrap-ui.js?v=2"></script>
 </head>
+
 <body>
-    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <template
-        data-app-message="<%= uiMessage.message %>"
-                data-app-type="<%= uiMessage.type || 'info' %>"
-                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
-    <% } %>
+    <% if (typeof uiMessage !=='undefined' && uiMessage && uiMessage.message) { %>
+        <template data-app-message="<%= uiMessage.message %>" data-app-type="<%= uiMessage.type || 'info' %>"
+            data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
+        <% } %>
 
-    <div class="d-flex vh-100 overflow-hidden csp-admin-quanlybacsi-suabacsi-ejs-9">
-        <%- include('../sidebar') %>
-        
-        <div class="main-content flex-grow-1 p-3 p-md-4 overflow-auto d-flex justify-content-center"> 
-            <div class="card-box bg-white p-4 p-md-5 rounded shadow-sm border-0 w-100 csp-admin-quanlybacsi-suabacsi-ejs-8"> 
-                
-                <div class="card-header-title mb-4">
-                    <h2 class="mb-0">Sửa Thông Tin Bác Sĩ</h2>
-                </div>
+            <div class="d-flex vh-100 overflow-hidden csp-admin-quanlybacsi-suabacsi-ejs-9">
+                <%- include('../sidebar') %>
 
-                <form action="/admin/suaBacSi/<%= bacSi.id %>" method="POST" enctype="multipart/form-data">
-                    <input type="hidden" name="page" value="<%= currentPage %>">
-    
-                    <input type="hidden" name="id" value="<%= bacSi.id %>">
+                    <!-- Đã thêm style="margin-left: 0 !important;" để triệt tiêu margin thừa -->
+                    <div class="main-content flex-grow-1 p-3 p-md-4 overflow-auto d-flex justify-content-center align-items-start"
+                        style="margin-left: 0 !important;">
 
-                    <h5 class="fw-bold mt-4 mb-3 csp-admin-quanlybacsi-suabacsi-ejs-7">1. Thông tin tài khoản</h5>
-                    <div class="row g-3">
-                        <div class="col-md-6 form-group">
-                            <label class="form-label fw-semibold">Tên đăng nhập <span class="text-danger">*</span></label>
-                            <input type="text" name="tenDangNhap" value="<%= bacSi.tenDangNhap %>" class="form-control" required>
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label class="form-label fw-semibold">Mật khẩu (Để trống nếu không đổi)</label>
-                            <input type="password" name="matKhau" class="form-control" placeholder="Nhập mật khẩu mới (nếu cần)...">
-                        </div>
-                    </div>
+                        <!-- Đã thêm mx-auto và max-width: 900px để căn giữa form -->
+                        <div class="card-box bg-white p-4 p-md-5 rounded shadow-sm border-0 mx-auto csp-admin-quanlybacsi-suabacsi-ejs-8"
+                            style="max-width: 900px; width: 100%;">
 
-                    <hr class="my-4 text-muted">
-
-                    <h5 class="fw-bold mb-3 csp-admin-quanlybacsi-suabacsi-ejs-6">2. Thông tin cá nhân</h5>
-                    <div class="form-group mb-3">
-                        <label class="form-label fw-semibold">Họ và tên <span class="text-danger">*</span></label>
-                        <input type="text" name="hoTen" value="<%= bacSi.hoTen %>" class="form-control" required>
-                    </div>
-                    
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-6 form-group">
-                            <label class="form-label fw-semibold">Email</label>
-                            <input type="email" name="email" value="<%= bacSi.email %>" class="form-control">
-                        </div>
-                        <div class="col-md-6 form-group">
-                            <label class="form-label fw-semibold">Số điện thoại</label>
-                            <input type="text" name="soDienThoai" value="<%= bacSi.soDienThoai %>" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="form-group mb-3">
-                        <label class="form-label fw-semibold">Hình ảnh đại diện</label>
-                        <div class="mb-2 d-flex align-items-center gap-3">
-                            <% if (bacSi.hinhAnh) { %>
-                                <img src="/uploads/anhBacSi/<%= bacSi.hinhAnh %>" alt="Ảnh bác sĩ" class="csp-admin-quanlybacsi-suabacsi-ejs-5">
-                            <% } else { %>
-                                <div class="csp-admin-quanlybacsi-suabacsi-ejs-4">
-                                    <span class="text-muted csp-admin-quanlybacsi-suabacsi-ejs-3">Chưa có</span>
-                                </div>
-                            <% } %>
-                            <div class="flex-grow-1">
-                                <input type="file" name="hinhAnh" class="form-control" accept="image/*">
-                                <small class="text-muted">Chọn ảnh mới nếu bạn muốn thay đổi. Nếu không chọn, ảnh cũ sẽ được giữ nguyên.</small>
+                            <div class="card-header-title mb-4">
+                                <h2 class="mb-0">Sửa Thông Tin Bác Sĩ</h2>
                             </div>
+
+                            <form action="/admin/suaBacSi/<%= bacSi.id %>" method="POST" enctype="multipart/form-data">
+                                <input type="hidden" name="page" value="<%= currentPage %>">
+
+                                <input type="hidden" name="id" value="<%= bacSi.id %>">
+
+                                <h5 class="fw-bold mt-4 mb-3 csp-admin-quanlybacsi-suabacsi-ejs-7">1. Thông tin tài
+                                    khoản</h5>
+                                <div class="row g-3">
+                                    <div class="col-md-6 form-group">
+                                        <label class="form-label fw-semibold">Tên đăng nhập <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" name="tenDangNhap" value="<%= bacSi.tenDangNhap %>"
+                                            class="form-control" required>
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label class="form-label fw-semibold">Mật khẩu (Để trống nếu không đổi)</label>
+                                        <input type="password" name="matKhau" class="form-control"
+                                            placeholder="Nhập mật khẩu mới (nếu cần)...">
+                                    </div>
+                                </div>
+
+                                <hr class="my-4 text-muted">
+
+                                <h5 class="fw-bold mb-3 csp-admin-quanlybacsi-suabacsi-ejs-6">2. Thông tin cá nhân</h5>
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-semibold">Họ và tên <span
+                                            class="text-danger">*</span></label>
+                                    <input type="text" name="hoTen" value="<%= bacSi.hoTen %>" class="form-control"
+                                        required>
+                                </div>
+
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6 form-group">
+                                        <label class="form-label fw-semibold">Email</label>
+                                        <input type="email" name="email" value="<%= bacSi.email %>"
+                                            class="form-control">
+                                    </div>
+                                    <div class="col-md-6 form-group">
+                                        <label class="form-label fw-semibold">Số điện thoại</label>
+                                        <input type="text" name="soDienThoai" value="<%= bacSi.soDienThoai %>"
+                                            class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-3">
+                                    <label class="form-label fw-semibold">Hình ảnh đại diện</label>
+                                    <div class="mb-2 d-flex align-items-center gap-3">
+                                        <% if (bacSi.hinhAnh) { %>
+                                            <img src="/uploads/anhBacSi/<%= bacSi.hinhAnh %>" alt="Ảnh bác sĩ"
+                                                class="csp-admin-quanlybacsi-suabacsi-ejs-5">
+                                            <% } else { %>
+                                                <div class="csp-admin-quanlybacsi-suabacsi-ejs-4">
+                                                    <span class="text-muted csp-admin-quanlybacsi-suabacsi-ejs-3">Chưa
+                                                        có</span>
+                                                </div>
+                                                <% } %>
+                                                    <div class="flex-grow-1">
+                                                        <input type="file" name="hinhAnh" class="form-control"
+                                                            accept="image/*">
+                                                        <small class="text-muted">Chọn ảnh mới nếu bạn muốn thay đổi.
+                                                            Nếu không chọn, ảnh cũ sẽ được giữ nguyên.</small>
+                                                    </div>
+                                    </div>
+                                </div>
+
+                                <hr class="my-4 text-muted">
+
+                                <h5 class="fw-bold mb-3 csp-admin-quanlybacsi-suabacsi-ejs-2">3. Thông tin chuyên môn
+                                </h5>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-4 form-group">
+                                        <label class="form-label fw-semibold">Trình độ</label>
+                                        <input type="text" name="trinhDo" value="<%= bacSi.trinhDo %>"
+                                            class="form-control" placeholder="Ví dụ: ThS, TS, BS.CKI...">
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label class="form-label fw-semibold">Năm tốt nghiệp</label>
+                                        <input type="number" name="namTotNghiep" value="<%= bacSi.namTotNghiep %>"
+                                            class="form-control">
+                                    </div>
+                                    <div class="col-md-4 form-group">
+                                        <label class="form-label fw-semibold">Chuyên khoa</label>
+                                        <select name="id_chuyenKhoa" class="form-select shadow-none">
+                                            <% dsKhoa.forEach(function(khoa) { %>
+                                                <option value="<%= khoa.id_chuyenKhoa %>"
+                                                    <%=khoa.id_chuyenKhoa==bacSi.id_chuyenKhoa ? 'selected' : '' %> >
+                                                    <%= khoa.tenChuyenKhoa %>
+                                                </option>
+                                                <% }); %>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label class="form-label fw-semibold">Chi tiết / Giới thiệu</label>
+                                    <textarea name="chiTiet" class="form-control"
+                                        rows="4"><%= bacSi.chiTiet %></textarea>
+                                </div>
+
+                                <hr class="my-4 text-muted">
+
+                                <div class="d-flex gap-2 justify-content-start align-items-center mt-4">
+                                    <button type="submit" class="btn btn-add px-4 py-2">
+                                        <i class="fas fa-save me-2"></i> Lưu Sửa Đổi
+                                    </button>
+                                    <a href="/admin/quanLyBacSi"
+                                        class="btn btn-light px-4 py-2 border fw-semibold text-muted csp-admin-quanlybacsi-suabacsi-ejs-1">
+                                        Hủy bỏ
+                                    </a>
+                                </div>
+                            </form>
                         </div>
                     </div>
-
-                    <hr class="my-4 text-muted">
-
-                    <h5 class="fw-bold mb-3 csp-admin-quanlybacsi-suabacsi-ejs-2">3. Thông tin chuyên môn</h5>
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-4 form-group">
-                            <label class="form-label fw-semibold">Trình độ</label>
-                            <input type="text" name="trinhDo" value="<%= bacSi.trinhDo %>" class="form-control" placeholder="Ví dụ: ThS, TS, BS.CKI...">
-                        </div>
-                        <div class="col-md-4 form-group">
-                            <label class="form-label fw-semibold">Năm tốt nghiệp</label>
-                            <input type="number" name="namTotNghiep" value="<%= bacSi.namTotNghiep %>" class="form-control">
-                        </div>
-                        <div class="col-md-4 form-group">
-                            <label class="form-label fw-semibold">Chuyên khoa</label>
-                            <select name="id_chuyenKhoa" class="form-select shadow-none"> 
-                                <% dsKhoa.forEach(function(khoa) { %>
-                                    <option value="<%= khoa.id_chuyenKhoa %>" <%= khoa.id_chuyenKhoa == bacSi.id_chuyenKhoa ? 'selected' : '' %> > 
-                                        <%= khoa.tenChuyenKhoa %> 
-                                    </option>
-                                <% }); %>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-group mb-4">
-                        <label class="form-label fw-semibold">Chi tiết / Giới thiệu</label>
-                        <textarea name="chiTiet" class="form-control" rows="4"><%= bacSi.chiTiet %></textarea>
-                    </div>
-
-                    <hr class="my-4 text-muted">
-
-                    <div class="d-flex gap-2 justify-content-start align-items-center mt-4">
-                        <button type="submit" class="btn btn-add px-4 py-2">
-                            <i class="fas fa-save me-2"></i> Lưu Sửa Đổi
-                        </button>
-                        <a href="/admin/quanLyBacSi" class="btn btn-light px-4 py-2 border fw-semibold text-muted csp-admin-quanlybacsi-suabacsi-ejs-1">
-                            Hủy bỏ
-                        </a>
-                    </div>
-                </form>
             </div>
-        </div>
-    </div>
 
-    <% if (typeof msg !== 'undefined' && msg) { %>
-        <template
-            data-app-message="<%= msg %>"
-            data-app-type="error"
-            data-app-title="Thông báo"
-            data-app-mode="dialog"
-            data-app-confirm-text="Đã hiểu"></template>
-    <% } %>
+            <% if (typeof msg !=='undefined' && msg) { %>
+                <template data-app-message="<%= msg %>" data-app-type="error" data-app-title="Thông báo"
+                    data-app-mode="dialog" data-app-confirm-text="Đã hiểu"></template>
+                <% } %>
 </body>
+
 </html>

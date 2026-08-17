@@ -218,6 +218,7 @@ const getSuaBacSi = async (req, res) => {
 };
 
 //Sửa thông tin bác sĩ
+// Sửa thông tin bác sĩ
 const postSuaBacSi = async (req, res) => {
     const id = req.params.id;
 
@@ -228,44 +229,75 @@ const postSuaBacSi = async (req, res) => {
             return res.status(500).send("Lỗi hệ thống khi tải tệp tin.");
         }
 
-        // Lấy page từ req.body (do input hidden trong form gửi lên)
         const { 
             page, tenDangNhap, matKhau, hoTen, email, soDienThoai, 
             trinhDo, namTotNghiep, chiTiet, id_chuyenKhoa 
         } = req.body;
 
         try {
-            con.beginTransaction(async (err) => {
-                if (err) throw err;
-
-                // Cập nhật bảng NguoiDung
-                let sqlNguoiDung = "UPDATE NguoiDung SET tenDangNhap = ?, hoTen = ?, email = ?, soDienThoai = ? WHERE id = ?";
-                let paramsNguoiDung = [tenDangNhap, hoTen, email, soDienThoai, id];
-
-                if (matKhau && matKhau.trim() !== "") {
-                    sqlNguoiDung = "UPDATE NguoiDung SET tenDangNhap = ?, matKhau = ?, hoTen = ?, email = ?, soDienThoai = ? WHERE id = ?";
-                    paramsNguoiDung = [tenDangNhap, matKhau, hoTen, email, soDienThoai, id];
+            // Lấy một kết nối từ Pool
+            con.getConnection((err, connection) => {
+                if (err) {
+                    console.error("Lỗi lấy kết nối từ pool:", err);
+                    return res.status(500).send("Lỗi hệ thống");
                 }
 
-                con.query(sqlNguoiDung, paramsNguoiDung, (err, result) => {
-                    if (err) return con.rollback(() => { throw err; });
-
-                    // Cập nhật bảng BacSi
-                    let sqlBacSi = "UPDATE BacSi SET trinhDo = ?, namTotNghiep = ?, chiTiet = ?, id_chuyenKhoa = ? WHERE id = ?";
-                    let paramsBacSi = [trinhDo, namTotNghiep, chiTiet, id_chuyenKhoa, id];
-
-                    if (req.file) {
-                        sqlBacSi = "UPDATE BacSi SET trinhDo = ?, namTotNghiep = ?, chiTiet = ?, id_chuyenKhoa = ?, hinhAnh = ? WHERE id = ?";
-                        paramsBacSi = [trinhDo, namTotNghiep, chiTiet, id_chuyenKhoa, req.file.filename, id];
+                // Dùng `connection` thay vì `con` để bắt đầu transaction
+                connection.beginTransaction(async (err) => {
+                    if (err) {
+                        connection.release(); // Trả kết nối
+                        throw err;
                     }
 
-                    con.query(sqlBacSi, paramsBacSi, (err, resultDoc) => {
-                        if (err) return con.rollback(() => { throw err; });
+                    // Cập nhật bảng NguoiDung
+                    let sqlNguoiDung = "UPDATE NguoiDung SET tenDangNhap = ?, hoTen = ?, email = ?, soDienThoai = ? WHERE id = ?";
+                    let paramsNguoiDung = [tenDangNhap, hoTen, email, soDienThoai, id];
 
-                        con.commit((err) => {
-                            if (err) return con.rollback(() => { throw err; });
-                            // Quay lại đúng trang cũ
-                            res.redirect(`/admin/quanLyBacSi?page=${page || 1}`);
+                    if (matKhau && matKhau.trim() !== "") {
+                        sqlNguoiDung = "UPDATE NguoiDung SET tenDangNhap = ?, matKhau = ?, hoTen = ?, email = ?, soDienThoai = ? WHERE id = ?";
+                        paramsNguoiDung = [tenDangNhap, matKhau, hoTen, email, soDienThoai, id];
+                    }
+
+                    // Lưu ý: Dùng `connection.query` ở đây
+                    connection.query(sqlNguoiDung, paramsNguoiDung, (err, result) => {
+                        if (err) {
+                            return connection.rollback(() => {
+                                connection.release(); // Trả kết nối khi lỗi
+                                throw err;
+                            });
+                        }
+
+                        // Cập nhật bảng BacSi
+                        let sqlBacSi = "UPDATE BacSi SET trinhDo = ?, namTotNghiep = ?, chiTiet = ?, id_chuyenKhoa = ? WHERE id = ?";
+                        let paramsBacSi = [trinhDo, namTotNghiep, chiTiet, id_chuyenKhoa, id];
+
+                        if (req.file) {
+                            sqlBacSi = "UPDATE BacSi SET trinhDo = ?, namTotNghiep = ?, chiTiet = ?, id_chuyenKhoa = ?, hinhAnh = ? WHERE id = ?";
+                            paramsBacSi = [trinhDo, namTotNghiep, chiTiet, id_chuyenKhoa, req.file.filename, id];
+                        }
+
+                        connection.query(sqlBacSi, paramsBacSi, (err, resultDoc) => {
+                            if (err) {
+                                return connection.rollback(() => {
+                                    connection.release(); // Trả kết nối khi lỗi
+                                    throw err;
+                                });
+                            }
+
+                            // Hoàn tất transaction
+                            connection.commit((err) => {
+                                if (err) {
+                                    return connection.rollback(() => {
+                                        connection.release();
+                                        throw err;
+                                    });
+                                }
+                                
+                                // Giải phóng kết nối thành công
+                                connection.release(); 
+                                // Quay lại đúng trang cũ
+                                res.redirect(`/admin/quanLyBacSi?page=${page || 1}`);
+                            });
                         });
                     });
                 });

@@ -12,319 +12,315 @@
 
   <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Giao diện thông báo Bootstrap dùng chung -->
-    <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
-    <link rel="stylesheet" href="/css/bootstrap-ui.css?v=2">
-    <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/bootstrap-ui.js?v=2"></script>
+  <!-- Giao diện thông báo Bootstrap dùng chung -->
+  <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
+  <link rel="stylesheet" href="/css/bootstrap-ui.css?v=2">
+  <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/bootstrap-ui.js?v=2"></script>
 </head>
 
 <body>
-    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <template
-        data-app-message="<%= uiMessage.message %>"
-                data-app-type="<%= uiMessage.type || 'info' %>"
-                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
+  <% if (typeof uiMessage !=='undefined' && uiMessage && uiMessage.message) { %>
+    <template data-app-message="<%= uiMessage.message %>" data-app-type="<%= uiMessage.type || 'info' %>"
+      data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
     <% } %>
 
 
-  <%- include('../header') %>
+      <%- include('../header') %>
 
-    <div class="wrapper">
-      <div class="login-card datLich__content csp-khachhang-datlich-chonthoigianchuyengia-ejs-3">
+        <div class="wrapper">
+          <div class="login-card datLich__content csp-khachhang-datlich-chonthoigianchuyengia-ejs-3">
 
-        <h4 class="fw-bold mb-4 text-primary"><i class="fa-solid fa-calendar-check me-2"></i>Đăng ký lịch khám chuyên
-          gia</h4>
+            <h4 class="fw-bold mb-4 text-primary"><i class="fa-solid fa-calendar-check me-2"></i>Đăng ký lịch khám
+              chuyên
+              gia</h4>
 
-        <div class="doctor-info-box mb-4 d-flex align-items-center shadow-sm">
-          <img src="/BacSi/nam.webp" alt="Doctor"
-            class="rounded-circle me-3 border border-2 border-primary csp-khachhang-datlich-chonthoigianchuyengia-ejs-2"
-           >
-          <div>
-            <h5 class="mb-1 fw-bold text-dark">BS. <%= bacSi.hoTen %>
-            </h5>
-            <p class="mb-0 text-muted"><i class="fa-solid fa-stethoscope me-1"></i>Chuyên khoa: <strong>
-                <%= bacSi.tenChuyenKhoa %>
-              </strong></p>
+            <div class="doctor-info-box mb-4 d-flex align-items-center shadow-sm">
+              <img src="<%= bacSi.hinhAnh ? '/uploads/anhBacSi/' + bacSi.hinhAnh : '/BacSi/nam.png' %>"
+                alt="BS. <%= bacSi.hoTen %>"
+                class="rounded-circle me-3 border border-2 border-primary csp-khachhang-datlich-chonthoigianchuyengia-ejs-2">
+              <div>
+                <h5 class="mb-1 fw-bold text-dark">BS. <%= bacSi.hoTen %>
+                </h5>
+                <p class="mb-0 text-muted"><i class="fa-solid fa-stethoscope me-1"></i>Chuyên khoa: <strong>
+                    <%= bacSi.tenChuyenKhoa %>
+                  </strong></p>
+              </div>
+            </div>
+
+            <form id="bookingForm" action="/datLichChuyenGia" method="POST">
+
+              <input type="hidden" name="ngay" id="hiddenNgay" value="">
+              <input type="hidden" name="gioHen" id="hiddenGio" value="">
+              <input type="hidden" name="id_bacSi" id="hiddenBacSi" value="<%= bacSi.id_bacSi %>">
+              <input type="hidden" name="id_chuyenKhoa" id="hiddenKhoa" value="<%= bacSi.id_chuyenKhoa %>">
+
+              <label class="fw-bold mb-2">Ngày khám</label>
+              <div class="row g-2 mb-4" id="datesContainer">
+
+                <% if (typeof caKhamList !=='undefined' && caKhamList.length> 0) { %>
+                  <% caKhamList.forEach((ca)=> {
+                    const d = new Date(ca.ngay);
+                    const yyyy = d.getFullYear();
+                    const mm = String(d.getMonth() + 1).padStart(2, '0');
+                    const dd = String(d.getDate()).padStart(2, '0');
+                    const val = `${yyyy}-${mm}-${dd}`;
+                    %>
+                    <div class="col-4 col-md-3 col-lg-2">
+                      <div class="date-box w-100 text-center py-2 csp-khachhang-datlich-chonthoigianchuyengia-ejs-1"
+                        data-date="<%= val %>">
+                        <div><b>
+                            <%= dd %>/<%= mm %>
+                          </b></div>
+                      </div>
+                    </div>
+                    <% }) %>
+                      <% } else { %>
+                        <div class="col-12">
+                          <div class="alert alert-warning mb-0">
+                            <i class="fa-solid fa-circle-exclamation me-2"></i> Bác sĩ này hiện chưa có lịch trực trong
+                            thời
+                            gian tới. Vui lòng quay lại và chọn bác sĩ khác!
+                          </div>
+                        </div>
+                        <% } %>
+
+              </div>
+
+              <label class="fw-bold mb-2">Giờ khám</label>
+              <div class="row g-2" id="slotContainer">
+                <% ["07:00","08:00","09:00","10:00","13:00","14:00","15:00","16:00"].forEach(t=> {
+                  let hour = parseInt(t.split(':')[0]);
+                  let nextHour = (hour + 1).toString().padStart(2, '0') + ":00";
+                  %>
+                  <div class="col-4">
+                    <div class="slot disabled" data-time="<%= t %>">
+                      <%= t %> - <%= nextHour %>
+                    </div>
+                  </div>
+                  <% }) %>
+              </div>
+
+              <div class="mt-5 d-flex justify-content-between">
+                <a href="/datLichChuyenGia" class="btn btn-outline-secondary px-4"><i
+                    class="fa-solid fa-arrow-left me-1"></i> Quay lại chọn BS</a>
+                <button type="submit" class="btn btn-primary px-4 fw-bold" id="submitBtn">Tiếp tục thanh toán <i
+                    class="fa-solid fa-arrow-right ms-1"></i></button>
+              </div>
+
+            </form>
+
           </div>
         </div>
 
-        <form id="bookingForm" action="/datLichChuyenGia" method="POST">
+        <script nonce="<%= cspNonce %>">
+          document.addEventListener('DOMContentLoaded', () => {
+            const datesContainer = document.getElementById('datesContainer');
+            const slotContainer = document.getElementById('slotContainer');
+            const bookingForm = document.getElementById('bookingForm');
 
-          <input type="hidden" name="ngay" id="hiddenNgay" value="">
-          <input type="hidden" name="gioHen" id="hiddenGio" value="">
-          <input type="hidden" name="id_bacSi" id="hiddenBacSi" value="<%= bacSi.id_bacSi %>">
-          <input type="hidden" name="id_chuyenKhoa" id="hiddenKhoa" value="<%= bacSi.id_chuyenKhoa %>">
+            const hiddenNgay = document.getElementById('hiddenNgay');
+            const hiddenGio = document.getElementById('hiddenGio');
+            const hiddenBacSi = document.getElementById('hiddenBacSi');
+            const hiddenKhoa = document.getElementById('hiddenKhoa');
 
-          <label class="fw-bold mb-2">Ngày khám</label>
-          <div class="row g-2 mb-4" id="datesContainer">
+            const dateBoxes = () => Array.from(document.querySelectorAll('.date-box'));
+            const slotLabels = () => Array.from(document.querySelectorAll('.slot'));
 
-            <% if (typeof caKhamList !=='undefined' && caKhamList.length> 0) { %>
-              <% caKhamList.forEach((ca)=> {
-                const d = new Date(ca.ngay);
-                const yyyy = d.getFullYear();
-                const mm = String(d.getMonth() + 1).padStart(2, '0');
-                const dd = String(d.getDate()).padStart(2, '0');
-                const val = `${yyyy}-${mm}-${dd}`;
-                %>
-                <div class="col-4 col-md-3 col-lg-2">
-                  <div class="date-box w-100 text-center py-2 csp-khachhang-datlich-chonthoigianchuyengia-ejs-1" data-date="<%= val %>"
-                   >
-                    <div><b>
-                        <%= dd %>/<%= mm %>
-                      </b></div>
-                  </div>
-                </div>
-                <% }) %>
-                  <% } else { %>
-                    <div class="col-12">
-                      <div class="alert alert-warning mb-0">
-                        <i class="fa-solid fa-circle-exclamation me-2"></i> Bác sĩ này hiện chưa có lịch trực trong thời
-                        gian tới. Vui lòng quay lại và chọn bác sĩ khác!
-                      </div>
-                    </div>
-                    <% } %>
+            // Load slots from server API and update UI
+            async function loadSlots() {
+              const id_bacSi = hiddenBacSi.value;
+              const date = hiddenNgay.value;
 
-          </div>
-
-          <label class="fw-bold mb-2">Giờ khám</label>
-          <div class="row g-2" id="slotContainer">
-            <% ["07:00","08:00","09:00","10:00","13:00","14:00","15:00","16:00"].forEach(t=> {
-              let hour = parseInt(t.split(':')[0]);
-              let nextHour = (hour + 1).toString().padStart(2, '0') + ":00";
-              %>
-              <div class="col-4">
-                <div class="slot disabled" data-time="<%= t %>">
-                  <%= t %> - <%= nextHour %>
-                </div>
-              </div>
-              <% }) %>
-          </div>
-
-          <div class="mt-5 d-flex justify-content-between">
-            <a href="/datLichChuyenGia" class="btn btn-outline-secondary px-4"><i
-                class="fa-solid fa-arrow-left me-1"></i> Quay lại chọn BS</a>
-            <button type="submit" class="btn btn-primary px-4 fw-bold" id="submitBtn">Tiếp tục thanh toán <i
-                class="fa-solid fa-arrow-right ms-1"></i></button>
-          </div>
-
-        </form>
-
-      </div>
-    </div>
-
-    <script nonce="<%= cspNonce %>">
-      document.addEventListener('DOMContentLoaded', () => {
-        const datesContainer = document.getElementById('datesContainer');
-        const slotContainer = document.getElementById('slotContainer');
-        const bookingForm = document.getElementById('bookingForm');
-
-        const hiddenNgay = document.getElementById('hiddenNgay');
-        const hiddenGio = document.getElementById('hiddenGio');
-        const hiddenBacSi = document.getElementById('hiddenBacSi');
-        const hiddenKhoa = document.getElementById('hiddenKhoa');
-
-        const dateBoxes = () => Array.from(document.querySelectorAll('.date-box'));
-        const slotLabels = () => Array.from(document.querySelectorAll('.slot'));
-
-        // Load slots from server API and update UI
-        async function loadSlots() {
-          const id_bacSi = hiddenBacSi.value;
-          const date = hiddenNgay.value;
-
-          if (!id_bacSi || !date) {
-            slotLabels().forEach(label => {
-              label.classList.add('disabled');
-              label.classList.remove('active');
-              if (hiddenGio.value === label.dataset.time) hiddenGio.value = '';
-              const old = label.querySelector('.slot-note'); if (old) old.remove();
-            });
-            return;
-          }
-
-          try {
-            // Đã đổi sang gọi API của chuyên gia
-            const url = `/api/slotsChuyenGia?ngay=${encodeURIComponent(date)}&id_bacSi=${encodeURIComponent(id_bacSi)}`;
-            const res = await fetch(url, { cache: 'no-store' });
-            const data = await res.json();
-
-            if (!data || !data.success) {
-              slotLabels().forEach(l => {
-                l.classList.add('disabled');
-                l.querySelector('.slot-note')?.remove();
-                const note = document.createElement('div'); note.className = 'slot-note'; note.textContent = data.msg || 'Không có lịch';
-                l.appendChild(note);
-              });
-              return;
-            }
-
-            const map = {};
-            data.slots.forEach(s => map[s.time] = s);
-
-            slotLabels().forEach(label => {
-              const time = label.dataset.time;
-              const info = map[time];
-              label.querySelector('.slot-note')?.remove();
-
-              if (!info) {
-                label.classList.remove('disabled');
-                if (hiddenGio.value === time) label.classList.add('active');
-                else label.classList.remove('active');
+              if (!id_bacSi || !date) {
+                slotLabels().forEach(label => {
+                  label.classList.add('disabled');
+                  label.classList.remove('active');
+                  if (hiddenGio.value === label.dataset.time) hiddenGio.value = '';
+                  const old = label.querySelector('.slot-note'); if (old) old.remove();
+                });
                 return;
               }
 
-              if (info.disabled) {
-                label.classList.add('disabled');
-                if (hiddenGio.value === time) hiddenGio.value = '';
-                label.classList.remove('active');
-                const note = document.createElement('div'); note.className = 'slot-note'; note.textContent = 'Đã đầy hoặc quá giờ';
-                label.appendChild(note);
-              } else {
-                label.classList.remove('disabled');
-                if (hiddenGio.value === time) label.classList.add('active');
-                else label.classList.remove('active');
-              }
-            });
-
-          } catch (err) {
-            console.error('Lỗi khi gọi /api/slotsChuyenGia:', err);
-            slotLabels().forEach(l => {
-              l.classList.remove('disabled');
-              l.querySelector('.slot-note')?.remove();
-            });
-          }
-        }
-
-        /* ========== Handle date clicks ========== */
-        datesContainer.addEventListener('click', (e) => {
-          const label = e.target.closest('.date-box');
-          if (!label) return;
-
-          const dateVal = label.dataset.date;
-          if (!dateVal) return;
-
-          if (label.classList.contains('active')) {
-            label.classList.remove('active');
-            hiddenNgay.value = '';
-          } else {
-            dateBoxes().forEach(l => l.classList.remove('active'));
-            label.classList.add('active');
-            hiddenNgay.value = dateVal;
-          }
-
-          hiddenGio.value = '';
-          slotLabels().forEach(l => l.classList.remove('active'));
-          loadSlots();
-        });
-
-        /* ========== Handle slot clicks ========== */
-        slotContainer.addEventListener('click', (e) => {
-          const label = e.target.closest('.slot');
-          if (!label) return;
-          if (label.classList.contains('disabled')) return;
-
-          const timeVal = label.dataset.time;
-          if (!timeVal) return;
-
-          if (label.classList.contains('active')) {
-            label.classList.remove('active');
-            if (hiddenGio.value === timeVal) hiddenGio.value = '';
-          } else {
-            slotLabels().forEach(l => l.classList.remove('active'));
-            label.classList.add('active');
-            hiddenGio.value = timeVal;
-          }
-        });
-
-        /* ========== Submit validation & AJAX Post ========== */
-        bookingForm.addEventListener('submit', async (e) => {
-          e.preventDefault();
-
-          const id_bacSi = hiddenBacSi.value;
-          const id_chuyenKhoa = hiddenKhoa.value;
-          const ngay = hiddenNgay.value;
-          const gio = hiddenGio.value;
-
-          if (!ngay || !gio) {
-            AppDialog.fire({
-              icon: 'warning',
-              title: 'Thiếu thông tin',
-              text: 'Vui lòng chọn Ngày khám và Giờ khám'
-            });
-            return false;
-          }
-
-          const submitBtn = document.getElementById('submitBtn');
-          const originalText = submitBtn.innerHTML;
-
-          try {
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Đang xử lý...';
-            submitBtn.disabled = true;
-
-            const response = await fetch('/datLichChuyenGia', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json'
-              },
-              body: JSON.stringify({
-                id_bacSi: id_bacSi,
-                id_chuyenKhoa: id_chuyenKhoa,
-                ngay: ngay,
-                gioHen: gio
-              })
-            });
-
-            const data = await response.json();
-
-            if (data.success && data.payUrl) {
-              AppDialog.fire({
-                title: 'Đang chuyển đến trang thanh toán...',
-                text: 'Vui lòng đợi trong giây lát',
-                allowOutsideClick: false,
-                didOpen: () => {
-                  AppDialog.showLoading()
-                }
-              });
-
               try {
-                // Ép chuỗi thành đối tượng URL. Nếu không phải định dạng URL, nó sẽ văng lỗi vào catch
-                const parsedUrl = new URL(data.payUrl);
+                // Đã đổi sang gọi API của chuyên gia
+                const url = `/api/slotsChuyenGia?ngay=${encodeURIComponent(date)}&id_bacSi=${encodeURIComponent(id_bacSi)}`;
+                const res = await fetch(url, { cache: 'no-store' });
+                const data = await res.json();
 
-                // Chỉ cho phép http: hoặc https:
-                if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
-                  window.location.href = data.payUrl;
-                } else {
-                  console.error("Bảo mật: Giao thức không được phép (Có thể là mã độc XSS).");
+                if (!data || !data.success) {
+                  slotLabels().forEach(l => {
+                    l.classList.add('disabled');
+                    l.querySelector('.slot-note')?.remove();
+                    const note = document.createElement('div'); note.className = 'slot-note'; note.textContent = data.msg || 'Không có lịch';
+                    l.appendChild(note);
+                  });
+                  return;
                 }
-              } catch (error) {
-                console.error("Dữ liệu trả về không phải là một đường dẫn hợp lệ.");
-              }
 
-            } else {
-              AppDialog.fire('Lỗi', data.msg || 'Đã có lỗi xảy ra, vui lòng thử lại!', 'error');
-              submitBtn.innerHTML = originalText;
-              submitBtn.disabled = false;
+                const map = {};
+                data.slots.forEach(s => map[s.time] = s);
+
+                slotLabels().forEach(label => {
+                  const time = label.dataset.time;
+                  const info = map[time];
+                  label.querySelector('.slot-note')?.remove();
+
+                  if (!info) {
+                    label.classList.remove('disabled');
+                    if (hiddenGio.value === time) label.classList.add('active');
+                    else label.classList.remove('active');
+                    return;
+                  }
+
+                  if (info.disabled) {
+                    label.classList.add('disabled');
+                    if (hiddenGio.value === time) hiddenGio.value = '';
+                    label.classList.remove('active');
+                    const note = document.createElement('div'); note.className = 'slot-note'; note.textContent = 'Đã đầy hoặc quá giờ';
+                    label.appendChild(note);
+                  } else {
+                    label.classList.remove('disabled');
+                    if (hiddenGio.value === time) label.classList.add('active');
+                    else label.classList.remove('active');
+                  }
+                });
+
+              } catch (err) {
+                console.error('Lỗi khi gọi /api/slotsChuyenGia:', err);
+                slotLabels().forEach(l => {
+                  l.classList.remove('disabled');
+                  l.querySelector('.slot-note')?.remove();
+                });
+              }
             }
 
-          } catch (error) {
-            console.error('Lỗi khi submit form:', error);
-            AppDialog.fire('Lỗi', 'Không thể kết nối đến máy chủ!', 'error');
-            submitBtn.innerHTML = originalText;
-            submitBtn.disabled = false;
-          }
-        });
-      });
-    </script>
+            /* ========== Handle date clicks ========== */
+            datesContainer.addEventListener('click', (e) => {
+              const label = e.target.closest('.date-box');
+              if (!label) return;
 
-    <% if (typeof msg !== 'undefined' && msg) { %>
-      <template
-        data-app-message="<%= msg %>"
-        data-app-type="error"
-        data-app-title="Thông báo"
-        data-app-mode="dialog"
-        data-app-confirm-text="Đã hiểu"></template>
-    <% } %>
-        <%- include('../footer') %>
+              const dateVal = label.dataset.date;
+              if (!dateVal) return;
+
+              if (label.classList.contains('active')) {
+                label.classList.remove('active');
+                hiddenNgay.value = '';
+              } else {
+                dateBoxes().forEach(l => l.classList.remove('active'));
+                label.classList.add('active');
+                hiddenNgay.value = dateVal;
+              }
+
+              hiddenGio.value = '';
+              slotLabels().forEach(l => l.classList.remove('active'));
+              loadSlots();
+            });
+
+            /* ========== Handle slot clicks ========== */
+            slotContainer.addEventListener('click', (e) => {
+              const label = e.target.closest('.slot');
+              if (!label) return;
+              if (label.classList.contains('disabled')) return;
+
+              const timeVal = label.dataset.time;
+              if (!timeVal) return;
+
+              if (label.classList.contains('active')) {
+                label.classList.remove('active');
+                if (hiddenGio.value === timeVal) hiddenGio.value = '';
+              } else {
+                slotLabels().forEach(l => l.classList.remove('active'));
+                label.classList.add('active');
+                hiddenGio.value = timeVal;
+              }
+            });
+
+            /* ========== Submit validation & AJAX Post ========== */
+            bookingForm.addEventListener('submit', async (e) => {
+              e.preventDefault();
+
+              const id_bacSi = hiddenBacSi.value;
+              const id_chuyenKhoa = hiddenKhoa.value;
+              const ngay = hiddenNgay.value;
+              const gio = hiddenGio.value;
+
+              if (!ngay || !gio) {
+                AppDialog.fire({
+                  icon: 'warning',
+                  title: 'Thiếu thông tin',
+                  text: 'Vui lòng chọn Ngày khám và Giờ khám'
+                });
+                return false;
+              }
+
+              const submitBtn = document.getElementById('submitBtn');
+              const originalText = submitBtn.innerHTML;
+
+              try {
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Đang xử lý...';
+                submitBtn.disabled = true;
+
+                const response = await fetch('/datLichChuyenGia', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    id_bacSi: id_bacSi,
+                    id_chuyenKhoa: id_chuyenKhoa,
+                    ngay: ngay,
+                    gioHen: gio
+                  })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.payUrl) {
+                  AppDialog.fire({
+                    title: 'Đang chuyển đến trang thanh toán...',
+                    text: 'Vui lòng đợi trong giây lát',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                      AppDialog.showLoading()
+                    }
+                  });
+
+                  try {
+                    // Ép chuỗi thành đối tượng URL. Nếu không phải định dạng URL, nó sẽ văng lỗi vào catch
+                    const parsedUrl = new URL(data.payUrl);
+
+                    // Chỉ cho phép http: hoặc https:
+                    if (parsedUrl.protocol === 'http:' || parsedUrl.protocol === 'https:') {
+                      window.location.href = data.payUrl;
+                    } else {
+                      console.error("Bảo mật: Giao thức không được phép (Có thể là mã độc XSS).");
+                    }
+                  } catch (error) {
+                    console.error("Dữ liệu trả về không phải là một đường dẫn hợp lệ.");
+                  }
+
+                } else {
+                  AppDialog.fire('Lỗi', data.msg || 'Đã có lỗi xảy ra, vui lòng thử lại!', 'error');
+                  submitBtn.innerHTML = originalText;
+                  submitBtn.disabled = false;
+                }
+
+              } catch (error) {
+                console.error('Lỗi khi submit form:', error);
+                AppDialog.fire('Lỗi', 'Không thể kết nối đến máy chủ!', 'error');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+              }
+            });
+          });
+        </script>
+
+        <% if (typeof msg !=='undefined' && msg) { %>
+          <template data-app-message="<%= msg %>" data-app-type="error" data-app-title="Thông báo"
+            data-app-mode="dialog" data-app-confirm-text="Đã hiểu"></template>
+          <% } %>
+            <%- include('../footer') %>
 </body>
 
 </html>

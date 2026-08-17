@@ -8,7 +8,7 @@
 
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
-<link rel="stylesheet" href="/css/khachHang/home.css">
+    <link rel="stylesheet" href="/css/khachHang/home.css">
 
     <!-- Giao diện thông báo Bootstrap dùng chung -->
     <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
@@ -18,132 +18,131 @@
 </head>
 
 <body>
-    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <template
-        data-app-message="<%= uiMessage.message %>"
-                data-app-type="<%= uiMessage.type || 'info' %>"
-                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
-    <% } %>
+    <% if (typeof uiMessage !=='undefined' && uiMessage && uiMessage.message) { %>
+        <template data-app-message="<%= uiMessage.message %>" data-app-type="<%= uiMessage.type || 'info' %>"
+            data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
+        <% } %>
 
 
-    <%- include('../header') %>
+            <%- include('../header') %>
 
-        <div class="container wrapper-page">
-            <div class="content-container p-4 p-md-5">
+                <div class="container wrapper-page">
+                    <div class="content-container p-4 p-md-5">
 
-                <div class="text-center mb-5">
-                    <h2 class="fw-bold text-primary text-uppercase">Đội Ngũ Chuyên Gia Nổi Bật</h2>
-                    <p class="text-muted">
-                        Vui lòng chọn chuyên khoa để xem danh sách các bác sĩ chuyên gia của chúng tôi
-                    </p>
-                </div>
+                        <div class="text-center mb-5">
+                            <h2 class="fw-bold text-primary text-uppercase">Đội Ngũ Chuyên Gia Nổi Bật</h2>
+                            <p class="text-muted">
+                                Vui lòng chọn chuyên khoa để xem danh sách các bác sĩ chuyên gia của chúng tôi
+                            </p>
+                        </div>
 
-                <div class="d-flex flex-wrap justify-content-center mb-5 pb-3 border-bottom" id="specialty-container">
-                    <% if (typeof chuyenKhoa !=='undefined' && chuyenKhoa.length> 0) { %>
-                        <% chuyenKhoa.forEach(ck=> { %>
-                            <button class="btn btn-outline-primary specialty-btn" data-id="<%= ck.id_chuyenKhoa %>"
-                                data-name="<%= ck.tenChuyenKhoa %>">
-                                <%= ck.tenChuyenKhoa %>
-                            </button>
-                            <% }) %>
-                                <% } else { %>
-                                    <div class="alert alert-warning">
-                                        Chưa tải được danh sách chuyên khoa từ máy chủ!
-                                    </div>
-                                    <% } %>
-                </div>
+                        <div class="d-flex flex-wrap justify-content-center mb-5 pb-3 border-bottom"
+                            id="specialty-container">
+                            <% if (typeof chuyenKhoa !=='undefined' && chuyenKhoa.length> 0) { %>
+                                <% chuyenKhoa.forEach(ck=> { %>
+                                    <button class="btn btn-outline-primary specialty-btn"
+                                        data-id="<%= ck.id_chuyenKhoa %>" data-name="<%= ck.tenChuyenKhoa %>">
+                                        <%= ck.tenChuyenKhoa %>
+                                    </button>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <div class="alert alert-warning">
+                                                Chưa tải được danh sách chuyên khoa từ máy chủ!
+                                            </div>
+                                            <% } %>
+                        </div>
 
-                <div class="row" id="doctor-list-container">
-                    <div class="col-12 text-center text-muted py-4">
-                        <i class="fa-solid fa-user-doctor fa-4x mb-3 opacity-25"></i>
-                        <h5 class="fw-normal">Đang tải danh sách bác sĩ...</h5>
+                        <div class="row" id="doctor-list-container">
+                            <div class="col-12 text-center text-muted py-4">
+                                <i class="fa-solid fa-user-doctor fa-4x mb-3 opacity-25"></i>
+                                <h5 class="fw-normal">Đang tải danh sách bác sĩ...</h5>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
-            </div>
-        </div>
+                <div class="modal fade" id="doctorDetailModal" tabindex="-1" aria-labelledby="doctorDetailModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow-lg">
+                            <div class="modal-header bg-primary text-white border-0">
+                                <h5 class="modal-title fw-bold" id="doctorDetailModalLabel">
+                                    <i class="fa-solid fa-stethoscope me-2"></i>Thông tin Bác sĩ
+                                </h5>
 
-        <div class="modal fade" id="doctorDetailModal" tabindex="-1" aria-labelledby="doctorDetailModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content border-0 shadow-lg">
-                    <div class="modal-header bg-primary text-white border-0">
-                        <h5 class="modal-title fw-bold" id="doctorDetailModalLabel">
-                            <i class="fa-solid fa-stethoscope me-2"></i>Thông tin Bác sĩ
-                        </h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
 
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                            aria-label="Close"></button>
-                    </div>
+                            <div class="modal-body text-center p-4" id="modal-body-content">
+                            </div>
 
-                    <div class="modal-body text-center p-4" id="modal-body-content">
-                    </div>
-
-                    <div class="modal-footer justify-content-center border-0 bg-light">
-                        <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
-                            Đóng
-                        </button>
+                            <div class="modal-footer justify-content-center border-0 bg-light">
+                                <button type="button" class="btn btn-secondary px-4" data-bs-dismiss="modal">
+                                    Đóng
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-<script nonce="<%= cspNonce %>">
-            document.addEventListener('DOMContentLoaded', () => {
-                const specialtyBtns = document.querySelectorAll('.specialty-btn');
-                const doctorContainer = document.getElementById('doctor-list-container');
-                const doctorDetailModal = new bootstrap.Modal(document.getElementById('doctorDetailModal'));
+                <script nonce="<%= cspNonce %>">
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const specialtyBtns = document.querySelectorAll('.specialty-btn');
+                        const doctorContainer = document.getElementById('doctor-list-container');
+                        const doctorDetailModal = new bootstrap.Modal(document.getElementById('doctorDetailModal'));
 
-                async function loadDoctorsBySpecialty(button) {
-                    if (!button) {
-                        doctorContainer.innerHTML = `
+                        async function loadDoctorsBySpecialty(button) {
+                            if (!button) {
+                                doctorContainer.innerHTML = `
                         <div class="col-12 text-center text-muted py-5">
                             <i class="fa-solid fa-user-doctor fa-4x mb-3 opacity-25"></i>
                             <h5 class="fw-normal">Hiện chưa có chuyên khoa để hiển thị</h5>
                         </div>
                     `;
-                        return;
-                    }
+                                return;
+                            }
 
-                    specialtyBtns.forEach(b => b.classList.remove('active'));
-                    button.classList.add('active');
+                            specialtyBtns.forEach(b => b.classList.remove('active'));
+                            button.classList.add('active');
 
-                    const chuyenKhoaId = button.getAttribute('data-id');
+                            const chuyenKhoaId = button.getAttribute('data-id');
 
-                    doctorContainer.innerHTML = `
+                            doctorContainer.innerHTML = `
                     <div class="col-12 text-center py-5">
                         <div class="spinner-border text-primary csp-khachhang-datlich-datlichchuyengia-ejs-3" role="status"></div>
                         <h5 class="mt-3 text-muted">Đang tìm kiếm bác sĩ...</h5>
                     </div>
                 `;
 
-                    try {
-                        const response = await fetch(`/api/bacsi?id_chuyenKhoa=${encodeURIComponent(chuyenKhoaId)}`);
-                        const dataResponse = await response.json();
+                            try {
+                                const response = await fetch(`/api/bacsi?id_chuyenKhoa=${encodeURIComponent(chuyenKhoaId)}`);
+                                const dataResponse = await response.json();
 
-                        doctorContainer.innerHTML = '';
+                                doctorContainer.innerHTML = '';
 
-                        if (dataResponse.success && dataResponse.data && dataResponse.data.length > 0) {
-                            dataResponse.data.forEach(bs => {
-                                const tenBs = bs.hoTen || 'Đang cập nhật';
-                                const idBs = bs.id_bacSi;
-                                const chiTiet = bs.chiTiet || 'Chuyên gia giỏi và tận tâm với bệnh nhân.';
-                                const trinhDo = bs.trinhDo || 'Bác sĩ chuyên khoa';
-                                const namKinhNghiem = bs.namKinhNghiem || 0;
-                                const hinhAnh = '/BacSi/nam.webp';
+                                if (dataResponse.success && dataResponse.data && dataResponse.data.length > 0) {
+                                    dataResponse.data.forEach(bs => {
+                                        const tenBs = bs.hoTen || 'Đang cập nhật';
+                                        const idBs = bs.id_bacSi;
+                                        const chiTiet = bs.chiTiet || 'Chuyên gia giỏi và tận tâm với bệnh nhân.';
+                                        const trinhDo = bs.trinhDo || 'Bác sĩ chuyên khoa';
+                                        const namKinhNghiem = bs.namKinhNghiem || 0;
+                                        const hinhAnh = bs.hinhAnh ? `/uploads/anhBacSi/${bs.hinhAnh}` : '/BacSi/nam.png';
 
-                                const doctorDataString = encodeURIComponent(JSON.stringify({
-                                    id: idBs,
-                                    ten: tenBs,
-                                    anh: hinhAnh,
-                                    chiTiet: chiTiet,
-                                    trinhDo: trinhDo,
-                                    namKinhNghiem: namKinhNghiem
-                                }));
+                                        const doctorDataString = encodeURIComponent(JSON.stringify({
+                                            id: idBs,
+                                            ten: tenBs,
+                                            anh: hinhAnh,
+                                            chiTiet: chiTiet,
+                                            trinhDo: trinhDo,
+                                            namKinhNghiem: namKinhNghiem
+                                        }));
 
-                                const col = document.createElement('div');
-                                col.className = 'col-md-6 col-lg-4 mb-4';
+                                        const col = document.createElement('div');
+                                        col.className = 'col-md-6 col-lg-4 mb-4';
 
-                                col.innerHTML = `
+                                        col.innerHTML = `
                                 <div class="card doctor-card h-100 shadow-sm">
                                     <img 
                                         src="${hinhAnh}" 
@@ -177,115 +176,116 @@
                                 </div>
                             `;
 
-                                doctorContainer.appendChild(col);
-                            });
+                                        doctorContainer.appendChild(col);
+                                    });
 
-                            attachCardEvents();
+                                    attachCardEvents();
 
-                        } else {
-                            doctorContainer.innerHTML = `
+                                } else {
+                                    doctorContainer.innerHTML = `
                             <div class="col-12 text-center text-muted py-5">
                                 <i class="fa-solid fa-user-doctor-message fa-4x mb-3 text-warning opacity-75"></i>
                                 <h5>Hiện chưa có chuyên gia nào thuộc chuyên khoa này!</h5>
                                 <p>Vui lòng chọn chuyên khoa khác.</p>
                             </div>
                         `;
-                        }
+                                }
 
-                    } catch (error) {
-                        console.error("Lỗi fetch bác sĩ:", error);
+                            } catch (error) {
+                                console.error("Lỗi fetch bác sĩ:", error);
 
-                        doctorContainer.innerHTML = `
+                                doctorContainer.innerHTML = `
                         <div class="col-12 text-center text-danger py-5">
                             <i class="fa-solid fa-triangle-exclamation fa-4x mb-3 opacity-75"></i>
                             <h5>Đã xảy ra lỗi khi tải dữ liệu từ hệ thống!</h5>
                             <p>Vui lòng thử lại sau ít phút hoặc kiểm tra lại kết nối mạng.</p>
                         </div>
                     `;
-                    }
-                }
+                            }
+                        }
 
-                specialtyBtns.forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        loadDoctorsBySpecialty(this);
-                    });
-                });
-
-                function attachCardEvents() {
-                    document.querySelectorAll('.btn-chi-tiet').forEach(btn => {
-                        btn.addEventListener('click', function () {
-                            const data = JSON.parse(decodeURIComponent(this.getAttribute('data-info')));
-                            const modalBody = document.getElementById('modal-body-content');
-
-                            modalBody.innerHTML = `
-                            <img 
-                                src="${data.anh}" 
-                                class="rounded-circle mb-3 border border-4 border-primary shadow-sm csp-khachhang-datlich-datlichchuyengia-ejs-2" 
-                               
-                            >
-
-                            <h4 class="text-primary fw-bold mb-1">BS. ${data.ten}</h4>
-
-                            <p class="text-muted fw-semibold mb-2">
-                                ${data.trinhDo}
-                            </p>
-
-                            <hr class="csp-khachhang-datlich-datlichchuyengia-ejs-1">
-
-                            <div class="text-start px-md-3 mt-4">
-                                <div class="mb-3">
-                                    <h6 class="fw-bold text-dark">
-                                        <i class="fa-solid fa-graduation-cap text-success me-2"></i>Kinh nghiệm:
-                                    </h6>
-
-                                    <p class="ms-4 mb-0 text-muted">
-                                        ${data.namKinhNghiem} năm
-                                    </p>
-                                </div>
-
-                                <div class="mb-3">
-                                    <h6 class="fw-bold text-dark">
-                                        <i class="fa-solid fa-stethoscope text-info me-2"></i>Giới thiệu chuyên môn:
-                                    </h6>
-
-                                    <p class="ms-4 mb-0 text-muted">
-                                        ${data.chiTiet}
-                                    </p>
-                                </div>
-                            </div>
-                        `;
-
-                            doctorDetailModal.show();
+                        specialtyBtns.forEach(btn => {
+                            btn.addEventListener('click', function () {
+                                loadDoctorsBySpecialty(this);
+                            });
                         });
-                    });
 
-                    document.querySelectorAll('.btn-chon-bs').forEach(btn => {
-                        btn.addEventListener('click', function () {
-                            const id = this.getAttribute('data-id');
-                            window.location.href = `/datLichChuyenGia/chonThoiGian?bacSiId=${encodeURIComponent(id)}`;
+                        function attachCardEvents() {
+                            document.querySelectorAll('.btn-chi-tiet').forEach(btn => {
+                                btn.addEventListener('click', function () {
+                                    const data = JSON.parse(decodeURIComponent(this.getAttribute('data-info')));
+                                    const modalBody = document.getElementById('modal-body-content');
+
+                                    modalBody.innerHTML = `
+                                    <img 
+                                        src="${data.anh}" 
+                                        class="rounded-circle mb-3 border border-4 border-primary shadow-sm d-block mx-auto" 
+                                        style="width: 150px; height: 150px; object-fit: cover;"
+                                        alt="Bác sĩ ${data.ten}"
+                                    >
+                            
+                                        <h4 class="text-primary fw-bold mb-1">BS. ${data.ten}</h4>
+
+                                    <p class="text-muted fw-semibold mb-2">
+                                        ${data.trinhDo}
+                                    </p>
+
+                                    <hr class="csp-khachhang-datlich-datlichchuyengia-ejs-1">
+
+                                    <div class="text-start px-md-3 mt-4">
+                                        <div class="mb-3">
+                                            <h6 class="fw-bold text-dark">
+                                                <i class="fa-solid fa-graduation-cap text-success me-2"></i>Kinh nghiệm:
+                                            </h6>
+
+                                            <p class="ms-4 mb-0 text-muted">
+                                                ${data.namKinhNghiem} năm
+                                            </p>
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <h6 class="fw-bold text-dark">
+                                                <i class="fa-solid fa-stethoscope text-info me-2"></i>Giới thiệu chuyên môn:
+                                            </h6>
+
+                                            <p class="ms-4 mb-0 text-muted">
+                                                ${data.chiTiet}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    `;
+
+                                    doctorDetailModal.show();
+                                });
+                            });
+
+                            document.querySelectorAll('.btn-chon-bs').forEach(btn => {
+                                btn.addEventListener('click', function () {
+                                    const id = this.getAttribute('data-id');
+                                    window.location.href = `/datLichChuyenGia/chonThoiGian?bacSiId=${encodeURIComponent(id)}`;
+                                });
+                            });
+                        }
+
+                        const defaultSpecialtyBtn = Array.from(specialtyBtns).find(btn => {
+                            const name = btn.getAttribute('data-name') || btn.textContent || '';
+
+                            return name
+                                .trim()
+                                .toLowerCase()
+                                .normalize('NFD')
+                                .replace(/[\u0300-\u036f]/g, '')
+                                .includes('khoa noi');
                         });
+
+                        if (defaultSpecialtyBtn) {
+                            loadDoctorsBySpecialty(defaultSpecialtyBtn);
+                        } else if (specialtyBtns.length > 0) {
+                            loadDoctorsBySpecialty(specialtyBtns[0]);
+                        }
                     });
-                }
-
-                const defaultSpecialtyBtn = Array.from(specialtyBtns).find(btn => {
-                    const name = btn.getAttribute('data-name') || btn.textContent || '';
-
-                    return name
-                        .trim()
-                        .toLowerCase()
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                        .includes('khoa noi');
-                });
-
-                if (defaultSpecialtyBtn) {
-                    loadDoctorsBySpecialty(defaultSpecialtyBtn);
-                } else if (specialtyBtns.length > 0) {
-                    loadDoctorsBySpecialty(specialtyBtns[0]);
-                }
-            });
-        </script>
-    <%- include('../footer') %>
+                </script>
+                <%- include('../footer') %>
 </body>
 
 </html>

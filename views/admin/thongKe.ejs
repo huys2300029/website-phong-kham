@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -27,1025 +28,946 @@
 </head>
 
 <body>
-    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <template
-        data-app-message="<%= uiMessage.message %>"
-                data-app-type="<%= uiMessage.type || 'info' %>"
-                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
-    <% } %>
+    <% if (typeof uiMessage !=='undefined' && uiMessage && uiMessage.message) { %>
+        <template data-app-message="<%= uiMessage.message %>" data-app-type="<%= uiMessage.type || 'info' %>"
+            data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
+        <% } %>
 
 
-    <div class="d-flex vh-100 overflow-hidden bg-light">
+            <div class="d-flex vh-100 overflow-hidden bg-light">
 
-        <%- include('./sidebar') %>
+                <%- include('./sidebar') %>
 
-        <div class="main-content flex-grow-1 p-4 overflow-auto">
+                    <div class="main-content flex-grow-1 w-100 p-3 p-md-4 overflow-auto">
+                        <div class="container-fluid px-0 px-lg-2">
 
-            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4 pb-2 border-bottom">
-                <h3 class="mb-0 fw-bold csp-admin-thongke-ejs-2">
-                    Thống Kê
-                </h3>
-            </div>
-
-            <div class="filter-card p-4 mb-4">
-                <form action="/admin/thongKe" method="GET" class="row g-3 align-items-end">
-
-                    <div class="col-12 col-md-4">
-                        <label class="form-label fw-bold text-muted">
-                            <i class="fa-solid fa-calendar-day"></i> Từ ngày
-                        </label>
-
-                        <input 
-                            type="text" 
-                            id="tuNgay"
-                            name="tuNgay" 
-                            class="form-control fw-bold text-primary"
-                            placeholder="Chọn ngày bắt đầu"
-                            value="<%= tuNgay || '' %>"
-                            autocomplete="off"
-                        >
-                    </div>
-
-                    <div class="col-12 col-md-4">
-                        <label class="form-label fw-bold text-muted">
-                            <i class="fa-solid fa-calendar-check"></i> Đến ngày
-                        </label>
-
-                        <input 
-                            type="text" 
-                            id="denNgay"
-                            name="denNgay" 
-                            class="form-control fw-bold text-primary"
-                            placeholder="Chọn ngày kết thúc"
-                            value="<%= denNgay || '' %>"
-                            autocomplete="off"
-                        >
-                    </div>
-
-                    <div class="col-12 col-md-4 d-flex gap-2 flex-wrap">
-                        <button type="submit" class="btn btn-primary fw-bold px-4 flex-fill">
-                            <i class="fa-solid fa-filter"></i> Thống kê
-                        </button>
-
-                        <a href="/admin/thongKe" class="btn btn-outline-secondary fw-bold px-4 flex-fill">
-                            <i class="fa-solid fa-rotate-left"></i> Làm mới
-                        </a>
-                    </div>
-
-                </form>
-            </div>
-
-            <div class="row g-4 mb-4">
-
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="summary-card">
-                        <div class="summary-icon bg-soft-primary">
-                            <i class="fa-solid fa-calendar-check"></i>
-                        </div>
-
-                        <div class="summary-title">Tổng lượt đặt</div>
-
-                        <h3 class="summary-value">
-                            <%= tongQuan?.tongLuotDat || 0 %>
-                        </h3>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="summary-card">
-                        <div class="summary-icon bg-soft-success">
-                            <i class="fa-solid fa-circle-check"></i>
-                        </div>
-
-                        <div class="summary-title">Đã khám xong</div>
-
-                        <h3 class="summary-value">
-                            <%= tongQuan?.tongHoanThanh || 0 %>
-                        </h3>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="summary-card">
-                        <div class="summary-icon bg-soft-warning">
-                            <i class="fa-solid fa-user-clock"></i>
-                        </div>
-
-                        <div class="summary-title">Đến trễ / Không đến</div>
-
-                        <h3 class="summary-value">
-                            <%= tongQuan?.tongDenTre || 0 %>
-                        </h3>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-xl-3">
-                    <div class="summary-card">
-                        <div class="summary-icon bg-soft-info">
-                            <i class="fa-solid fa-money-bill-wave"></i>
-                        </div>
-
-                        <div class="summary-title">Tổng doanh thu</div>
-
-                        <h3 class="summary-value money-text">
-                            <%= new Intl.NumberFormat('vi-VN').format(tongQuan?.tongDoanhThu || 0) %>đ
-                        </h3>
-                    </div>
-                </div>
-
-            </div>
-
-            <ul class="nav nav-tabs mb-4" id="thongKeTabs" role="tablist">
-
-                <li class="nav-item" role="presentation">
-                    <button 
-                        class="nav-link active" 
-                        id="luot-kham-tab" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#luot-kham-pane" 
-                        type="button" 
-                        role="tab"
-                    >
-                        <i class="fa-solid fa-chart-column"></i> Thống kê lượt khám
-                    </button>
-                </li>
-
-                <li class="nav-item" role="presentation">
-                    <button 
-                        class="nav-link" 
-                        id="doanh-thu-tab" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#doanh-thu-pane" 
-                        type="button" 
-                        role="tab"
-                    >
-                        <i class="fa-solid fa-chart-line"></i> Thống kê doanh thu
-                    </button>
-                </li>
-
-                <li class="nav-item" role="presentation">
-                    <button 
-                        class="nav-link" 
-                        id="khach-hang-tab" 
-                        data-bs-toggle="tab" 
-                        data-bs-target="#khach-hang-pane" 
-                        type="button" 
-                        role="tab"
-                    >
-                        <i class="fa-solid fa-users"></i> Lượng khách
-                    </button>
-                </li>
-
-            </ul>
-
-            <div class="tab-content" id="thongKeTabsContent">
-
-                <div class="tab-pane show active" id="luot-kham-pane" role="tabpanel">
-
-                    <div class="chart-card p-4 mb-4">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                            <div>
-                                <h5 class="section-title">Biểu đồ lượt khám</h5>
-                            </div>
-                        </div>
-
-                        <% if (!thongKeLuotKham || thongKeLuotKham.length === 0) { %>
-
-                            <div class="empty-box">
-                                <i class="fa-solid fa-chart-simple"></i>
-                                <h5 class="fw-bold">Chưa có dữ liệu lượt khám</h5>
-                                <p class="mb-0">Không tìm thấy dữ liệu trong khoảng thời gian đã chọn.</p>
+                            <!-- Header -->
+                            <div
+                                class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4 pb-2 border-bottom">
+                                <h3 class="mb-0 fw-bold csp-admin-thongke-ejs-2">
+                                    Thống Kê
+                                </h3>
                             </div>
 
-                        <% } else { %>
+                            <!-- Bộ lọc -->
+                            <div class="filter-card p-4 mb-4">
+                                <form action="/admin/thongKe" method="GET" class="row g-3 align-items-end">
 
-                            <div class="chart-wrapper">
-                                <canvas id="chartLuotKham"></canvas>
+                                    <div class="col-12 col-md-4">
+                                        <label class="form-label fw-bold text-muted">
+                                            <i class="fa-solid fa-calendar-day"></i> Từ ngày
+                                        </label>
+                                        <input type="text" id="tuNgay" name="tuNgay"
+                                            class="form-control fw-bold text-primary" placeholder="Chọn ngày bắt đầu"
+                                            value="<%= tuNgay || '' %>" autocomplete="off">
+                                    </div>
+
+                                    <div class="col-12 col-md-4">
+                                        <label class="form-label fw-bold text-muted">
+                                            <i class="fa-solid fa-calendar-check"></i> Đến ngày
+                                        </label>
+                                        <input type="text" id="denNgay" name="denNgay"
+                                            class="form-control fw-bold text-primary" placeholder="Chọn ngày kết thúc"
+                                            value="<%= denNgay || '' %>" autocomplete="off">
+                                    </div>
+
+                                    <div class="col-12 col-md-4 d-flex gap-2 flex-wrap">
+                                        <button type="submit" class="btn btn-primary fw-bold px-4 flex-fill">
+                                            <i class="fa-solid fa-filter"></i> Thống kê
+                                        </button>
+                                        <a href="/admin/thongKe"
+                                            class="btn btn-outline-secondary fw-bold px-4 flex-fill">
+                                            <i class="fa-solid fa-rotate-left"></i> Làm mới
+                                        </a>
+                                    </div>
+
+                                </form>
                             </div>
 
-                        <% } %>
-                    </div>
+                            <!-- Summary Cards -->
+                            <div class="row g-3 g-md-4 mb-4">
 
-                    <div class="table-card p-4">
-                        <div class="mb-3">
-                            <h5 class="section-title">Bảng chi tiết lượt khám</h5>
-                            <p class="section-subtitle">
-                                Chi tiết số lượng lịch hẹn theo từng trạng thái.
-                            </p>
-                        </div>
-
-                        <% if (!thongKeLuotKham || thongKeLuotKham.length === 0) { %>
-
-                            <div class="empty-box">
-                                <i class="fa-solid fa-table-list"></i>
-                                <h5 class="fw-bold">Không có dữ liệu</h5>
-                                <p class="mb-0">Hãy chọn khoảng thời gian khác để xem thống kê.</p>
-                            </div>
-
-                        <% } else { %>
-
-                            <div class="table-responsive rounded-4">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Ngày</th>
-                                            <th class="text-center">Tổng lượt</th>
-                                            <th class="text-center">Chờ khám</th>
-                                            <th class="text-center">Hoàn thành</th>
-                                            <th class="text-center">Hủy</th>
-                                            <th class="text-center">Đến trễ</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        <% thongKeLuotKham.forEach(item => { %>
-                                            <tr>
-                                                <td class="fw-bold text-primary">
-                                                    <i class="fa-regular fa-calendar"></i>
-                                                    <%= item.ngayHienThi %>
-                                                </td>
-
-                                                <td class="text-center fw-bold">
-                                                    <%= item.tongLuot || 0 %>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <span class="badge-status badge-wait">
-                                                        <%= item.choKham || 0 %>
-                                                    </span>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <span class="badge-status badge-complete">
-                                                        <%= item.hoanThanh || 0 %>
-                                                    </span>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <span class="badge-status badge-cancel">
-                                                        <%= item.huy || 0 %>
-                                                    </span>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <span class="badge-status badge-late">
-                                                        <%= item.denTre || 0 %>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        <% }) %>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        <% } %>
-                    </div>
-
-                </div>
-
-                <div class="tab-pane" id="doanh-thu-pane" role="tabpanel">
-
-                    <div class="chart-card p-4 mb-4">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                            <div>
-                                <h5 class="section-title">Biểu đồ doanh thu</h5>
-                            </div>
-                        </div>
-
-                        <% if (!thongKeDoanhThu || thongKeDoanhThu.length === 0) { %>
-
-                            <div class="empty-box">
-                                <i class="fa-solid fa-chart-line"></i>
-                                <h5 class="fw-bold">Chưa có dữ liệu doanh thu</h5>
-                                <p class="mb-0">Không tìm thấy doanh thu trong khoảng thời gian đã chọn.</p>
-                            </div>
-
-                        <% } else { %>
-
-                            <div class="chart-wrapper">
-                                <canvas id="chartDoanhThu"></canvas>
-                            </div>
-
-                        <% } %>
-                    </div>
-
-                    <div class="table-card p-4">
-                        <div class="mb-3">
-                            <h5 class="section-title">Bảng chi tiết doanh thu</h5>
-                            <p class="section-subtitle">
-                                Theo dõi số lượt thanh toán và tổng tiền theo từng ngày.
-                            </p>
-                        </div>
-
-                        <% if (!thongKeDoanhThu || thongKeDoanhThu.length === 0) { %>
-
-                            <div class="empty-box">
-                                <i class="fa-solid fa-money-check-dollar"></i>
-                                <h5 class="fw-bold">Không có dữ liệu</h5>
-                                <p class="mb-0">Hãy chọn khoảng thời gian khác để xem thống kê.</p>
-                            </div>
-
-                        <% } else { %>
-
-                            <div class="table-responsive rounded-4">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Ngày</th>
-                                            <th class="text-center">Lượt đã thanh toán</th>
-                                            <th class="text-center">Lượt hoàn tiền</th>
-                                            <th class="text-end">Doanh thu</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        <% thongKeDoanhThu.forEach(item => { %>
-                                            <tr>
-                                                <td class="fw-bold text-primary">
-                                                    <i class="fa-regular fa-calendar"></i>
-                                                    <%= item.ngayHienThi %>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <span class="badge-status badge-complete">
-                                                        <%= item.luotDaThanhToan || 0 %>
-                                                    </span>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <span class="badge-status badge-cancel">
-                                                        <%= item.luotHoanTien || 0 %>
-                                                    </span>
-                                                </td>
-
-                                                <td class="text-end money-text">
-                                                    <%= new Intl.NumberFormat('vi-VN').format(item.doanhThu || 0) %>đ
-                                                </td>
-                                            </tr>
-                                        <% }) %>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        <% } %>
-                    </div>
-
-                </div>
-
-                <div class="tab-pane" id="khach-hang-pane" role="tabpanel">
-
-                    <div class="row g-4 mb-4">
-
-                        <div class="col-12 col-md-6">
-                            <div class="summary-card">
-                                <div class="summary-icon bg-soft-primary">
-                                    <i class="fa-solid fa-users"></i>
+                                <div class="col-12 col-sm-6 col-xl-3">
+                                    <div class="summary-card h-100 p-3 p-md-4">
+                                        <div class="summary-icon bg-soft-primary">
+                                            <i class="fa-solid fa-calendar-check"></i>
+                                        </div>
+                                        <div class="summary-title">Tổng lượt đặt</div>
+                                        <h3 class="summary-value">
+                                            <%= tongQuan?.tongLuotDat || 0 %>
+                                        </h3>
+                                    </div>
                                 </div>
 
-                                <div class="summary-title">Tổng khách trong tuần</div>
+                                <div class="col-12 col-sm-6 col-xl-3">
+                                    <div class="summary-card h-100 p-3 p-md-4">
+                                        <div class="summary-icon bg-soft-success">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                        </div>
+                                        <div class="summary-title">Đã khám xong</div>
+                                        <h3 class="summary-value">
+                                            <%= tongQuan?.tongHoanThanh || 0 %>
+                                        </h3>
+                                    </div>
+                                </div>
 
-                                <h3 class="summary-value">
-                                    <%= tongKhachTrongTuan || 0 %>
-                                </h3>
+                                <div class="col-12 col-sm-6 col-xl-3">
+                                    <div class="summary-card h-100 p-3 p-md-4">
+                                        <div class="summary-icon bg-soft-warning">
+                                            <i class="fa-solid fa-user-clock"></i>
+                                        </div>
+                                        <div class="summary-title">Đến trễ / Không đến</div>
+                                        <h3 class="summary-value">
+                                            <%= tongQuan?.tongDenTre || 0 %>
+                                        </h3>
+                                    </div>
+                                </div>
 
-                                <p class="section-subtitle mb-0">
-                                    Từ <%= tuanBatDau || '' %> đến <%= tuanKetThuc || '' %>
-                                </p>
+                                <div class="col-12 col-sm-6 col-xl-3">
+                                    <div class="summary-card h-100 p-3 p-md-4">
+                                        <div class="summary-icon bg-soft-info">
+                                            <i class="fa-solid fa-money-bill-wave"></i>
+                                        </div>
+                                        <div class="summary-title">Tổng doanh thu</div>
+                                        <h3 class="summary-value money-text">
+                                            <%= new Intl.NumberFormat('vi-VN').format(tongQuan?.tongDoanhThu || 0) %>đ
+                                        </h3>
+                                    </div>
+                                </div>
+
                             </div>
+
+                            <!-- Nav Tabs -->
+                            <ul class="nav nav-tabs mb-4 w-100" id="thongKeTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="luot-kham-tab" data-bs-toggle="tab"
+                                        data-bs-target="#luot-kham-pane" type="button" role="tab">
+                                        <i class="fa-solid fa-chart-column"></i> Thống kê lượt khám
+                                    </button>
+                                </li>
+
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="doanh-thu-tab" data-bs-toggle="tab"
+                                        data-bs-target="#doanh-thu-pane" type="button" role="tab">
+                                        <i class="fa-solid fa-chart-line"></i> Thống kê doanh thu
+                                    </button>
+                                </li>
+
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="khach-hang-tab" data-bs-toggle="tab"
+                                        data-bs-target="#khach-hang-pane" type="button" role="tab">
+                                        <i class="fa-solid fa-users"></i> Lượng khách
+                                    </button>
+                                </li>
+                            </ul>
+
+                            <!-- Tab Content -->
+                            <div class="tab-content w-100" id="thongKeTabsContent">
+
+                                <!-- Tab 1: Lượt khám -->
+                                <div class="tab-pane fade show active" id="luot-kham-pane" role="tabpanel">
+
+                                    <div class="chart-card p-4 mb-4">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                                            <div>
+                                                <h5 class="section-title">Biểu đồ lượt khám</h5>
+                                            </div>
+                                        </div>
+
+                                        <% if (!thongKeLuotKham || thongKeLuotKham.length===0) { %>
+                                            <div class="empty-box">
+                                                <i class="fa-solid fa-chart-simple"></i>
+                                                <h5 class="fw-bold">Chưa có dữ liệu lượt khám</h5>
+                                                <p class="mb-0">Không tìm thấy dữ liệu trong khoảng thời gian đã chọn.
+                                                </p>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="chart-wrapper">
+                                                    <canvas id="chartLuotKham"></canvas>
+                                                </div>
+                                                <% } %>
+                                    </div>
+
+                                    <div class="table-card p-4">
+                                        <div class="mb-3">
+                                            <h5 class="section-title">Bảng chi tiết lượt khám</h5>
+                                            <p class="section-subtitle">
+                                                Chi tiết số lượng lịch hẹn theo từng trạng thái.
+                                            </p>
+                                        </div>
+
+                                        <% if (!thongKeLuotKham || thongKeLuotKham.length===0) { %>
+                                            <div class="empty-box">
+                                                <i class="fa-solid fa-table-list"></i>
+                                                <h5 class="fw-bold">Không có dữ liệu</h5>
+                                                <p class="mb-0">Hãy chọn khoảng thời gian khác để xem thống kê.</p>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="table-responsive rounded-4">
+                                                    <table class="table table-hover align-middle mb-0 w-100">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Ngày</th>
+                                                                <th class="text-center">Tổng lượt</th>
+                                                                <th class="text-center">Chờ khám</th>
+                                                                <th class="text-center">Hoàn thành</th>
+                                                                <th class="text-center">Hủy</th>
+                                                                <th class="text-center">Đến trễ</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% thongKeLuotKham.forEach(item=> { %>
+                                                                <tr>
+                                                                    <td class="fw-bold text-primary">
+                                                                        <i class="fa-regular fa-calendar"></i>
+                                                                        <%= item.ngayHienThi %>
+                                                                    </td>
+                                                                    <td class="text-center fw-bold">
+                                                                        <%= item.tongLuot || 0 %>
+                                                                    </td>
+                                                                    <td class="text-center"><span
+                                                                            class="badge-status badge-wait">
+                                                                            <%= item.choKham || 0 %>
+                                                                        </span></td>
+                                                                    <td class="text-center"><span
+                                                                            class="badge-status badge-complete">
+                                                                            <%= item.hoanThanh || 0 %>
+                                                                        </span></td>
+                                                                    <td class="text-center"><span
+                                                                            class="badge-status badge-cancel">
+                                                                            <%= item.huy || 0 %>
+                                                                        </span></td>
+                                                                    <td class="text-center"><span
+                                                                            class="badge-status badge-late">
+                                                                            <%= item.denTre || 0 %>
+                                                                        </span></td>
+                                                                </tr>
+                                                                <% }) %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <% } %>
+                                    </div>
+
+                                </div>
+
+                                <!-- Tab 2: Doanh thu -->
+                                <div class="tab-pane fade" id="doanh-thu-pane" role="tabpanel">
+
+                                    <div class="chart-card p-4 mb-4">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                                            <div>
+                                                <h5 class="section-title">Biểu đồ doanh thu</h5>
+                                            </div>
+                                        </div>
+
+                                        <% if (!thongKeDoanhThu || thongKeDoanhThu.length===0) { %>
+                                            <div class="empty-box">
+                                                <i class="fa-solid fa-chart-line"></i>
+                                                <h5 class="fw-bold">Chưa có dữ liệu doanh thu</h5>
+                                                <p class="mb-0">Không tìm thấy doanh thu trong khoảng thời gian đã chọn.
+                                                </p>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="chart-wrapper">
+                                                    <canvas id="chartDoanhThu"></canvas>
+                                                </div>
+                                                <% } %>
+                                    </div>
+
+                                    <div class="table-card p-4">
+                                        <div class="mb-3">
+                                            <h5 class="section-title">Bảng chi tiết doanh thu</h5>
+                                            <p class="section-subtitle">
+                                                Theo dõi số lượt thanh toán và tổng tiền theo từng ngày.
+                                            </p>
+                                        </div>
+
+                                        <% if (!thongKeDoanhThu || thongKeDoanhThu.length===0) { %>
+                                            <div class="empty-box">
+                                                <i class="fa-solid fa-money-check-dollar"></i>
+                                                <h5 class="fw-bold">Không có dữ liệu</h5>
+                                                <p class="mb-0">Hãy chọn khoảng thời gian khác để xem thống kê.</p>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="table-responsive rounded-4">
+                                                    <table class="table table-hover align-middle mb-0 w-100">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Ngày</th>
+                                                                <th class="text-center">Lượt đã thanh toán</th>
+                                                                <th class="text-center">Lượt hoàn tiền</th>
+                                                                <th class="text-end">Doanh thu</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% thongKeDoanhThu.forEach(item=> { %>
+                                                                <tr>
+                                                                    <td class="fw-bold text-primary">
+                                                                        <i class="fa-regular fa-calendar"></i>
+                                                                        <%= item.ngayHienThi %>
+                                                                    </td>
+                                                                    <td class="text-center"><span
+                                                                            class="badge-status badge-complete">
+                                                                            <%= item.luotDaThanhToan || 0 %>
+                                                                        </span></td>
+                                                                    <td class="text-center"><span
+                                                                            class="badge-status badge-cancel">
+                                                                            <%= item.luotHoanTien || 0 %>
+                                                                        </span></td>
+                                                                    <td class="text-end money-text">
+                                                                        <%= new
+                                                                            Intl.NumberFormat('vi-VN').format(item.doanhThu
+                                                                            || 0) %>đ
+                                                                    </td>
+                                                                </tr>
+                                                                <% }) %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <% } %>
+                                    </div>
+
+                                </div>
+
+                                <!-- Tab 3: Khách hàng -->
+                                <div class="tab-pane fade" id="khach-hang-pane" role="tabpanel">
+
+                                    <div class="row g-4 mb-4">
+                                        <div class="col-12 col-md-6">
+                                            <div class="summary-card h-100 p-4">
+                                                <div class="summary-icon bg-soft-primary">
+                                                    <i class="fa-solid fa-users"></i>
+                                                </div>
+                                                <div class="summary-title">Tổng khách trong tuần</div>
+                                                <h3 class="summary-value">
+                                                    <%= tongKhachTrongTuan || 0 %>
+                                                </h3>
+                                                <p class="section-subtitle mb-0">
+                                                    Từ <%= tuanBatDau || '' %> đến <%= tuanKetThuc || '' %>
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="chart-card p-4 mb-4">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                                            <div>
+                                                <h5 class="section-title">Lượng khách trong tuần</h5>
+                                                <p class="section-subtitle mb-0">
+                                                    Xem số lượng khách từ <%= tuanBatDau || '' %> đến <%= tuanKetThuc
+                                                            || '' %>.
+                                                </p>
+                                            </div>
+                                            <div class="d-flex gap-2 flex-wrap">
+                                                <a href="<%= tuanTruocUrl || '#' %>"
+                                                    class="btn btn-outline-primary fw-bold">
+                                                    <i class="fa-solid fa-chevron-left"></i> Tuần trước
+                                                </a>
+                                                <a href="<%= tuanSauUrl || '#' %>"
+                                                    class="btn btn-outline-primary fw-bold">
+                                                    Tuần sau <i class="fa-solid fa-chevron-right"></i>
+                                                </a>
+                                            </div>
+                                        </div>
+
+                                        <% if (!thongKeKhachTheoTuan || thongKeKhachTheoTuan.length===0) { %>
+                                            <div class="empty-box">
+                                                <i class="fa-solid fa-users"></i>
+                                                <h5 class="fw-bold">Chưa có dữ liệu khách trong tuần</h5>
+                                                <p class="mb-0">Không tìm thấy dữ liệu trong tuần đã chọn.</p>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="chart-wrapper">
+                                                    <canvas id="chartKhachTheoTuan"></canvas>
+                                                </div>
+                                                <% } %>
+                                    </div>
+
+                                    <div class="table-card p-4 mb-4">
+                                        <div class="mb-3">
+                                            <h5 class="section-title">Bảng lượng khách theo từng ngày</h5>
+                                            <p class="section-subtitle">Thống kê số khách đặt lịch trong từng ngày của
+                                                tuần.</p>
+                                        </div>
+
+                                        <% if (!thongKeKhachTheoTuan || thongKeKhachTheoTuan.length===0) { %>
+                                            <div class="empty-box">
+                                                <i class="fa-solid fa-table-list"></i>
+                                                <h5 class="fw-bold">Không có dữ liệu</h5>
+                                                <p class="mb-0">Không tìm thấy dữ liệu trong tuần đã chọn.</p>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="table-responsive rounded-4">
+                                                    <table class="table table-hover align-middle mb-0 w-100">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Thứ</th>
+                                                                <th>Ngày</th>
+                                                                <th class="text-center">Số khách</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% thongKeKhachTheoTuan.forEach(item=> { %>
+                                                                <tr>
+                                                                    <td class="fw-bold">
+                                                                        <%= item.thu %>
+                                                                    </td>
+                                                                    <td class="fw-bold text-primary">
+                                                                        <i class="fa-regular fa-calendar"></i>
+                                                                        <%= item.ngayHienThi %>
+                                                                    </td>
+                                                                    <td class="text-center"><span
+                                                                            class="badge-status badge-complete">
+                                                                            <%= item.tongKhach || 0 %>
+                                                                        </span></td>
+                                                                </tr>
+                                                                <% }) %>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                                <% } %>
+                                    </div>
+
+                                    <div class="chart-card p-4 mb-4" id="khach-theo-gio-section">
+                                        <div
+                                            class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                                            <div>
+                                                <h5 class="section-title">Lượng khách theo khung giờ</h5>
+                                                <p class="section-subtitle mb-0">
+                                                    Chọn một ngày cụ thể để xem lượng khách từ 7 giờ sáng đến 5 giờ
+                                                    chiều.
+                                                </p>
+                                            </div>
+
+                                            <form id="formKhachTheoGio" action="/admin/thongKe" method="GET"
+                                                class="d-flex gap-2 flex-wrap">
+                                                <input type="hidden" name="tuNgay" value="<%= tuNgay || '' %>">
+                                                <input type="hidden" name="denNgay" value="<%= denNgay || '' %>">
+                                                <input type="hidden" name="tuanBatDau"
+                                                    value="<%= tuanBatDau ? tuanBatDau.split('/').reverse().join('-') : '' %>">
+                                                <input type="hidden" name="activeTab" value="khach-hang">
+                                                <input type="hidden" name="scrollTo" value="khach-theo-gio-section">
+
+                                                <input type="text" id="ngayKhachHang" name="ngayKhachHang"
+                                                    class="form-control fw-bold text-primary csp-admin-thongke-ejs-1"
+                                                    value="<%= ngayKhachHang || '' %>" placeholder="Chọn ngày"
+                                                    autocomplete="off">
+
+                                                <button type="submit" class="btn btn-primary fw-bold">
+                                                    <i class="fa-solid fa-magnifying-glass-chart"></i> Xem
+                                                </button>
+                                            </form>
+                                        </div>
+
+                                        <% if (!thongKeKhachTheoGio || thongKeKhachTheoGio.length===0) { %>
+                                            <div class="empty-box">
+                                                <i class="fa-solid fa-clock"></i>
+                                                <h5 class="fw-bold">Chưa có dữ liệu theo giờ</h5>
+                                                <p class="mb-0">Không tìm thấy dữ liệu trong ngày đã chọn.</p>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="chart-wrapper">
+                                                    <canvas id="chartKhachTheoGio"></canvas>
+                                                </div>
+                                                <% } %>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
                         </div>
                     </div>
-
-                    <div class="chart-card p-4 mb-4">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                            <div>
-                                <h5 class="section-title">Lượng khách trong tuần</h5>
-                                <p class="section-subtitle mb-0">
-                                    Xem số lượng khách từ <%= tuanBatDau || '' %> đến <%= tuanKetThuc || '' %>.
-                                </p>
-                            </div>
-
-                            <div class="d-flex gap-2 flex-wrap">
-                                <a href="<%= tuanTruocUrl || '#' %>" class="btn btn-outline-primary fw-bold">
-                                    <i class="fa-solid fa-chevron-left"></i> Tuần trước
-                                </a>
-
-                                <a href="<%= tuanSauUrl || '#' %>" class="btn btn-outline-primary fw-bold">
-                                    Tuần sau <i class="fa-solid fa-chevron-right"></i>
-                                </a>
-                            </div>
-                        </div>
-
-                        <% if (!thongKeKhachTheoTuan || thongKeKhachTheoTuan.length === 0) { %>
-
-                            <div class="empty-box">
-                                <i class="fa-solid fa-users"></i>
-                                <h5 class="fw-bold">Chưa có dữ liệu khách trong tuần</h5>
-                                <p class="mb-0">Không tìm thấy dữ liệu trong tuần đã chọn.</p>
-                            </div>
-
-                        <% } else { %>
-
-                            <div class="chart-wrapper">
-                                <canvas id="chartKhachTheoTuan"></canvas>
-                            </div>
-
-                        <% } %>
-                    </div>
-
-                    <div class="table-card p-4 mb-4">
-                        <div class="mb-3">
-                            <h5 class="section-title">Bảng lượng khách theo từng ngày</h5>
-                            <p class="section-subtitle">
-                                Thống kê số khách đặt lịch trong từng ngày của tuần.
-                            </p>
-                        </div>
-
-                        <% if (!thongKeKhachTheoTuan || thongKeKhachTheoTuan.length === 0) { %>
-
-                            <div class="empty-box">
-                                <i class="fa-solid fa-table-list"></i>
-                                <h5 class="fw-bold">Không có dữ liệu</h5>
-                                <p class="mb-0">Không tìm thấy dữ liệu trong tuần đã chọn.</p>
-                            </div>
-
-                        <% } else { %>
-
-                            <div class="table-responsive rounded-4">
-                                <table class="table table-hover align-middle mb-0">
-                                    <thead>
-                                        <tr>
-                                            <th>Thứ</th>
-                                            <th>Ngày</th>
-                                            <th class="text-center">Số khách</th>
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-                                        <% thongKeKhachTheoTuan.forEach(item => { %>
-                                            <tr>
-                                                <td class="fw-bold">
-                                                    <%= item.thu %>
-                                                </td>
-
-                                                <td class="fw-bold text-primary">
-                                                    <i class="fa-regular fa-calendar"></i>
-                                                    <%= item.ngayHienThi %>
-                                                </td>
-
-                                                <td class="text-center">
-                                                    <span class="badge-status badge-complete">
-                                                        <%= item.tongKhach || 0 %>
-                                                    </span>
-                                                </td>
-                                            </tr>
-                                        <% }) %>
-                                    </tbody>
-                                </table>
-                            </div>
-
-                        <% } %>
-                    </div>
-
-                    <div class="chart-card p-4 mb-4" id="khach-theo-gio-section">
-                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                            <div>
-                                <h5 class="section-title">Lượng khách theo khung giờ</h5>
-                                <p class="section-subtitle mb-0">
-                                    Chọn một ngày cụ thể để xem lượng khách từ 7 giờ sáng đến 5 giờ chiều.
-                                </p>
-                            </div>
-
-                            <form id="formKhachTheoGio" action="/admin/thongKe" method="GET" class="d-flex gap-2 flex-wrap">
-                                <input type="hidden" name="tuNgay" value="<%= tuNgay || '' %>">
-                                <input type="hidden" name="denNgay" value="<%= denNgay || '' %>">
-                                <input type="hidden" name="tuanBatDau" value="<%= tuanBatDau ? tuanBatDau.split('/').reverse().join('-') : '' %>">
-                                <input type="hidden" name="activeTab" value="khach-hang">
-                                <input type="hidden" name="scrollTo" value="khach-theo-gio-section">
-
-                                <input 
-                                    type="text"
-                                    id="ngayKhachHang"
-                                    name="ngayKhachHang"
-                                    class="form-control fw-bold text-primary csp-admin-thongke-ejs-1"
-                                    value="<%= ngayKhachHang || '' %>"
-                                    placeholder="Chọn ngày"
-                                    autocomplete="off"
-                                   
-                                >
-
-                                <button type="submit" class="btn btn-primary fw-bold">
-                                    <i class="fa-solid fa-magnifying-glass-chart"></i> Xem
-                                </button>
-                            </form>
-                        </div>
-
-                        <% if (!thongKeKhachTheoGio || thongKeKhachTheoGio.length === 0) { %>
-
-                            <div class="empty-box">
-                                <i class="fa-solid fa-clock"></i>
-                                <h5 class="fw-bold">Chưa có dữ liệu theo giờ</h5>
-                                <p class="mb-0">Không tìm thấy dữ liệu trong ngày đã chọn.</p>
-                            </div>
-
-                        <% } else { %>
-
-                            <div class="chart-wrapper">
-                                <canvas id="chartKhachTheoGio"></canvas>
-                            </div>
-
-                        <% } %>
-                    </div>
-
-                </div>
-
             </div>
 
-        </div>
-    </div>
-
-    <script nonce="<%= cspNonce %>" id="dataThongKeLuotKham" type="application/json">
+            <script nonce="<%= cspNonce %>" id="dataThongKeLuotKham" type="application/json">
         <%- JSON.stringify(thongKeLuotKham || []) %>
     </script>
 
-    <script nonce="<%= cspNonce %>" id="dataThongKeDoanhThu" type="application/json">
+            <script nonce="<%= cspNonce %>" id="dataThongKeDoanhThu" type="application/json">
         <%- JSON.stringify(thongKeDoanhThu || []) %>
     </script>
 
-    <script nonce="<%= cspNonce %>" id="dataThongKeKhachTheoTuan" type="application/json">
+            <script nonce="<%= cspNonce %>" id="dataThongKeKhachTheoTuan" type="application/json">
         <%- JSON.stringify(thongKeKhachTheoTuan || []) %>
     </script>
 
-    <script nonce="<%= cspNonce %>" id="dataThongKeKhachTheoGio" type="application/json">
+            <script nonce="<%= cspNonce %>" id="dataThongKeKhachTheoGio" type="application/json">
         <%- JSON.stringify(thongKeKhachTheoGio || []) %>
     </script>
 
-    <script nonce="<%= cspNonce %>">
-        const thongKeLuotKham = JSON.parse(
-            document.getElementById('dataThongKeLuotKham').textContent || '[]'
-        );
+            <script nonce="<%= cspNonce %>">
+                const thongKeLuotKham = JSON.parse(
+                    document.getElementById('dataThongKeLuotKham').textContent || '[]'
+                );
 
-        const thongKeDoanhThu = JSON.parse(
-            document.getElementById('dataThongKeDoanhThu').textContent || '[]'
-        );
+                const thongKeDoanhThu = JSON.parse(
+                    document.getElementById('dataThongKeDoanhThu').textContent || '[]'
+                );
 
-        const thongKeKhachTheoTuan = JSON.parse(
-            document.getElementById('dataThongKeKhachTheoTuan').textContent || '[]'
-        );
+                const thongKeKhachTheoTuan = JSON.parse(
+                    document.getElementById('dataThongKeKhachTheoTuan').textContent || '[]'
+                );
 
-        const thongKeKhachTheoGio = JSON.parse(
-            document.getElementById('dataThongKeKhachTheoGio').textContent || '[]'
-        );
+                const thongKeKhachTheoGio = JSON.parse(
+                    document.getElementById('dataThongKeKhachTheoGio').textContent || '[]'
+                );
 
-        function formatMoney(value) {
-            return new Intl.NumberFormat('vi-VN').format(value || 0) + 'đ';
-        }
+                function formatMoney(value) {
+                    return new Intl.NumberFormat('vi-VN').format(value || 0) + 'đ';
+                }
 
-        if (window.Chart) {
-            Chart.defaults.animation = false;
+                if (window.Chart) {
+                    Chart.defaults.animation = false;
 
-            if (Chart.defaults.animations) {
-                Chart.defaults.animations = false;
-            }
-
-            if (Chart.defaults.transitions) {
-                Object.keys(Chart.defaults.transitions).forEach(function(key) {
-                    if (Chart.defaults.transitions[key].animation) {
-                        Chart.defaults.transitions[key].animation.duration = 0;
+                    if (Chart.defaults.animations) {
+                        Chart.defaults.animations = false;
                     }
 
-                    if (Chart.defaults.transitions[key].animations) {
-                        Chart.defaults.transitions[key].animations = false;
-                    }
-                });
-            }
-        }
-
-        function initFlatpickr(selector) {
-            const input = document.querySelector(selector);
-
-            if (!input || !window.flatpickr) {
-                return;
-            }
-
-            if (input._flatpickr) {
-                input._flatpickr.destroy();
-            }
-
-            flatpickr(input, {
-                locale: "vn",
-                dateFormat: "d/m/Y",
-                allowInput: true
-            });
-        }
-
-        function initDatePickers() {
-            initFlatpickr("#tuNgay");
-            initFlatpickr("#denNgay");
-            initFlatpickr("#ngayKhachHang");
-        }
-
-        initDatePickers();
-
-        if (thongKeLuotKham.length > 0) {
-            const labelsLuotKham = thongKeLuotKham.map(item => item.ngayHienThi);
-            const tongLuotData = thongKeLuotKham.map(item => item.tongLuot || 0);
-            const hoanThanhData = thongKeLuotKham.map(item => item.hoanThanh || 0);
-            const huyData = thongKeLuotKham.map(item => item.huy || 0);
-            const denTreData = thongKeLuotKham.map(item => item.denTre || 0);
-
-            const ctxLuotKham = document.getElementById('chartLuotKham');
-
-            if (ctxLuotKham) {
-                new Chart(ctxLuotKham, {
-                    type: 'bar',
-                    data: {
-                        labels: labelsLuotKham,
-                        datasets: [
-                            {
-                                label: 'Tổng lượt',
-                                data: tongLuotData,
-                                backgroundColor: 'rgba(13, 110, 253, 0.75)',
-                                borderColor: 'rgba(13, 110, 253, 1)',
-                                borderWidth: 1,
-                                borderRadius: 8
-                            },
-                            {
-                                label: 'Hoàn thành',
-                                data: hoanThanhData,
-                                backgroundColor: 'rgba(13, 110, 253, 0.75)',
-                                borderColor: 'rgba(13, 110, 253, 1)',
-                                borderWidth: 1,
-                                borderRadius: 8
-                            },
-                            {
-                                label: 'Hủy',
-                                data: huyData,
-                                backgroundColor: 'rgba(220, 53, 69, 0.75)',
-                                borderColor: 'rgba(220, 53, 69, 1)',
-                                borderWidth: 1,
-                                borderRadius: 8
-                            },
-                            {
-                                label: 'Đến trễ',
-                                data: denTreData,
-                                backgroundColor: 'rgba(255, 193, 7, 0.8)',
-                                borderColor: 'rgba(255, 193, 7, 1)',
-                                borderWidth: 1,
-                                borderRadius: 8
+                    if (Chart.defaults.transitions) {
+                        Object.keys(Chart.defaults.transitions).forEach(function (key) {
+                            if (Chart.defaults.transitions[key].animation) {
+                                Chart.defaults.transitions[key].animation.duration = 0;
                             }
-                        ]
-                    },
-                    options: {
-                        animation: false,
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `${context.dataset.label}: ${context.raw} lượt`;
-                                    }
-                                }
+
+                            if (Chart.defaults.transitions[key].animations) {
+                                Chart.defaults.transitions[key].animations = false;
                             }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    precision: 0
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        if (thongKeDoanhThu.length > 0) {
-            const labelsDoanhThu = thongKeDoanhThu.map(item => item.ngayHienThi);
-            const doanhThuData = thongKeDoanhThu.map(item => item.doanhThu || 0);
-
-            const ctxDoanhThu = document.getElementById('chartDoanhThu');
-
-            if (ctxDoanhThu) {
-                new Chart(ctxDoanhThu, {
-                    type: 'line',
-                    data: {
-                        labels: labelsDoanhThu,
-                        datasets: [
-                            {
-                                label: 'Doanh thu',
-                                data: doanhThuData,
-                                backgroundColor: 'rgba(13, 110, 253, 0.75)',
-                                borderColor: 'rgba(13, 110, 253, 1)',
-                                borderWidth: 3,
-                                pointRadius: 5,
-                                pointHoverRadius: 7,
-                                fill: true,
-                                tension: 0
-                            }
-                        ]
-                    },
-                    options: {
-                        animation: false,
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `Doanh thu: ${formatMoney(context.raw)}`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    callback: function(value) {
-                                        return formatMoney(value);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        if (thongKeKhachTheoTuan.length > 0) {
-            const labelsKhachTheoTuan = thongKeKhachTheoTuan.map(item => `${item.thu} - ${item.ngayHienThi}`);
-            const dataKhachTheoTuan = thongKeKhachTheoTuan.map(item => item.tongKhach || 0);
-
-            const ctxKhachTheoTuan = document.getElementById('chartKhachTheoTuan');
-
-            if (ctxKhachTheoTuan) {
-                new Chart(ctxKhachTheoTuan, {
-                    type: 'bar',
-                    data: {
-                        labels: labelsKhachTheoTuan,
-                        datasets: [
-                            {
-                                label: 'Số khách',
-                                data: dataKhachTheoTuan,
-                                backgroundColor: 'rgba(13, 110, 253, 0.75)',
-                                borderColor: 'rgba(13, 110, 253, 1)',
-                                borderWidth: 1,
-                                borderRadius: 8
-                            }
-                        ]
-                    },
-                    options: {
-                        animation: false,
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        interaction: {
-                            mode: 'index',
-                            intersect: false
-                        },
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: {
-                                    font: {
-                                        weight: 'bold'
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        return `Số khách: ${context.raw}`;
-                                    }
-                                }
-                            }
-                        },
-                        scales: {
-                            y: {
-                                beginAtZero: true,
-                                ticks: {
-                                    precision: 0
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        }
-
-        let chartKhachTheoGioInstance = null;
-
-        function renderChartKhachTheoGio(dataKhachTheoGioSource) {
-            const ctxKhachTheoGio = document.getElementById('chartKhachTheoGio');
-
-            if (chartKhachTheoGioInstance) {
-                chartKhachTheoGioInstance.destroy();
-                chartKhachTheoGioInstance = null;
-            }
-
-            if (!ctxKhachTheoGio || !dataKhachTheoGioSource || dataKhachTheoGioSource.length === 0) {
-                return;
-            }
-
-            const labelsKhachTheoGio = dataKhachTheoGioSource.map(item => item.khungGio);
-            const dataKhachTheoGio = dataKhachTheoGioSource.map(item => item.tongKhach || 0);
-
-            chartKhachTheoGioInstance = new Chart(ctxKhachTheoGio, {
-                type: 'bar',
-                data: {
-                    labels: labelsKhachTheoGio,
-                    datasets: [
-                        {
-                            label: 'Số khách',
-                            data: dataKhachTheoGio,
-                            backgroundColor: 'rgba(13, 110, 253, 0.75)',
-                            borderWidth: 1,
-                            borderRadius: 8
-                        }
-                    ]
-                },
-                options: {
-                    animation: false,
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    interaction: {
-                        mode: 'index',
-                        intersect: false
-                    },
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                font: {
-                                    weight: 'bold'
-                                }
-                            }
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return `Số khách: ${context.raw}`;
-                                }
-                            }
-                        }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            ticks: {
-                                precision: 0
-                            }
-                        }
+                        });
                     }
                 }
-            });
-        }
 
-        function scrollToThongKeTarget(targetId) {
-            const targetEl = document.getElementById(targetId);
+                function initFlatpickr(selector) {
+                    const input = document.querySelector(selector);
 
-            if (!targetEl) {
-                return;
-            }
-
-            targetEl.scrollIntoView({
-                block: 'start'
-            });
-        }
-
-        function showCorrectTabAndScroll() {
-            const params = new URLSearchParams(window.location.search);
-            const activeTab = params.get('activeTab');
-            const scrollTo = params.get('scrollTo');
-
-            let tabTarget = window.location.hash;
-
-            if (activeTab === 'khach-hang' || scrollTo === 'khach-theo-gio-section' || window.location.hash === '#khach-hang-pane') {
-                tabTarget = '#khach-hang-pane';
-            }
-
-            if (tabTarget) {
-                const triggerEl = document.querySelector(`[data-bs-target="${tabTarget}"]`);
-
-                if (triggerEl && window.bootstrap) {
-                    const tab = new bootstrap.Tab(triggerEl);
-                    tab.show();
-                }
-            }
-
-            if (scrollTo) {
-                setTimeout(function() {
-                    scrollToThongKeTarget(scrollTo);
-                }, 0);
-            }
-        }
-
-        function bindFormKhachTheoGio() {
-            const formKhachTheoGio = document.getElementById('formKhachTheoGio');
-
-            if (!formKhachTheoGio) {
-                return;
-            }
-
-            formKhachTheoGio.addEventListener('submit', async function(event) {
-                event.preventDefault();
-
-                const submitButton = formKhachTheoGio.querySelector('button[type="submit"]');
-                const oldButtonHtml = submitButton ? submitButton.innerHTML : '';
-
-                try {
-                    if (submitButton) {
-                        submitButton.disabled = true;
-                        submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xem';
+                    if (!input || !window.flatpickr) {
+                        return;
                     }
 
-                    const formData = new FormData(formKhachTheoGio);
-                    const params = new URLSearchParams(formData);
-                    const requestUrl = `${formKhachTheoGio.action}?${params.toString()}`;
+                    if (input._flatpickr) {
+                        input._flatpickr.destroy();
+                    }
 
-                    const response = await fetch(requestUrl, {
-                        method: 'GET',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
+                    flatpickr(input, {
+                        locale: "vn",
+                        dateFormat: "d/m/Y",
+                        allowInput: true
+                    });
+                }
+
+                function initDatePickers() {
+                    initFlatpickr("#tuNgay");
+                    initFlatpickr("#denNgay");
+                    initFlatpickr("#ngayKhachHang");
+                }
+
+                initDatePickers();
+
+                if (thongKeLuotKham.length > 0) {
+                    const labelsLuotKham = thongKeLuotKham.map(item => item.ngayHienThi);
+                    const tongLuotData = thongKeLuotKham.map(item => item.tongLuot || 0);
+                    const hoanThanhData = thongKeLuotKham.map(item => item.hoanThanh || 0);
+                    const huyData = thongKeLuotKham.map(item => item.huy || 0);
+                    const denTreData = thongKeLuotKham.map(item => item.denTre || 0);
+
+                    const ctxLuotKham = document.getElementById('chartLuotKham');
+
+                    if (ctxLuotKham) {
+                        new Chart(ctxLuotKham, {
+                            type: 'bar',
+                            data: {
+                                labels: labelsLuotKham,
+                                datasets: [
+                                    {
+                                        label: 'Tổng lượt',
+                                        data: tongLuotData,
+                                        backgroundColor: 'rgba(13, 110, 253, 0.75)',
+                                        borderColor: 'rgba(13, 110, 253, 1)',
+                                        borderWidth: 1,
+                                        borderRadius: 8
+                                    },
+                                    {
+                                        label: 'Hoàn thành',
+                                        data: hoanThanhData,
+                                        backgroundColor: 'rgba(13, 110, 253, 0.75)',
+                                        borderColor: 'rgba(13, 110, 253, 1)',
+                                        borderWidth: 1,
+                                        borderRadius: 8
+                                    },
+                                    {
+                                        label: 'Hủy',
+                                        data: huyData,
+                                        backgroundColor: 'rgba(220, 53, 69, 0.75)',
+                                        borderColor: 'rgba(220, 53, 69, 1)',
+                                        borderWidth: 1,
+                                        borderRadius: 8
+                                    },
+                                    {
+                                        label: 'Đến trễ',
+                                        data: denTreData,
+                                        backgroundColor: 'rgba(255, 193, 7, 0.8)',
+                                        borderColor: 'rgba(255, 193, 7, 1)',
+                                        borderWidth: 1,
+                                        borderRadius: 8
+                                    }
+                                ]
+                            },
+                            options: {
+                                animation: false,
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false
+                                },
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            font: {
+                                                weight: 'bold'
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                return `${context.dataset.label}: ${context.raw} lượt`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            precision: 0
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+
+                if (thongKeDoanhThu.length > 0) {
+                    const labelsDoanhThu = thongKeDoanhThu.map(item => item.ngayHienThi);
+                    const doanhThuData = thongKeDoanhThu.map(item => item.doanhThu || 0);
+
+                    const ctxDoanhThu = document.getElementById('chartDoanhThu');
+
+                    if (ctxDoanhThu) {
+                        new Chart(ctxDoanhThu, {
+                            type: 'line',
+                            data: {
+                                labels: labelsDoanhThu,
+                                datasets: [
+                                    {
+                                        label: 'Doanh thu',
+                                        data: doanhThuData,
+                                        backgroundColor: 'rgba(13, 110, 253, 0.75)',
+                                        borderColor: 'rgba(13, 110, 253, 1)',
+                                        borderWidth: 3,
+                                        pointRadius: 5,
+                                        pointHoverRadius: 7,
+                                        fill: true,
+                                        tension: 0
+                                    }
+                                ]
+                            },
+                            options: {
+                                animation: false,
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false
+                                },
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            font: {
+                                                weight: 'bold'
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                return `Doanh thu: ${formatMoney(context.raw)}`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            callback: function (value) {
+                                                return formatMoney(value);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+
+                if (thongKeKhachTheoTuan.length > 0) {
+                    const labelsKhachTheoTuan = thongKeKhachTheoTuan.map(item => `${item.thu} - ${item.ngayHienThi}`);
+                    const dataKhachTheoTuan = thongKeKhachTheoTuan.map(item => item.tongKhach || 0);
+
+                    const ctxKhachTheoTuan = document.getElementById('chartKhachTheoTuan');
+
+                    if (ctxKhachTheoTuan) {
+                        new Chart(ctxKhachTheoTuan, {
+                            type: 'bar',
+                            data: {
+                                labels: labelsKhachTheoTuan,
+                                datasets: [
+                                    {
+                                        label: 'Số khách',
+                                        data: dataKhachTheoTuan,
+                                        backgroundColor: 'rgba(13, 110, 253, 0.75)',
+                                        borderColor: 'rgba(13, 110, 253, 1)',
+                                        borderWidth: 1,
+                                        borderRadius: 8
+                                    }
+                                ]
+                            },
+                            options: {
+                                animation: false,
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                interaction: {
+                                    mode: 'index',
+                                    intersect: false
+                                },
+                                plugins: {
+                                    legend: {
+                                        position: 'bottom',
+                                        labels: {
+                                            font: {
+                                                weight: 'bold'
+                                            }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function (context) {
+                                                return `Số khách: ${context.raw}`;
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            precision: 0
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+
+                let chartKhachTheoGioInstance = null;
+
+                function renderChartKhachTheoGio(dataKhachTheoGioSource) {
+                    const ctxKhachTheoGio = document.getElementById('chartKhachTheoGio');
+
+                    if (chartKhachTheoGioInstance) {
+                        chartKhachTheoGioInstance.destroy();
+                        chartKhachTheoGioInstance = null;
+                    }
+
+                    if (!ctxKhachTheoGio || !dataKhachTheoGioSource || dataKhachTheoGioSource.length === 0) {
+                        return;
+                    }
+
+                    const labelsKhachTheoGio = dataKhachTheoGioSource.map(item => item.khungGio);
+                    const dataKhachTheoGio = dataKhachTheoGioSource.map(item => item.tongKhach || 0);
+
+                    chartKhachTheoGioInstance = new Chart(ctxKhachTheoGio, {
+                        type: 'bar',
+                        data: {
+                            labels: labelsKhachTheoGio,
+                            datasets: [
+                                {
+                                    label: 'Số khách',
+                                    data: dataKhachTheoGio,
+                                    backgroundColor: 'rgba(13, 110, 253, 0.75)',
+                                    borderWidth: 1,
+                                    borderRadius: 8
+                                }
+                            ]
+                        },
+                        options: {
+                            animation: false,
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            interaction: {
+                                mode: 'index',
+                                intersect: false
+                            },
+                            plugins: {
+                                legend: {
+                                    position: 'bottom',
+                                    labels: {
+                                        font: {
+                                            weight: 'bold'
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    callbacks: {
+                                        label: function (context) {
+                                            return `Số khách: ${context.raw}`;
+                                        }
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        precision: 0
+                                    }
+                                }
+                            }
                         }
                     });
+                }
 
-                    if (!response.ok) {
-                        throw new Error('Không tải được dữ liệu lượng khách theo giờ');
+                function scrollToThongKeTarget(targetId) {
+                    const targetEl = document.getElementById(targetId);
+
+                    if (!targetEl) {
+                        return;
                     }
 
-                    const htmlText = await response.text();
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(htmlText, 'text/html');
+                    targetEl.scrollIntoView({
+                        block: 'start'
+                    });
+                }
 
-                    const newSection = doc.getElementById('khach-theo-gio-section');
-                    const currentSection = document.getElementById('khach-theo-gio-section');
-                    const newDataEl = doc.getElementById('dataThongKeKhachTheoGio');
+                function showCorrectTabAndScroll() {
+                    const params = new URLSearchParams(window.location.search);
+                    const activeTab = params.get('activeTab');
+                    const scrollTo = params.get('scrollTo');
 
-                    if (!newSection || !currentSection || !newDataEl) {
-                        throw new Error('Không tìm thấy dữ liệu lượng khách theo giờ');
+                    let tabTarget = window.location.hash;
+
+                    if (activeTab === 'khach-hang' || scrollTo === 'khach-theo-gio-section' || window.location.hash === '#khach-hang-pane') {
+                        tabTarget = '#khach-hang-pane';
                     }
 
-                    const newData = JSON.parse(newDataEl.textContent || '[]');
+                    if (tabTarget) {
+                        const triggerEl = document.querySelector(`[data-bs-target="${tabTarget}"]`);
 
-                    currentSection.replaceWith(newSection);
+                        if (triggerEl && window.bootstrap) {
+                            const tab = new bootstrap.Tab(triggerEl);
+                            tab.show();
+                        }
+                    }
 
-                    window.history.pushState(
-                        {},
-                        '',
-                        `${requestUrl}#khach-theo-gio-section`
-                    );
-
-                    initFlatpickr("#ngayKhachHang");
-                    bindFormKhachTheoGio();
-                    renderChartKhachTheoGio(newData);
-                    scrollToThongKeTarget('khach-theo-gio-section');
-                } catch (error) {
-                    console.error(error);
-
-                    formKhachTheoGio.submit();
-                } finally {
-                    const newSubmitButton = document.querySelector('#formKhachTheoGio button[type="submit"]');
-
-                    if (newSubmitButton) {
-                        newSubmitButton.disabled = false;
-                        newSubmitButton.innerHTML = oldButtonHtml || '<i class="fa-solid fa-magnifying-glass-chart"></i> Xem';
+                    if (scrollTo) {
+                        setTimeout(function () {
+                            scrollToThongKeTarget(scrollTo);
+                        }, 0);
                     }
                 }
-            });
-        }
 
-        renderChartKhachTheoGio(thongKeKhachTheoGio);
+                function bindFormKhachTheoGio() {
+                    const formKhachTheoGio = document.getElementById('formKhachTheoGio');
 
-        document.addEventListener('DOMContentLoaded', function() {
-            showCorrectTabAndScroll();
-            bindFormKhachTheoGio();
-        });
-    </script>
+                    if (!formKhachTheoGio) {
+                        return;
+                    }
+
+                    formKhachTheoGio.addEventListener('submit', async function (event) {
+                        event.preventDefault();
+
+                        const submitButton = formKhachTheoGio.querySelector('button[type="submit"]');
+                        const oldButtonHtml = submitButton ? submitButton.innerHTML : '';
+
+                        try {
+                            if (submitButton) {
+                                submitButton.disabled = true;
+                                submitButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Đang xem';
+                            }
+
+                            const formData = new FormData(formKhachTheoGio);
+                            const params = new URLSearchParams(formData);
+                            const requestUrl = `${formKhachTheoGio.action}?${params.toString()}`;
+
+                            const response = await fetch(requestUrl, {
+                                method: 'GET',
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest'
+                                }
+                            });
+
+                            if (!response.ok) {
+                                throw new Error('Không tải được dữ liệu lượng khách theo giờ');
+                            }
+
+                            const htmlText = await response.text();
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(htmlText, 'text/html');
+
+                            const newSection = doc.getElementById('khach-theo-gio-section');
+                            const currentSection = document.getElementById('khach-theo-gio-section');
+                            const newDataEl = doc.getElementById('dataThongKeKhachTheoGio');
+
+                            if (!newSection || !currentSection || !newDataEl) {
+                                throw new Error('Không tìm thấy dữ liệu lượng khách theo giờ');
+                            }
+
+                            const newData = JSON.parse(newDataEl.textContent || '[]');
+
+                            currentSection.replaceWith(newSection);
+
+                            window.history.pushState(
+                                {},
+                                '',
+                                `${requestUrl}#khach-theo-gio-section`
+                            );
+
+                            initFlatpickr("#ngayKhachHang");
+                            bindFormKhachTheoGio();
+                            renderChartKhachTheoGio(newData);
+                            scrollToThongKeTarget('khach-theo-gio-section');
+                        } catch (error) {
+                            console.error(error);
+
+                            formKhachTheoGio.submit();
+                        } finally {
+                            const newSubmitButton = document.querySelector('#formKhachTheoGio button[type="submit"]');
+
+                            if (newSubmitButton) {
+                                newSubmitButton.disabled = false;
+                                newSubmitButton.innerHTML = oldButtonHtml || '<i class="fa-solid fa-magnifying-glass-chart"></i> Xem';
+                            }
+                        }
+                    });
+                }
+
+                renderChartKhachTheoGio(thongKeKhachTheoGio);
+
+                document.addEventListener('DOMContentLoaded', function () {
+                    showCorrectTabAndScroll();
+                    bindFormKhachTheoGio();
+                });
+            </script>
 </body>
+
 </html>

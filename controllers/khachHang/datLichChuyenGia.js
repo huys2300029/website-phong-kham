@@ -59,7 +59,8 @@ const getBacSiByChuyenKhoa = async (req, res) => {
                 nd.hoTen, 
                 bs.chiTiet, 
                 bs.namTotNghiep, 
-                bs.trinhDo 
+                bs.trinhDo,
+                bs.hinhAnh 
             FROM BacSi bs
             JOIN NguoiDung nd ON bs.id = nd.id
             WHERE bs.id_chuyenKhoa = ?
@@ -103,7 +104,8 @@ const getChonThoiGian = async (req, res) => {
                 bs.id AS id_bacSi, 
                 nd.hoTen, 
                 ck.id_chuyenKhoa, 
-                ck.tenChuyenKhoa
+                ck.tenChuyenKhoa,
+                bs.hinhAnh 
             FROM BacSi bs
             JOIN NguoiDung nd ON bs.id = nd.id
             JOIN ChuyenKhoa ck ON bs.id_chuyenKhoa = ck.id_chuyenKhoa

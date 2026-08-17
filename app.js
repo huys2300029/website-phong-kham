@@ -84,9 +84,10 @@ app.use(
                 'upgrade-insecure-requests': isProduction ? [] : null
             }
         },
-        strictTransportSecurity: isProduction
-            ? { maxAge: 31536000, includeSubDomains: true, preload: false }
-            : false
+        strictTransportSecurity: {
+            maxAge: 31536000, // ghi nhớ chính sách HTTPS 1 năm
+            includeSubDomains: true, // áp dụng cho các tên miền con
+        }
     })
 );
 

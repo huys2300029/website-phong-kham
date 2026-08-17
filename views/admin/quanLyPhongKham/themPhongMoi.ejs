@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Phân Công Vị Trí Chuyên Khoa</title>
-    
+
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
-    
-<link rel="stylesheet" href="/css/admin/sidebar.css">
+
+    <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/style.css">
 
     <!-- Giao diện thông báo Bootstrap dùng chung -->
@@ -17,91 +18,93 @@
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/js/bootstrap-ui.js?v=2"></script>
 </head>
+
 <body>
-    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <template
-        data-app-message="<%= uiMessage.message %>"
-                data-app-type="<%= uiMessage.type || 'info' %>"
-                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
-    <% } %>
+    <% if (typeof uiMessage !=='undefined' && uiMessage && uiMessage.message) { %>
+        <template data-app-message="<%= uiMessage.message %>" data-app-type="<%= uiMessage.type || 'info' %>"
+            data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
+        <% } %>
 
 
-    <div class="d-flex vh-100 overflow-hidden csp-admin-quanlyphongkham-themphongmoi-ejs-3">
-        
-        <%- include('../sidebar') %>
-        
-        <div class="main-content flex-grow-1 p-3 p-md-4 overflow-auto d-flex justify-content-center"> 
-            
-            <div class="card-box bg-white p-4 p-md-5 rounded shadow-sm border-0 w-100 csp-admin-quanlyphongkham-themphongmoi-ejs-2"> 
-                
-                <div class="card-header-title mb-4">
-                    <h2 class="mb-0">Phân Công Vị Trí Mới</h2>
-                </div>
+            <div class="d-flex vh-100 overflow-hidden csp-admin-quanlyphongkham-themphongmoi-ejs-3">
 
-                <form action="/admin/themPhongMoi" method="POST">
-                    
-                    <div class="form-group mb-4">
-                        <label for="id_chuyenKhoa" class="form-label fw-semibold">Chọn Chuyên Khoa <span class="text-danger">*</span></label>
-                        <select id="id_chuyenKhoa" name="id_chuyenKhoa" class="form-select shadow-none p-2" required>
-                            <option value="" disabled selected>-- Vui lòng chọn khoa --</option>
-                            
-                            <% if (typeof listChuyenKhoa !== 'undefined' && listChuyenKhoa.length > 0) { %>
-                                <% listChuyenKhoa.forEach(function(khoa) { %>
-                                    <option value="<%= khoa.id_chuyenKhoa %>">
-                                        <%= khoa.tenChuyenKhoa %>
-                                    </option>
-                                <% }); %>
-                            <% } else { %>
-                                <option disabled>Không có dữ liệu chuyên khoa</option>
-                            <% } %>
-                        </select>
+                <%- include('../sidebar') %>
+
+                    <div class="main-content flex-grow-1 p-3 p-md-4 overflow-auto d-flex justify-content-center align-items-start"
+                        style="margin-left: 0 !important;">
+
+                        <div class="card-box bg-white p-4 p-md-5 rounded shadow-sm border-0 csp-admin-quanlyphongkham-themphongmoi-ejs-2"
+                            style="max-width: 900px; width: 100%;">
+                            <div class="card-header-title mb-4">
+                                <h2 class="mb-0">Phân Công Vị Trí Mới</h2>
+                            </div>
+
+                            <form action="/admin/themPhongMoi" method="POST">
+
+                                <div class="form-group mb-4">
+                                    <label for="id_chuyenKhoa" class="form-label fw-semibold">Chọn Chuyên Khoa <span
+                                            class="text-danger">*</span></label>
+                                    <select id="id_chuyenKhoa" name="id_chuyenKhoa" class="form-select shadow-none p-2"
+                                        required>
+                                        <option value="" disabled selected>-- Vui lòng chọn khoa --</option>
+
+                                        <% if (typeof listChuyenKhoa !=='undefined' && listChuyenKhoa.length> 0) { %>
+                                            <% listChuyenKhoa.forEach(function(khoa) { %>
+                                                <option value="<%= khoa.id_chuyenKhoa %>">
+                                                    <%= khoa.tenChuyenKhoa %>
+                                                </option>
+                                                <% }); %>
+                                                    <% } else { %>
+                                                        <option disabled>Không có dữ liệu chuyên khoa</option>
+                                                        <% } %>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label for="soPhong" class="form-label fw-semibold">Chọn Phòng & Tầng <span
+                                            class="text-danger">*</span></label>
+                                    <select id="soPhong" name="soPhong" class="form-select shadow-none p-2" required>
+                                        <option value="" disabled selected>-- Chọn phòng làm việc --</option>
+
+                                        <% if (typeof listPhong !=='undefined' && listPhong.length> 0) { %>
+                                            <% listPhong.forEach(function(phong) { %>
+                                                <option value="<%= phong.soPhong %>">
+                                                    Phòng <%= phong.soPhong %> - Tầng <%= phong.tang %>
+                                                </option>
+                                                <% }); %>
+                                                    <% } else { %>
+                                                        <option disabled>Không có dữ liệu phòng</option>
+                                                        <% } %>
+                                    </select>
+                                </div>
+
+                                <div class="form-group mb-4">
+                                    <label for="ghiChu" class="form-label fw-semibold">Ghi chú (Tùy chọn)</label>
+                                    <textarea id="ghiChu" name="ghiChu" class="form-control shadow-none" rows="4"
+                                        placeholder="Ví dụ: Khu vực cánh trái..."></textarea>
+                                </div>
+
+                                <hr class="my-4 text-muted">
+
+                                <div class="d-flex gap-2 justify-content-start align-items-center mt-4">
+                                    <button type="submit" class="btn btn-add px-4 py-2">
+                                        <i class="fas fa-save me-2"></i> Lưu Phân Công
+                                    </button>
+                                    <a href="/admin/quanLyPhongKham"
+                                        class="btn btn-light px-4 py-2 border fw-semibold text-muted csp-admin-quanlyphongkham-themphongmoi-ejs-1">
+                                        <i class="fas fa-arrow-left me-1"></i> Quay lại
+                                    </a>
+                                </div>
+
+                            </form>
+                        </div>
                     </div>
-
-                    <div class="form-group mb-4">
-                        <label for="soPhong" class="form-label fw-semibold">Chọn Phòng & Tầng <span class="text-danger">*</span></label>
-                        <select id="soPhong" name="soPhong" class="form-select shadow-none p-2" required>
-                            <option value="" disabled selected>-- Chọn phòng làm việc --</option>
-                            
-                            <% if (typeof listPhong !== 'undefined' && listPhong.length > 0) { %>
-                                <% listPhong.forEach(function(phong) { %>
-                                    <option value="<%= phong.soPhong %>">
-                                        Phòng <%= phong.soPhong %> - Tầng <%= phong.tang %>
-                                    </option>
-                                <% }); %>
-                            <% } else { %>
-                                <option disabled>Không có dữ liệu phòng</option>
-                            <% } %>
-                        </select>
-                    </div>
-
-                    <div class="form-group mb-4">
-                        <label for="ghiChu" class="form-label fw-semibold">Ghi chú (Tùy chọn)</label>
-                        <textarea id="ghiChu" name="ghiChu" class="form-control shadow-none" rows="4" placeholder="Ví dụ: Khu vực cánh trái..."></textarea>
-                    </div>
-
-                    <hr class="my-4 text-muted">
-
-                    <div class="d-flex gap-2 justify-content-start align-items-center mt-4">
-                        <button type="submit" class="btn btn-add px-4 py-2">
-                            <i class="fas fa-save me-2"></i> Lưu Phân Công
-                        </button>
-                        <a href="/admin/quanLyPhongKham" class="btn btn-light px-4 py-2 border fw-semibold text-muted csp-admin-quanlyphongkham-themphongmoi-ejs-1">
-                            <i class="fas fa-arrow-left me-1"></i> Quay lại
-                        </a>
-                    </div>
-
-                </form>
             </div>
-        </div>
-    </div>
 
-    <% if (typeof msg !== 'undefined' && msg) { %>
-        <template
-            data-app-message="<%= msg %>"
-            data-app-type="error"
-            data-app-title="Không thể lưu!"
-            data-app-mode="dialog"
-            data-app-confirm-text="Đã hiểu"></template>
-    <% } %>
+            <% if (typeof msg !=='undefined' && msg) { %>
+                <template data-app-message="<%= msg %>" data-app-type="error" data-app-title="Không thể lưu!"
+                    data-app-mode="dialog" data-app-confirm-text="Đã hiểu"></template>
+                <% } %>
 </body>
+
 </html>
