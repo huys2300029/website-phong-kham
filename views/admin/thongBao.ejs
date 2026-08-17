@@ -27,7 +27,6 @@
                 data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
     <% } %>
 
-
     <audio id="sound-notification" src="/sounds/thongBao.mp3" preload="auto"></audio>
 
     <div class="d-flex vh-100 overflow-hidden bg-light">
@@ -88,7 +87,6 @@
                                         <p 
                                             id="noiDung-<%= tb.id_thongBao %>"
                                             class="notification-content mb-0 <%= tb.trangThaiDoc ? 'text-muted' : 'text-dark fw-medium' %> csp-admin-thongbao-ejs-2" 
-                                           
                                         >
                                             <%= tb.noiDung %>
                                         </p>
@@ -139,7 +137,8 @@
             
         </div>
     </div>
-<script nonce="<%= cspNonce %>">
+
+    <script nonce="<%= cspNonce %>">
         let currentAdminUnreadCount = document.querySelectorAll('[id^="badge-"]').length;
 
         document.querySelectorAll('.js-admin-thong-bao-item').forEach(function (item) {
@@ -158,6 +157,7 @@
                 audio.load();
             }
         }, { once: true });
+
         function phatAmThanhThongBaoAdmin() {
             const audio = document.getElementById('sound-notification');
 
@@ -169,6 +169,7 @@
                 console.log('Trình duyệt đã chặn âm thanh vì người dùng chưa tương tác với trang.');
             });
         }
+
         function capNhatBadgeSidebarSauKhiDoc() {
             const badgeSidebar = document.querySelector('.badge-thongbao, #badgeThongBao, .notification-badge');
 
@@ -267,6 +268,7 @@
                     title: 'Thông báo',
                     text: 'Thông báo này không có yêu cầu đổi lịch đi kèm.',
                     icon: 'info',
+                    showCloseButton: true,
                     confirmButtonText: 'Đóng'
                 }).then(() => window.location.reload());
             }
@@ -285,12 +287,16 @@
 
                 if (!data.success) {
                     await danhDauDaDocServer(idThongBao);
-                    return AppDialog.fire('Lỗi', 'Không tìm thấy yêu cầu', 'error')
-                        .then(() => window.location.reload());
+                    return AppDialog.fire({
+                        title: 'Lỗi',
+                        text: 'Không tìm thấy yêu cầu',
+                        icon: 'error',
+                        showCloseButton: true,
+                        confirmButtonText: 'Đóng'
+                    }).then(() => window.location.reload());
                 }
 
                 const y = data.yeuCau;
-
                 const ngayTruc = y.ngayDoiStr || y.ngayMuonDoiStr || 'Không rõ';
 
                 let thongTinChungHtml = `
@@ -349,6 +355,7 @@
                         title: 'Chi tiết đổi lịch',
                         html: thongTinChungHtml + statusHtml,
                         icon: 'info',
+                        showCloseButton: true,
                         confirmButtonText: 'Đóng',
                         confirmButtonColor: '#6c757d'
                     }).then(() => window.location.reload());
@@ -366,11 +373,18 @@
                         title: 'Yêu cầu đã quá hạn',
                         html: expiredHtml,
                         icon: 'warning',
-                        confirmButtonText: '<i class="fas fa-times me-1"></i> Huỷ',
-                        confirmButtonColor: '#6c757d'
+                        showCloseButton: true,
+                        showDenyButton: true,
+                        showCancelButton: true,
+                        confirmButtonText: '<i class="fas fa-times me-1"></i> Từ chối',
+                        cancelButtonText: 'Đóng',
+                        confirmButtonColor: '#dc3545',
+                        cancelButtonColor: '#6c757d'
                     }).then((result) => {
                         if (result.isConfirmed) {
                             xuLyYeuCau(idYeuCau, 'TuChoi', idThongBao, true);
+                        } else {
+                            danhDauDaDocServer(idThongBao).then(() => window.location.reload());
                         }
                     });
                 }
@@ -379,13 +393,15 @@
                     title: 'Duyệt yêu cầu đổi lịch',
                     html: thongTinChungHtml,
                     icon: 'question',
+                    showCloseButton: true,
                     showDenyButton: true,
                     showCancelButton: true,
                     confirmButtonText: '<i class="fas fa-check me-1"></i> Phê duyệt',
                     denyButtonText: '<i class="fas fa-times me-1"></i> Từ chối',
                     cancelButtonText: 'Đóng',
                     confirmButtonColor: '#198754',
-                    denyButtonColor: '#dc3545'
+                    denyButtonColor: '#dc3545',
+                    cancelButtonColor: '#6c757d'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         xuLyYeuCau(idYeuCau, 'DaDuyet', idThongBao, false);
@@ -397,7 +413,12 @@
                 });
 
             } catch (e) {
-                AppDialog.fire('Lỗi mạng', 'Không thể kết nối đến máy chủ.', 'error');
+                AppDialog.fire({
+                    title: 'Lỗi mạng',
+                    text: 'Không thể kết nối đến máy chủ.',
+                    icon: 'error',
+                    showCloseButton: true
+                });
             }
         }
 
@@ -427,20 +448,32 @@
                         if (isSilent) {
                             window.location.reload();
                         } else {
-                            AppDialog.fire('Thành công', data.message, 'success')
-                                .then(() => window.location.reload());
+                            AppDialog.fire({
+                                title: 'Thành công',
+                                text: data.message,
+                                icon: 'success',
+                                showCloseButton: true
+                            }).then(() => window.location.reload());
                         }
                     });
                 } else {
-                    AppDialog.fire('Lỗi', data.message, 'error');
+                    AppDialog.fire({
+                        title: 'Lỗi',
+                        text: data.message,
+                        icon: 'error',
+                        showCloseButton: true
+                    });
                 }
             })
             .catch(() => {
-                AppDialog.fire('Lỗi', 'Đã xảy ra lỗi trong quá trình xử lý.', 'error');
+                AppDialog.fire({
+                    title: 'Lỗi',
+                    text: 'Đã xảy ra lỗi trong quá trình xử lý.',
+                    icon: 'error',
+                    showCloseButton: true
+                });
             });
         }
     </script>
-
 </body>
-<audio id="sound-notification" src="/sounds/thongBao.mp3" preload="auto"></audio>
 </html>
