@@ -59,16 +59,16 @@
                                             <% thongBaoList.forEach(tb=> { %>
 
                                                 <a href="#" id="thongbao-<%= tb.id_thongBao %>"
-                                                    class="js-admin-thong-bao-item list-group-item notification-item p-4 border-bottom cursor-pointer hover-notification <%= tb.trangThaiDoc ? 'bg-light' : 'bg-white' %>"
+                                                    class="js-admin-thong-bao-item list-group-item notification-item p-4 border-bottom cursor-pointer hover-notification <%= tb.trangThaiDoc ? 'bg-light' : 'bg-white border-start border-4 border-success' %>"
                                                     data-id-yeu-cau="<%= tb.id_yeuCau || '' %>"
                                                     data-id-thong-bao="<%= tb.id_thongBao %>">
                                                     <div
                                                         class="notification-header d-flex w-100 justify-content-between align-items-center mb-2">
 
                                                         <h5 id="tieuDe-<%= tb.id_thongBao %>"
-                                                            class="notification-title mb-0 <%= tb.trangThaiDoc ? 'text-secondary' : 'text-primary fw-bold' %>">
+                                                            class="notification-title mb-0 <%= tb.trangThaiDoc ? 'text-secondary' : 'text-success fw-bold' %>">
                                                             <i id="icon-<%= tb.id_thongBao %>"
-                                                                class="<%= tb.trangThaiDoc ? 'fas fa-envelope-open text-muted' : 'fas fa-envelope text-primary' %> me-2"></i>
+                                                                class="<%= tb.trangThaiDoc ? 'fas fa-envelope-open text-muted' : 'fas fa-envelope text-success' %> me-2"></i>
 
                                                             <%= tb.tieuDe %>
                                                         </h5>
@@ -182,13 +182,13 @@
                 function danhDauDaDocGiaoDien(idThongBao) {
                     const item = document.getElementById(`thongbao-${idThongBao}`);
                     if (item) {
-                        item.classList.remove('bg-white');
+                        item.classList.remove('bg-white', 'border-start', 'border-4', 'border-success');
                         item.classList.add('bg-light');
                     }
 
                     const tieuDeEl = document.getElementById(`tieuDe-${idThongBao}`);
                     if (tieuDeEl) {
-                        tieuDeEl.classList.remove('text-primary', 'fw-bold');
+                        tieuDeEl.classList.remove('text-success', 'text-primary', 'fw-bold');
                         tieuDeEl.classList.add('text-secondary');
                     }
 
@@ -253,9 +253,10 @@
                 setInterval(checkAdminNewNotifications, 8000);
 
                 async function xemChiTietYeuCau(idYeuCau, idThongBao) {
-                    danhDauDaDocGiaoDien(idThongBao);
+                    // Không tự động đánh dấu đã đọc ở đây để giữ viền xanh và chữ xanh nếu đóng popup
 
                     if (!idYeuCau || idYeuCau === 'undefined' || idYeuCau === 'null') {
+                        danhDauDaDocGiaoDien(idThongBao);
                         await danhDauDaDocServer(idThongBao);
 
                         return AppDialog.fire({
@@ -264,7 +265,7 @@
                             icon: 'info',
                             showCloseButton: true,
                             confirmButtonText: 'Đóng'
-                        }).then(() => window.location.reload());
+                        });
                     }
 
                     AppDialog.fire({
@@ -280,6 +281,7 @@
                         const data = await res.json();
 
                         if (!data.success) {
+                            danhDauDaDocGiaoDien(idThongBao);
                             await danhDauDaDocServer(idThongBao);
                             return AppDialog.fire({
                                 title: 'Lỗi',
@@ -287,7 +289,7 @@
                                 icon: 'error',
                                 showCloseButton: true,
                                 confirmButtonText: 'Đóng'
-                            }).then(() => window.location.reload());
+                            });
                         }
 
                         const y = data.yeuCau;
@@ -325,6 +327,7 @@
                         thongTinChungHtml += `</div>`;
 
                         if (y.trangThai !== 'ChoDuyet') {
+                            danhDauDaDocGiaoDien(idThongBao);
                             await danhDauDaDocServer(idThongBao);
 
                             let statusHtml = '';
@@ -352,7 +355,7 @@
                                 showCloseButton: true,
                                 confirmButtonText: 'Đóng',
                                 confirmButtonColor: '#6c757d'
-                            }).then(() => window.location.reload());
+                            });
                         }
 
                         if (data.isExpired) {
@@ -377,9 +380,8 @@
                             }).then((result) => {
                                 if (result.isConfirmed) {
                                     xuLyYeuCau(idYeuCau, 'TuChoi', idThongBao, true);
-                                } else {
-                                    danhDauDaDocServer(idThongBao).then(() => window.location.reload());
                                 }
+                                // Tắt popup không thao tác sẽ giữ nguyên giao diện chưa đọc
                             });
                         }
 
@@ -387,23 +389,19 @@
                             title: 'Duyệt yêu cầu đổi lịch',
                             html: thongTinChungHtml,
                             icon: 'question',
-                            showCloseButton: true,   // Hiển thị dấu X ở góc trên để Đóng
-                            showCancelButton: true,  // Bật nút thứ 2
+                            showCloseButton: true,
+                            showCancelButton: true,
                             confirmButtonText: '<i class="fas fa-check me-1"></i> Phê duyệt',
                             cancelButtonText: '<i class="fas fa-times me-1"></i> Từ chối',
-                            confirmButtonColor: '#198754', // Màu xanh cho Phê duyệt
-                            cancelButtonColor: '#dc3545'   // Màu đỏ cho Từ chối
+                            confirmButtonColor: '#198754',
+                            cancelButtonColor: '#dc3545'
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                // Nếu click Phê duyệt
                                 xuLyYeuCau(idYeuCau, 'DaDuyet', idThongBao, false);
                             } else if (result.dismiss === 'cancel' || (AppDialog.DismissReason && result.dismiss === AppDialog.DismissReason.cancel)) {
-                                // Nếu click Từ chối (Nút Cancel)
                                 xuLyYeuCau(idYeuCau, 'TuChoi', idThongBao, false);
-                            } else {
-                                // Nếu click dấu X hoặc click ra ngoài viền để Đóng
-                                danhDauDaDocServer(idThongBao).then(() => window.location.reload());
                             }
+                            // Bấm dấu X hoặc click ra ngoài để đóng popup: Không gọi danhDauDaDocServer, thông báo giữ nguyên viền xanh
                         });
 
                     } catch (e) {
@@ -438,6 +436,7 @@
                         .then(res => res.json())
                         .then(data => {
                             if (data.success) {
+                                danhDauDaDocGiaoDien(idThongBao);
                                 danhDauDaDocServer(idThongBao).then(() => {
                                     if (isSilent) {
                                         window.location.reload();
