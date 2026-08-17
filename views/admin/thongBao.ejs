@@ -59,16 +59,16 @@
                                             <% thongBaoList.forEach(tb=> { %>
 
                                                 <a href="#" id="thongbao-<%= tb.id_thongBao %>"
-                                                    class="js-admin-thong-bao-item list-group-item notification-item p-4 border-bottom cursor-pointer hover-notification <%= tb.trangThaiDoc ? 'bg-light' : 'bg-white border-start border-4 border-success' %>"
+                                                    class="js-admin-thong-bao-item list-group-item notification-item p-4 border-bottom cursor-pointer hover-notification <%= tb.trangThaiDoc ? 'bg-light' : 'bg-white' %>"
                                                     data-id-yeu-cau="<%= tb.id_yeuCau || '' %>"
                                                     data-id-thong-bao="<%= tb.id_thongBao %>">
                                                     <div
                                                         class="notification-header d-flex w-100 justify-content-between align-items-center mb-2">
 
                                                         <h5 id="tieuDe-<%= tb.id_thongBao %>"
-                                                            class="notification-title mb-0 <%= tb.trangThaiDoc ? 'text-secondary' : 'text-success fw-bold' %>">
+                                                            class="notification-title mb-0 <%= tb.trangThaiDoc ? 'text-secondary' : 'text-primary fw-bold' %>">
                                                             <i id="icon-<%= tb.id_thongBao %>"
-                                                                class="<%= tb.trangThaiDoc ? 'fas fa-envelope-open text-muted' : 'fas fa-envelope text-success' %> me-2"></i>
+                                                                class="<%= tb.trangThaiDoc ? 'fas fa-envelope-open text-muted' : 'fas fa-envelope text-primary' %> me-2"></i>
 
                                                             <%= tb.tieuDe %>
                                                         </h5>
@@ -182,13 +182,13 @@
                 function danhDauDaDocGiaoDien(idThongBao) {
                     const item = document.getElementById(`thongbao-${idThongBao}`);
                     if (item) {
-                        item.classList.remove('bg-white', 'border-start', 'border-4', 'border-success');
+                        item.classList.remove('bg-white');
                         item.classList.add('bg-light');
                     }
 
                     const tieuDeEl = document.getElementById(`tieuDe-${idThongBao}`);
                     if (tieuDeEl) {
-                        tieuDeEl.classList.remove('text-success', 'text-primary', 'fw-bold');
+                        tieuDeEl.classList.remove('text-primary', 'fw-bold');
                         tieuDeEl.classList.add('text-secondary');
                     }
 
@@ -253,18 +253,19 @@
                 setInterval(checkAdminNewNotifications, 8000);
 
                 async function xemChiTietYeuCau(idYeuCau, idThongBao) {
-                    // Không tự động đánh dấu đã đọc ở đây để giữ viền xanh và chữ xanh nếu đóng popup
+                    // Đã bỏ danhDauDaDocGiaoDien(idThongBao) ở đây để thông báo không bị chuyển sang xám khi chỉ mới xem popup
 
                     if (!idYeuCau || idYeuCau === 'undefined' || idYeuCau === 'null') {
-                        danhDauDaDocGiaoDien(idThongBao);
-                        await danhDauDaDocServer(idThongBao);
-
+                        // Thông báo dạng thông tin chung (không có yêu cầu đổi lịch) -> bấm Đóng mới đánh dấu đã đọc
                         return AppDialog.fire({
                             title: 'Thông báo',
                             text: 'Thông báo này không có yêu cầu đổi lịch đi kèm.',
                             icon: 'info',
                             showCloseButton: true,
                             confirmButtonText: 'Đóng'
+                        }).then(() => {
+                            danhDauDaDocGiaoDien(idThongBao);
+                            danhDauDaDocServer(idThongBao).then(() => window.location.reload());
                         });
                     }
 
@@ -281,14 +282,15 @@
                         const data = await res.json();
 
                         if (!data.success) {
-                            danhDauDaDocGiaoDien(idThongBao);
-                            await danhDauDaDocServer(idThongBao);
                             return AppDialog.fire({
                                 title: 'Lỗi',
                                 text: 'Không tìm thấy yêu cầu',
                                 icon: 'error',
                                 showCloseButton: true,
                                 confirmButtonText: 'Đóng'
+                            }).then(() => {
+                                danhDauDaDocGiaoDien(idThongBao);
+                                danhDauDaDocServer(idThongBao).then(() => window.location.reload());
                             });
                         }
 
@@ -326,10 +328,8 @@
 
                         thongTinChungHtml += `</div>`;
 
+                        // Nếu yêu cầu đã được xử lý từ trước
                         if (y.trangThai !== 'ChoDuyet') {
-                            danhDauDaDocGiaoDien(idThongBao);
-                            await danhDauDaDocServer(idThongBao);
-
                             let statusHtml = '';
 
                             if (y.trangThai === 'DaDuyet') {
@@ -355,9 +355,13 @@
                                 showCloseButton: true,
                                 confirmButtonText: 'Đóng',
                                 confirmButtonColor: '#6c757d'
+                            }).then(() => {
+                                danhDauDaDocGiaoDien(idThongBao);
+                                danhDauDaDocServer(idThongBao).then(() => window.location.reload());
                             });
                         }
 
+                        // Nếu yêu cầu đã quá hạn
                         if (data.isExpired) {
                             const expiredHtml = thongTinChungHtml + `
                         <div class="alert alert-danger mt-3 mb-0 text-start border-danger" role="alert">
@@ -371,7 +375,6 @@
                                 html: expiredHtml,
                                 icon: 'warning',
                                 showCloseButton: true,
-                                showDenyButton: true,
                                 showCancelButton: true,
                                 confirmButtonText: '<i class="fas fa-times me-1"></i> Từ chối',
                                 cancelButtonText: 'Đóng',
@@ -381,10 +384,11 @@
                                 if (result.isConfirmed) {
                                     xuLyYeuCau(idYeuCau, 'TuChoi', idThongBao, true);
                                 }
-                                // Tắt popup không thao tác sẽ giữ nguyên giao diện chưa đọc
+                                // Tắt popup bằng nút 'Đóng' hoặc 'X' sẽ không đánh dấu đã đọc
                             });
                         }
 
+                        // Yêu cầu đang chờ duyệt
                         AppDialog.fire({
                             title: 'Duyệt yêu cầu đổi lịch',
                             html: thongTinChungHtml,
@@ -397,11 +401,13 @@
                             cancelButtonColor: '#dc3545'
                         }).then((result) => {
                             if (result.isConfirmed) {
+                                // Click Phê duyệt
                                 xuLyYeuCau(idYeuCau, 'DaDuyet', idThongBao, false);
                             } else if (result.dismiss === 'cancel' || (AppDialog.DismissReason && result.dismiss === AppDialog.DismissReason.cancel)) {
+                                // Click Từ chối
                                 xuLyYeuCau(idYeuCau, 'TuChoi', idThongBao, false);
                             }
-                            // Bấm dấu X hoặc click ra ngoài để đóng popup: Không gọi danhDauDaDocServer, thông báo giữ nguyên viền xanh
+                            // Nếu click dấu X hoặc đóng popup ra ngoài thì giữ nguyên trạng thái chưa đọc
                         });
 
                     } catch (e) {
@@ -436,6 +442,7 @@
                         .then(res => res.json())
                         .then(data => {
                             if (data.success) {
+                                // Chỉ chuyển giao diện & server sang đã đọc khi xử lý thành công Phê duyệt/Từ chối
                                 danhDauDaDocGiaoDien(idThongBao);
                                 danhDauDaDocServer(idThongBao).then(() => {
                                     if (isSilent) {
