@@ -3,7 +3,8 @@ const router = express.Router();
 
 require("dotenv").config();
 
-const { query } = require("../config/connectDatabase");
+// Import db connection (tương thích với cả mysql2/promise và mysql2 thường)
+const db = require("../config/connectDatabase");
 
 let aiClient = null;
 
@@ -33,6 +34,24 @@ const ALLOWED_INTENTS = [
   "HUONG_DAN_WEBSITE",
   "NGOAI_PHAM_VI",
 ];
+
+// Hàm bổ trợ gọi Query Database an toàn, chống mất context 'this'
+async function executeQuery(sql, params = []) {
+  try {
+    if (db.promise && typeof db.promise === "function") {
+      const [rows] = await db.promise().query(sql, params);
+      return rows;
+    }
+    if (typeof db.query === "function") {
+      const result = await db.query(sql, params);
+      return Array.isArray(result) && Array.isArray(result[0]) ? result[0] : result;
+    }
+    throw new Error("Không thể khởi tạo hàm query từ module connectDatabase.");
+  } catch (err) {
+    console.error("Lỗi khi truy vấn CSDL:", err.message);
+    throw err;
+  }
+}
 
 async function getGeminiClient() {
   if (!aiClient) {
@@ -88,7 +107,11 @@ function extractIntentFromGeminiText(text) {
     return "NGOAI_PHAM_VI";
   }
 
-  const cleanedText = text.replace(/```/g, "").replace(/json/gi, "").trim().toUpperCase();
+  const cleanedText = text
+    .replace(/```/g, "")
+    .replace(/json/gi, "")
+    .trim()
+    .toUpperCase();
 
   for (const intent of ALLOWED_INTENTS) {
     if (cleanedText.includes(intent)) {
@@ -163,10 +186,8 @@ Dùng khi khách hỏi giá khám, phí khám, viện phí, khám thường, kh�
 5. PHONG_KHAM
 Dùng khi khách hỏi phòng khám, số phòng, tầng, phòng ở đâu.
 
-
 6. TRIEU_CHUNG
 Dùng khi khách mô tả triệu chứng như đau bụng, đau đầu, ho, sốt, khó thở, chóng mặt, buồn nôn... để hỏi nên khám khoa nào.
-
 
 7. NGOAI_PHAM_VI
 Dùng khi câu hỏi không liên quan đến bệnh viện, khám bệnh, bác sĩ, chuyên khoa, giá khám, phòng khám hoặc website bệnh viện.
@@ -181,7 +202,7 @@ Ví dụ:
 `;
 
   const response = await generateContentWithRetry(ai, {
-    model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+    model: process.env.GEMINI_MODEL || "gemini-1.5-flash",
     contents: userQuestion,
     config: {
       systemInstruction: classifyInstruction,
@@ -200,11 +221,11 @@ Ví dụ:
 }
 
 /* =========================================================
-   QUERY DATABASE THEO INTENT
+   QUERY DATABASE THEO INTENT (Đã cập nhật hàm executeQuery)
 ========================================================= */
 
 async function getChuyenKhoaData() {
-  const rows = await query(`
+  const rows = await executeQuery(`
     SELECT 
       id_chuyenKhoa,
       tenChuyenKhoa,
@@ -212,12 +233,12 @@ async function getChuyenKhoaData() {
     FROM ChuyenKhoa
     ORDER BY id_chuyenKhoa ASC
   `);
-  console.log("Lấy dữ liệu Chuyên khoa");
+  console.log("Lấy dữ liệu Chuyên khoa thành công");
   return rows;
 }
 
 async function getBacSiData() {
-  const rows = await query(`
+  const rows = await executeQuery(`
     SELECT
       nd.id,
       nd.hoTen,
@@ -233,12 +254,12 @@ async function getBacSiData() {
     WHERE nd.vaiTro = 'BacSi'
     ORDER BY ck.id_chuyenKhoa ASC, nd.hoTen ASC
   `);
-  console.log("Lấy dữ liệu Bác sĩ");
+  console.log("Lấy dữ liệu Bác sĩ thành công");
   return rows;
 }
 
 async function getGiaKhamData() {
-  const rows = await query(`
+  const rows = await executeQuery(`
     SELECT
       gk.id_gia,
       ck.tenChuyenKhoa,
@@ -249,12 +270,12 @@ async function getGiaKhamData() {
     INNER JOIN ChuyenKhoa ck ON gk.id_chuyenKhoa = ck.id_chuyenKhoa
     ORDER BY ck.id_chuyenKhoa ASC, gk.loaiKham ASC
   `);
-  console.log("Lấy dữ liệu Giá Khám");
+  console.log("Lấy dữ liệu Giá Khám thành công");
   return rows;
 }
 
 async function getPhongData() {
-  const rows = await query(`
+  const rows = await executeQuery(`
     SELECT
       p.soPhong,
       p.tang,
@@ -264,7 +285,7 @@ async function getPhongData() {
     LEFT JOIN ChuyenKhoa ck ON p.id_chuyenKhoa = ck.id_chuyenKhoa
     ORDER BY p.tang ASC, p.soPhong ASC
   `);
-  console.log("Lấy dữ liệu Phòng");
+  console.log("Lấy dữ liệu Phòng thành công");
   return rows;
 }
 
@@ -470,7 +491,7 @@ ${databaseContextText}
 `;
 
   const response = await generateContentWithRetry(ai, {
-    model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+    model: process.env.GEMINI_MODEL || "gemini-1.5-flash",
     contents: userQuestion,
     config: {
       systemInstruction: answerInstruction,
@@ -485,21 +506,6 @@ ${databaseContextText}
       : "Hiện tại tôi chưa có thông tin này trong hệ thống.";
 
   return cleanBotReply(reply);
-}
-
-function fallbackAnswerWhenGeminiBusy(intent, databaseContextText) {
-  if (intent === "NGOAI_PHAM_VI") {
-    return OUT_OF_SCOPE_REPLY;
-  }
-
-  if (!databaseContextText || databaseContextText.trim() === "") {
-    return GEMINI_BUSY_REPLY;
-  }
-
-  return (
-    "Hiện tại hệ thống AI đang quá tải nên tôi chưa thể diễn giải câu trả lời đầy đủ. " +
-    "Bạn có thể thử lại sau ít phút."
-  );
 }
 
 /* =========================================================
@@ -518,7 +524,7 @@ router.get("/test", async (req, res) => {
     const ai = await getGeminiClient();
 
     const response = await generateContentWithRetry(ai, {
-      model: process.env.GEMINI_MODEL || "gemini-2.5-flash",
+      model: process.env.GEMINI_MODEL || "gemini-1.5-flash",
       contents: "Chỉ trả lời đúng một chữ: OK",
     });
 
@@ -547,8 +553,6 @@ router.get("/test", async (req, res) => {
 
 /* =========================================================
    ROUTE CHATBOT MESSAGE
-   LẦN 1: GEMINI PHÂN LOẠI INTENT
-   LẦN 2: QUERY DATABASE + GEMINI TRẢ LỜI
 ========================================================= */
 
 router.post("/message", async (req, res) => {
@@ -606,7 +610,8 @@ router.post("/message", async (req, res) => {
       reply: reply,
     });
   } catch (error) {
-    console.error("Chatbot message error:", error);
+    // In chi tiết lỗi ra Terminal để hỗ trợ debug khi cần
+    console.error("Chatbot message error detail:", error);
 
     if (isGeminiBusyError(error)) {
       return res.json({
