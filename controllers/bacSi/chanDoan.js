@@ -6,6 +6,34 @@ const query = async (sql, params = []) => {
     return rows;
 };
 
+/* ================= HELPER XỬ LÝ MÚI GIỜ VIỆT NAM ================= */
+
+// Tính tuổi chính xác theo múi giờ Việt Nam
+function tinhTuoiVN(ngaySinh) {
+    if (!ngaySinh) return 'Chưa rõ';
+
+    // Lấy YYYY-MM-DD theo múi giờ Việt Nam
+    const nowStr = new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' });
+    const birthStr = new Date(ngaySinh).toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' });
+
+    const [tYear, tMonth, tDay] = nowStr.split('-').map(Number);
+    const [bYear, bMonth, bDay] = birthStr.split('-').map(Number);
+
+    let age = tYear - bYear;
+    if (tMonth < bMonth || (tMonth === bMonth && tDay < bDay)) {
+        age--;
+    }
+    return age >= 0 ? age : 'Chưa rõ';
+}
+
+// Định dạng ngày hiển thị (DD/MM/YYYY) chuẩn múi giờ Việt Nam
+function formatNgayVN(dateObj) {
+    if (!dateObj) return 'Chưa cập nhật';
+    return new Date(dateObj).toLocaleDateString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+}
+
+/* ================= CONTROLLER ================= */
+
 const chanDoan = {
     getChanDoan: async (req, res) => {
         try {
@@ -38,24 +66,12 @@ const chanDoan = {
 
             const patientInfo = lichHenRows[0];
 
-            if (patientInfo.ngaySinh) {
-                const birthDate = new Date(patientInfo.ngaySinh);
-                const today = new Date();
+            // 1. Tính tuổi theo múi giờ VN
+            patientInfo.tuoi = tinhTuoiVN(patientInfo.ngaySinh);
 
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const monthDiff = today.getMonth() - birthDate.getMonth();
-
-                if (
-                    monthDiff < 0 ||
-                    (monthDiff === 0 && today.getDate() < birthDate.getDate())
-                ) {
-                    age--;
-                }
-
-                patientInfo.tuoi = age;
-            } else {
-                patientInfo.tuoi = 'Chưa rõ';
-            }
+            // 2. Format hiển thị ngày khám & ngày sinh tránh bị lùi ngày ở View
+            patientInfo.ngayKhamHienThi = formatNgayVN(patientInfo.ngayKham);
+            patientInfo.ngaySinhHienThi = formatNgayVN(patientInfo.ngaySinh);
 
             const sqlLichSu = `
                 SELECT 
@@ -79,11 +95,17 @@ const chanDoan = {
                 idLichHen
             ]);
 
+            // 3. Format ngày khám cho lịch sử khám bệnh
+            const lichSuFormatted = lichSuKham.map(item => ({
+                ...item,
+                ngayKhamHienThi: formatNgayVN(item.ngayKham)
+            }));
+
             res.render('bacSi/chanDoan', {
                 user: req.session.user,
                 page: 'khamBenh',
                 patient: patientInfo,
-                lichSu: lichSuKham
+                lichSu: lichSuFormatted
             });
 
         } catch (error) {
