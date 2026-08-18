@@ -1074,7 +1074,31 @@ const thanhToanLai = async (req, res) => {
         });
     }
 };
+// 1. Hàm hỗ trợ gửi mail độc lập
+const guiMailChoDonHang = async (app_trans_id) => {
+    try {
+        const infoRows = await query(
+            `SELECT lh.*, nd.email, nd.hoTen, ck.tenChuyenKhoa, ca.ngay
+             FROM LichHen lh
+             JOIN NguoiDung nd ON lh.id_khachHang = nd.id
+             JOIN ChuyenKhoa ck ON lh.id_chuyenKhoa = ck.id_chuyenKhoa
+             JOIN CaKham ca ON lh.id_caKham = ca.id_caKham
+             WHERE lh.maZalo = ?`,
+            [app_trans_id]
+        );
 
+        if (infoRows.length > 0 && infoRows[0].email) {
+            const data = infoRows[0];
+            data.gioHenChinhXac = typeof data.gioHen === 'string'
+                ? data.gioHen.substring(0, 5)
+                : String(data.gioHen).substring(0, 5);
+
+            await sendSuccessEmail(data.email, data);
+        }
+    } catch (err) {
+        logLoi("Lỗi gửi mail sau thanh toán", err);
+    }
+};
 /* ================= CALLBACK ZALOPAY ================= */
 // Sau khi khách thanh toán, ZaloPay tự gọi vào hàm này để báo kết quả cho server.
 const callbackZaloPay = async (req, res) => {
@@ -1115,7 +1139,8 @@ const callbackZaloPay = async (req, res) => {
 
         // Cập nhật lịch hẹn sang Đã thanh toán; câu UPDATE chỉ đổi đơn còn Chưa thanh toán.
         const affectedRows = await capNhatThanhToanThanhCong(app_trans_id, zp_trans_id);
-
+        // Luôn thử gửi Email bất kể affectedRows có > 0 hay không
+        await guiMailChoDonHang(app_trans_id);
         if (affectedRows > 0) {
             logThanhToan(`Thanh toán thành công LH-${idLichHen}, ZP-${zp_trans_id}`);
 
