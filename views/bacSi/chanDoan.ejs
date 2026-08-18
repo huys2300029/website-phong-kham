@@ -24,434 +24,438 @@
     <% if (typeof uiMessage !=='undefined' && uiMessage && uiMessage.message) { %>
         <template data-app-message="<%= uiMessage.message %>" data-app-type="<%= uiMessage.type || 'info' %>"
             data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
-        <% } %>
+    <% } %>
 
+    <%- include('sidebar', { page: page }) %>
 
-            <%- include('sidebar', { page: page }) %>
+    <div class="main-content">
 
-                <div class="main-content">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <a href="/bacsi/khamBenh" class="text-decoration-none text-muted me-2">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại
+                </a>
+            </div>
 
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <div>
-                            <a href="/bacsi/khamBenh" class="text-decoration-none text-muted me-2">
-                                <i class="fa-solid fa-arrow-left"></i> Quay lại
-                            </a>
-                        </div>
+            <span class="badge bg-primary fs-6">
+                Mã LH: LH-<%= patient.id_lichHen %>
+            </span>
+        </div>
 
-                        <span class="badge bg-primary fs-6">
-                            Mã LH: LH-<%= patient.id_lichHen %>
-                        </span>
+        <div class="row g-4">
+
+            <div class="col-lg-5">
+
+                <div class="card shadow-sm border-0 mb-4">
+                    <div class="card-header bg-white pt-3 pb-2">
+                        <h5 class="fw-bold mb-0 text-primary">
+                            <i class="fa-regular fa-address-card me-2"></i>
+                            Thông tin bệnh nhân
+                        </h5>
                     </div>
 
-                    <div class="row g-4">
+                    <div class="card-body bg-light">
+                        <h4 class="fw-bold text-dark mb-3">
+                            <%= patient.hoTen %>
+                        </h4>
 
-                        <div class="col-lg-5">
+                        <ul class="list-unstyled mb-4 patient-info-list">
+                            <li>
+                                <i class="fa-solid fa-mars-and-venus w-icon"></i>
+                                <strong>Giới tính:</strong>
+                                <%= patient.gioiTinh || 'Chưa cập nhật' %>
+                            </li>
 
-                            <div class="card shadow-sm border-0 mb-4">
-                                <div class="card-header bg-white pt-3 pb-2">
-                                    <h5 class="fw-bold mb-0 text-primary">
-                                        <i class="fa-regular fa-address-card me-2"></i>
-                                        Thông tin bệnh nhân
-                                    </h5>
-                                </div>
+                            <li>
+                                <i class="fa-solid fa-cake-candles w-icon"></i>
+                                <strong>Tuổi:</strong>
+                                <%= patient.tuoi %> tuổi
+                                (<%= new Date(patient.ngaySinh).toLocaleDateString('vi-VN') %>)
+                            </li>
 
-                                <div class="card-body bg-light">
-                                    <h4 class="fw-bold text-dark mb-3">
-                                        <%= patient.hoTen %>
-                                    </h4>
+                            <li>
+                                <i class="fa-solid fa-phone w-icon"></i>
+                                <strong>Số điện thoại:</strong>
+                                <%= patient.soDienThoai || 'Chưa cập nhật' %>
+                            </li>
 
-                                    <ul class="list-unstyled mb-4 patient-info-list">
-                                        <li>
-                                            <i class="fa-solid fa-mars-and-venus w-icon"></i>
-                                            <strong>Giới tính:</strong>
-                                            <%= patient.gioiTinh || 'Chưa cập nhật' %>
-                                        </li>
+                            <li>
+                                <i class="fa-solid fa-location-dot w-icon"></i>
+                                <strong>Địa chỉ:</strong>
+                                <%= patient.diaChi || 'Chưa cập nhật' %>
+                            </li>
+                        </ul>
 
-                                        <li>
-                                            <i class="fa-solid fa-cake-candles w-icon"></i>
-                                            <strong>Tuổi:</strong>
-                                            <%= patient.tuoi %> tuổi
-                                                (<%= new Date(patient.ngaySinh).toLocaleDateString('vi-VN') %>)
-                                        </li>
-
-                                        <li>
-                                            <i class="fa-solid fa-phone w-icon"></i>
-                                            <strong>Số điện thoại:</strong>
-                                            <%= patient.soDienThoai || 'Chưa cập nhật' %>
-                                        </li>
-
-                                        <li>
-                                            <i class="fa-solid fa-location-dot w-icon"></i>
-                                            <strong>Địa chỉ:</strong>
-                                            <%= patient.diaChi || 'Chưa cập nhật' %>
-                                        </li>
-                                    </ul>
-
-                                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                                        <button type="button" class="btn btn-success history-btn px-4"
-                                            id="btnMoLichSuKham">
-                                            <i class="fa-solid fa-clock-rotate-left me-1"></i>
-                                            Xem lịch sử khám
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="card shadow-sm border-0">
-                                <div class="card-header bg-white pt-3 pb-2">
-                                    <h5 class="fw-bold mb-0 text-info">
-                                        <i class="fa-solid fa-calendar-check me-2"></i>
-                                        Thông tin lịch hẹn hiện tại
-                                    </h5>
-                                </div>
-
-                                <div class="card-body">
-                                    <ul class="list-unstyled mb-0 patient-info-list">
-                                        <li>
-                                            <i class="fa-solid fa-stethoscope w-icon"></i>
-                                            <strong>Chuyên khoa:</strong>
-                                            <%= patient.tenChuyenKhoa || 'Chưa cập nhật' %>
-                                        </li>
-
-                                        <li>
-                                            <i class="fa-regular fa-calendar w-icon"></i>
-                                            <strong>Ngày khám:</strong>
-                                            <%= new Date(patient.ngayKham).toLocaleDateString('vi-VN') %>
-                                        </li>
-
-                                        <li>
-                                            <i class="fa-regular fa-clock w-icon"></i>
-                                            <strong>Giờ hẹn:</strong>
-                                            <%= typeof patient.gioHen==='string' ? patient.gioHen.substring(0, 5) :
-                                                String(patient.gioHen).substring(0, 5) %>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
+                        <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <button type="button" class="btn btn-success history-btn px-4" id="btnMoLichSuKham">
+                                <i class="fa-solid fa-clock-rotate-left me-1"></i>
+                                Xem lịch sử khám
+                            </button>
                         </div>
-
-                        <div class="col-lg-7">
-
-                            <div class="card shadow-sm border-0 h-100">
-                                <div class="card-header bg-white pt-3 pb-2">
-                                    <h5 class="fw-bold mb-0 text-danger">
-                                        <i class="fa-solid fa-file-medical me-2"></i>
-                                        Chẩn đoán & Ghi chú
-                                    </h5>
-                                </div>
-
-                                <div class="card-body d-flex flex-column">
-                                    <form id="formChanDoan" action="/bacsi/khamBenh/hoanThanh/<%= patient.id_lichHen %>"
-                                        method="POST" class="d-flex flex-column h-100">
-
-                                        <% if (patient.ghiChu) { %>
-                                            <div class="alert alert-warning mb-3">
-                                                <strong>Triệu chứng KH báo trước:</strong>
-                                                <%= patient.ghiChu %>
-                                            </div>
-                                            <% } %>
-
-                                                <div class="form-group flex-grow-1 mb-4 d-flex flex-column">
-                                                    <label for="ghiChuBacSi" class="form-label fw-bold">
-                                                        Nội dung khám, chẩn đoán bệnh và lời dặn:
-                                                    </label>
-
-                                                    <textarea name="ghiChuBacSi" id="ghiChuBacSi"
-                                                        class="form-control flex-grow-1 custom-textarea shadow-none"
-                                                        placeholder="Nhập tình trạng bệnh, kết luận chẩn đoán và hướng dẫn cho bệnh nhân..."
-                                                        required><%- patient.ghiChu ? patient.ghiChu + '\n\n[CHẨN ĐOÁN CỦA BÁC SĨ]:\n' : '' %></textarea>
-                                                </div>
-
-                                                <div class="d-grid mt-auto">
-                                                    <button type="submit"
-                                                        class="btn btn-primary btn-lg py-3 fw-bold shadow-sm">
-                                                        <i class="fa-solid fa-check-circle me-2"></i>
-                                                        Hoàn Thành Khám Bệnh
-                                                    </button>
-                                                </div>
-
-                                    </form>
-                                </div>
-                            </div>
-
-                        </div>
-
                     </div>
-
                 </div>
 
-                <script nonce="<%= cspNonce %>" id="dataLichSuKham" type="application/json">
+                <div class="card shadow-sm border-0">
+                    <div class="card-header bg-white pt-3 pb-2">
+                        <h5 class="fw-bold mb-0 text-info">
+                            <i class="fa-solid fa-calendar-check me-2"></i>
+                            Thông tin lịch hẹn hiện tại
+                        </h5>
+                    </div>
+
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0 patient-info-list">
+                            <li>
+                                <i class="fa-solid fa-stethoscope w-icon"></i>
+                                <strong>Chuyên khoa:</strong>
+                                <%= patient.tenChuyenKhoa || 'Chưa cập nhật' %>
+                            </li>
+
+                            <li>
+                                <i class="fa-regular fa-calendar w-icon"></i>
+                                <strong>Ngày khám:</strong>
+                                <%= new Date(patient.ngayKham).toLocaleDateString('vi-VN') %>
+                            </li>
+
+                            <li>
+                                <i class="fa-regular fa-clock w-icon"></i>
+                                <strong>Giờ hẹn:</strong>
+                                <%= typeof patient.gioHen==='string' ? patient.gioHen.substring(0, 5) : String(patient.gioHen).substring(0, 5) %>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-7">
+
+                <div class="card shadow-sm border-0 h-100">
+                    <div class="card-header bg-white pt-3 pb-2">
+                        <h5 class="fw-bold mb-0 text-danger">
+                            <i class="fa-solid fa-file-medical me-2"></i>
+                            Chẩn đoán & Ghi chú
+                        </h5>
+                    </div>
+
+                    <div class="card-body d-flex flex-column">
+                        <form id="formChanDoan" action="/bacsi/khamBenh/hoanThanh/<%= patient.id_lichHen %>" method="POST" class="d-flex flex-column h-100">
+
+                            <% if (patient.ghiChu) { %>
+                                <div class="alert alert-warning mb-3">
+                                    <strong>Triệu chứng KH báo trước:</strong>
+                                    <%= patient.ghiChu %>
+                                </div>
+                            <% } %>
+
+                            <div class="form-group flex-grow-1 mb-4 d-flex flex-column">
+                                <label for="ghiChuBacSi" class="form-label fw-bold">
+                                    Nội dung khám, chẩn đoán bệnh và lời dặn:
+                                </label>
+
+                                <textarea name="ghiChuBacSi" id="ghiChuBacSi"
+                                    class="form-control flex-grow-1 custom-textarea shadow-none"
+                                    placeholder="Nhập tình trạng bệnh, kết luận chẩn đoán và hướng dẫn cho bệnh nhân..."
+                                    required><%- patient.ghiChu ? patient.ghiChu + '\n\n[CHẨN ĐOÁN CỦA BÁC SĨ]:\n' : '' %></textarea>
+                            </div>
+
+                            <div class="d-grid mt-auto">
+                                <button type="submit" class="btn btn-primary btn-lg py-3 fw-bold shadow-sm">
+                                    <i class="fa-solid fa-check-circle me-2"></i>
+                                    Hoàn Thành Khám Bệnh
+                                </button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script nonce="<%= cspNonce %>" id="dataLichSuKham" type="application/json">
         <%- JSON.stringify(lichSu || []) %>
     </script>
-                <script nonce="<%= cspNonce %>">
-                    const lichSuKham = JSON.parse(
-                        document.getElementById('dataLichSuKham').textContent || '[]'
-                    );
+    <script nonce="<%= cspNonce %>">
+        const lichSuKham = JSON.parse(
+            document.getElementById('dataLichSuKham').textContent || '[]'
+        );
 
-                    const HISTORY_PAGE_SIZE = 5;
+        const HISTORY_PAGE_SIZE = 5;
 
-                    function escapeHtml(text) {
-                        if (text === null || text === undefined) return 'Không có';
+        function escapeHtml(text) {
+            if (text === null || text === undefined) return 'Không có';
 
-                        return String(text)
-                            .replaceAll('&', '&amp;')
-                            .replaceAll('<', '&lt;')
-                            .replaceAll('>', '&gt;')
-                            .replaceAll('"', '&quot;')
-                            .replaceAll("'", '&#039;');
-                    }
+            return String(text)
+                .replaceAll('&', '&amp;')
+                .replaceAll('<', '&lt;')
+                .replaceAll('>', '&gt;')
+                .replaceAll('"', '&quot;')
+                .replaceAll("'", '&#039;');
+        }
 
-                    function formatNgayVN(value) {
-                        if (!value) return 'Chưa có';
+        function formatNgayVN(value) {
+            if (!value) return 'Chưa có';
 
-                        const d = new Date(value);
+            const d = new Date(value);
 
-                        if (isNaN(d.getTime())) {
-                            return value;
-                        }
+            if (isNaN(d.getTime())) {
+                return value;
+            }
 
-                        return d.toLocaleDateString('vi-VN');
-                    }
+            return d.toLocaleDateString('vi-VN');
+        }
 
-                    function renderLichSuPage(page = 1) {
-                        const container = document.getElementById('historyContent');
-                        const pagination = document.getElementById('historyPagination');
+        function renderLichSuPage(page = 1) {
+            const container = document.getElementById('historyContent');
+            const pagination = document.getElementById('historyPagination');
 
-                        if (!container || !pagination) return;
+            if (!container || !pagination) return;
 
-                        if (!lichSuKham || lichSuKham.length === 0) {
-                            container.innerHTML = `
-                <div class="text-center p-4 text-muted">
-                    <i class="fa-solid fa-folder-open fs-1 mb-3"></i>
-                    <h5 class="fw-bold">Chưa có lịch sử khám</h5>
-                    <p class="mb-0">Bệnh nhân này chưa có ca khám hoàn thành trước đó.</p>
-                </div>
-            `;
+            if (!lichSuKham || lichSuKham.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center p-4 text-muted">
+                        <i class="fa-solid fa-folder-open fs-1 mb-3"></i>
+                        <h5 class="fw-bold">Chưa có lịch sử khám</h5>
+                        <p class="mb-0">Bệnh nhân này chưa có ca khám hoàn thành trước đó.</p>
+                    </div>
+                `;
 
-                            pagination.innerHTML = '';
-                            return;
-                        }
+                pagination.innerHTML = '';
+                return;
+            }
 
-                        const totalPages = Math.ceil(lichSuKham.length / HISTORY_PAGE_SIZE);
+            const totalPages = Math.ceil(lichSuKham.length / HISTORY_PAGE_SIZE);
 
-                        if (page < 1) page = 1;
-                        if (page > totalPages) page = totalPages;
+            if (page < 1) page = 1;
+            if (page > totalPages) page = totalPages;
 
-                        const start = (page - 1) * HISTORY_PAGE_SIZE;
-                        const end = start + HISTORY_PAGE_SIZE;
-                        const currentItems = lichSuKham.slice(start, end);
+            const start = (page - 1) * HISTORY_PAGE_SIZE;
+            const end = start + HISTORY_PAGE_SIZE;
+            const currentItems = lichSuKham.slice(start, end);
 
-                        const tableRows = currentItems.map((item, index) => {
-                            const stt = start + index + 1;
+            const tableRows = currentItems.map((item, index) => {
+                const stt = start + index + 1;
 
-                            return `
-                <tr>
-                    <td class="col-stt fw-bold">${stt}</td>
+                return `
+                    <tr>
+                        <td class="col-stt fw-bold">${stt}</td>
 
-                    <td class="col-date">
-                        <span class="history-date-badge">
-                            ${escapeHtml(formatNgayVN(item.ngayKham))}
-                        </span>
-                    </td>
+                        <td class="col-date">
+                            <span class="history-date-badge">
+                                ${escapeHtml(formatNgayVN(item.ngayKham))}
+                            </span>
+                        </td>
 
-                    <td class="col-spec">
-                        <span class="history-specialty fw-semibold text-primary">
+                        <td class="col-spec">
+                            <span class="history-specialty fw-semibold text-primary">
+                                ${escapeHtml(item.tenChuyenKhoa || 'Khám tổng quát')}
+                            </span>
+                        </td>
+
+                        <td class="col-note">
+                            ${escapeHtml(item.ghiChu || 'Không có ghi chú')}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            const mobileCards = currentItems.map((item, index) => {
+                const stt = start + index + 1;
+
+                return `
+                    <div class="history-mobile-card">
+                        <div class="history-mobile-label">STT</div>
+                        <div class="history-mobile-value fw-bold">${stt}</div>
+
+                        <div class="history-mobile-label">Ngày khám</div>
+                        <div class="history-mobile-value">
+                            <span class="history-date-badge">
+                                ${escapeHtml(formatNgayVN(item.ngayKham))}
+                            </span>
+                        </div>
+
+                        <div class="history-mobile-label">Chuyên khoa</div>
+                        <div class="history-mobile-value history-specialty">
                             ${escapeHtml(item.tenChuyenKhoa || 'Khám tổng quát')}
-                        </span>
-                    </td>
+                        </div>
 
-                    <td class="col-note history-note-cell">
-                        ${escapeHtml(item.ghiChu || 'Không có ghi chú')}
-                    </td>
-                </tr>
-            `;
-                        }).join('');
-
-                        const mobileCards = currentItems.map((item, index) => {
-                            const stt = start + index + 1;
-
-                            return `
-                <div class="history-mobile-card">
-                    <div class="history-mobile-label">STT</div>
-                    <div class="history-mobile-value fw-bold">${stt}</div>
-
-                    <div class="history-mobile-label">Ngày khám</div>
-                    <div class="history-mobile-value">
-                        <span class="history-date-badge">
-                            ${escapeHtml(formatNgayVN(item.ngayKham))}
-                        </span>
+                        <div class="history-mobile-label">Kết luận</div>
+                        <div class="history-mobile-value text-start">
+                            ${escapeHtml(item.ghiChu || 'Không có ghi chú')}
+                        </div>
                     </div>
+                `;
+            }).join('');
 
-                    <div class="history-mobile-label">Chuyên khoa</div>
-                    <div class="history-mobile-value history-specialty">
-                        ${escapeHtml(item.tenChuyenKhoa || 'Khám tổng quát')}
-                    </div>
+            container.innerHTML = `
+                <style>
+                    /* Fix 1: Căn giữa popup ra giữa màn hình */
+                    .swal2-container {
+                        display: flex !important;
+                        align-items: center !important;
+                        justify-content: center !important;
+                    }
+                    .swal2-popup {
+                        margin: auto !important;
+                    }
 
-                    <div class="history-mobile-label">Kết luận</div>
-                    <div class="history-mobile-value text-start">
-                        ${escapeHtml(item.ghiChu || 'Không có ghi chú')}
-                    </div>
+                    /* Fix 2: Bắt buộc các cột bảng căn chỉnh thẳng hàng tuyệt đối */
+                    .history-modal-table {
+                        width: 100% !important;
+                        table-layout: fixed !important;
+                        border-collapse: collapse !important;
+                    }
+                    .history-modal-table th, 
+                    .history-modal-table td {
+                        display: table-cell !important;
+                        vertical-align: middle !important;
+                        box-sizing: border-box !important;
+                        padding: 12px 10px !important;
+                        margin: 0 !important;
+                    }
+                    .history-modal-table .col-stt {
+                        width: 8% !important;
+                        text-align: center !important;
+                    }
+                    .history-modal-table .col-date {
+                        width: 18% !important;
+                        text-align: center !important;
+                    }
+                    .history-modal-table .col-spec {
+                        width: 24% !important;
+                        text-align: left !important;
+                        padding-left: 12px !important;
+                    }
+                    .history-modal-table .col-note {
+                        width: 50% !important;
+                        text-align: left !important;
+                        padding-left: 12px !important;
+                        white-space: normal !important;
+                        word-break: break-word !important;
+                    }
+                </style>
+
+                <div class="history-table-wrapper table-responsive rounded-4">
+                    <table class="history-modal-table">
+                        <thead>
+                            <tr>
+                                <th class="col-stt">STT</th>
+                                <th class="col-date">Ngày khám</th>
+                                <th class="col-spec">Chuyên khoa</th>
+                                <th class="col-note">Ghi chú / kết luận</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            ${tableRows}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="history-mobile-wrapper">
+                    ${mobileCards}
                 </div>
             `;
-                        }).join('');
 
-                        container.innerHTML = `
-            <style>
-                .history-modal-table {
-                    width: 100% !important;
-                    table-layout: fixed !important;
-                    border-collapse: collapse !important;
-                }
-                .history-modal-table th, 
-                .history-modal-table td {
-                    display: table-cell !important;
-                    vertical-align: middle !important;
-                    box-sizing: border-box !important;
-                    padding: 12px 8px !important;
-                }
-                .history-modal-table .col-stt {
-                    width: 8% !important;
-                    text-align: center !important;
-                }
-                .history-modal-table .col-date {
-                    width: 18% !important;
-                    text-align: center !important;
-                }
-                .history-modal-table .col-spec {
-                    width: 24% !important;
-                    text-align: left !important;
-                    padding-left: 12px !important;
-                }
-                .history-modal-table .col-note,
-                .history-modal-table .history-note-cell {
-                    width: 50% !important;
-                    text-align: left !important;
-                    padding-left: 12px !important;
-                    justify-content: flex-start !important;
-                    white-space: normal !important;
-                    word-break: break-word !important;
-                }
-            </style>
-
-            <div class="history-table-wrapper table-responsive rounded-4">
-                <table class="history-modal-table">
-                    <thead>
-                        <tr>
-                            <th class="col-stt">STT</th>
-                            <th class="col-date">Ngày khám</th>
-                            <th class="col-spec">Chuyên khoa</th>
-                            <th class="col-note">Ghi chú / kết luận</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        ${tableRows}
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="history-mobile-wrapper">
-                ${mobileCards}
-            </div>
-        `;
-
-                        let pageButtons = `
-            <button 
-                class="history-page-btn"
-                ${page <= 1 ? 'disabled' : ''}
-                data-page="${page - 1}"
-            >
-                <i class="fa-solid fa-chevron-left"></i>
-            </button>
-        `;
-
-                        for (let i = 1; i <= totalPages; i++) {
-                            pageButtons += `
+            let pageButtons = `
                 <button 
-                    class="history-page-btn ${i === page ? 'active' : ''}"
-                    data-page="${i}"
+                    class="history-page-btn"
+                    ${page <= 1 ? 'disabled' : ''}
+                    data-page="${page - 1}"
                 >
-                    ${i}
+                    <i class="fa-solid fa-chevron-left"></i>
                 </button>
             `;
-                        }
 
-                        pageButtons += `
-            <button 
-                class="history-page-btn"
-                ${page >= totalPages ? 'disabled' : ''}
-                data-page="${page + 1}"
-            >
-                <i class="fa-solid fa-chevron-right"></i>
-            </button>
-        `;
+            for (let i = 1; i <= totalPages; i++) {
+                pageButtons += `
+                    <button 
+                        class="history-page-btn ${i === page ? 'active' : ''}"
+                        data-page="${i}"
+                    >
+                        ${i}
+                    </button>
+                `;
+            }
 
-                        pagination.innerHTML = pageButtons;
-                    }
+            pageButtons += `
+                <button 
+                    class="history-page-btn"
+                    ${page >= totalPages ? 'disabled' : ''}
+                    data-page="${page + 1}"
+                >
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            `;
 
-                    document.getElementById('btnMoLichSuKham')?.addEventListener('click', moLichSuKham);
+            pagination.innerHTML = pageButtons;
+        }
 
-                    document.addEventListener('click', function (event) {
-                        const pageButton = event.target.closest('.history-page-btn[data-page]');
-                        if (!pageButton || pageButton.disabled) return;
-                        renderLichSuPage(Number(pageButton.dataset.page || 1));
-                    });
+        document.getElementById('btnMoLichSuKham')?.addEventListener('click', moLichSuKham);
 
-                    function moLichSuKham() {
-                        AppDialog.fire({
-                            title: 'Lịch sử khám bệnh',
-                            width: 950,
-                            html: `
-                <div class="text-start">
-                    <div class="mb-3">
-                        <span class="fs-6 fw-bold">
-                            Bệnh nhân: <%= patient.hoTen %>
-                        </span>
+        document.addEventListener('click', function (event) {
+            const pageButton = event.target.closest('.history-page-btn[data-page]');
+            if (!pageButton || pageButton.disabled) return;
+            renderLichSuPage(Number(pageButton.dataset.page || 1));
+        });
+
+        function moLichSuKham() {
+            AppDialog.fire({
+                title: 'Lịch sử khám bệnh',
+                width: 950,
+                html: `
+                    <div class="text-start">
+                        <div class="mb-3">
+                            <span class="fs-6 fw-bold">
+                                Bệnh nhân: <%= patient.hoTen %>
+                            </span>
+                        </div>
+
+                        <div id="historyContent"></div>
+                        <div id="historyPagination" class="history-pagination"></div>
                     </div>
+                `,
+                showConfirmButton: true,
+                confirmButtonText: 'Đóng',
+                confirmButtonColor: '#0d6efd',
+                didOpen: () => {
+                    renderLichSuPage(1);
+                }
+            });
+        }
 
-                    <div id="historyContent"></div>
-                    <div id="historyPagination" class="history-pagination"></div>
-                </div>
-            `,
-                            showConfirmButton: true,
-                            confirmButtonText: 'Đóng',
-                            confirmButtonColor: '#0d6efd',
-                            didOpen: () => {
-                                renderLichSuPage(1);
-                            }
-                        });
-                    }
+        document.getElementById('formChanDoan').addEventListener('submit', function (e) {
+            e.preventDefault();
 
-                    document.getElementById('formChanDoan').addEventListener('submit', function (e) {
-                        e.preventDefault();
-
-                        AppDialog.fire({
-                            title: 'Hoàn thành ca khám?',
-                            text: "Bạn có chắc chắn muốn lưu kết quả và hoàn thành ca khám này không?",
-                            icon: 'question',
-                            showCancelButton: true,
-                            confirmButtonColor: '#0d6efd',
-                            cancelButtonColor: '#dc3545',
-                            confirmButtonText: '<i class="fa-solid fa-check"></i> Hoàn thành',
-                            cancelButtonText: 'Xem lại',
-                            reverseButtons: true
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                AppDialog.fire({
-                                    title: 'Đang lưu kết quả...',
-                                    allowOutsideClick: false,
-                                    didOpen: () => {
-                                        AppDialog.showLoading();
-                                    }
-                                });
-
-                                this.submit();
-                            }
-                        });
+            AppDialog.fire({
+                title: 'Hoàn thành ca khám?',
+                text: "Bạn có chắc chắn muốn lưu kết quả và hoàn thành ca khám này không?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#0d6efd',
+                cancelButtonColor: '#dc3545',
+                confirmButtonText: '<i class="fa-solid fa-check"></i> Hoàn thành',
+                cancelButtonText: 'Xem lại',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    AppDialog.fire({
+                        title: 'Đang lưu kết quả...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            AppDialog.showLoading();
+                        }
                     });
-                </script>
 
+                    this.submit();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
