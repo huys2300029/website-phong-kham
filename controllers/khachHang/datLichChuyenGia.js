@@ -20,9 +20,7 @@ const TIMES = [
 
 /* ================= HELPER ================= */
 function makeLocalDate(yyyyMMdd, timeHHMM) {
-    const [y, m, d] = yyyyMMdd.split('-').map(Number);
-    const [hh, mm] = timeHHMM.split(':').map(Number);
-    return new Date(y, m - 1, d, hh, mm, 0);
+    return new Date(`${yyyyMMdd}T${timeHHMM}:00+07:00`);
 }
 
 /* ================= LUỒNG KHÁM CHUYÊN GIA ================= */
