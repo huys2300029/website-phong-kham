@@ -247,21 +247,21 @@
 
                             return `
                 <tr>
-                    <td class="text-center fw-bold align-middle">${stt}</td>
+                    <td class="col-stt fw-bold">${stt}</td>
 
-                    <td class="text-center align-middle">
+                    <td class="col-date">
                         <span class="history-date-badge">
                             ${escapeHtml(formatNgayVN(item.ngayKham))}
                         </span>
                     </td>
 
-                    <td class="text-start align-middle">
+                    <td class="col-spec">
                         <span class="history-specialty fw-semibold text-primary">
                             ${escapeHtml(item.tenChuyenKhoa || 'Khám tổng quát')}
                         </span>
                     </td>
 
-                    <td class="text-start align-middle history-note-cell" style="text-align: left !important;">
+                    <td class="col-note history-note-cell">
                         ${escapeHtml(item.ghiChu || 'Không có ghi chú')}
                     </td>
                 </tr>
@@ -289,7 +289,7 @@
                     </div>
 
                     <div class="history-mobile-label">Kết luận</div>
-                    <div class="history-mobile-value csp-bacsi-chandoan-ejs-1 text-start">
+                    <div class="history-mobile-value text-start">
                         ${escapeHtml(item.ghiChu || 'Không có ghi chú')}
                     </div>
                 </div>
@@ -297,14 +297,51 @@
                         }).join('');
 
                         container.innerHTML = `
+            <style>
+                .history-modal-table {
+                    width: 100% !important;
+                    table-layout: fixed !important;
+                    border-collapse: collapse !important;
+                }
+                .history-modal-table th, 
+                .history-modal-table td {
+                    display: table-cell !important;
+                    vertical-align: middle !important;
+                    box-sizing: border-box !important;
+                    padding: 12px 8px !important;
+                }
+                .history-modal-table .col-stt {
+                    width: 8% !important;
+                    text-align: center !important;
+                }
+                .history-modal-table .col-date {
+                    width: 18% !important;
+                    text-align: center !important;
+                }
+                .history-modal-table .col-spec {
+                    width: 24% !important;
+                    text-align: left !important;
+                    padding-left: 12px !important;
+                }
+                .history-modal-table .col-note,
+                .history-modal-table .history-note-cell {
+                    width: 50% !important;
+                    text-align: left !important;
+                    padding-left: 12px !important;
+                    justify-content: flex-start !important;
+                    white-space: normal !important;
+                    word-break: break-word !important;
+                }
+            </style>
+
             <div class="history-table-wrapper table-responsive rounded-4">
-                <table class="history-modal-table w-100">
+                <table class="history-modal-table">
                     <thead>
                         <tr>
-                            <th class="text-center align-middle" style="width: 8%;">STT</th>
-                            <th class="text-center align-middle" style="width: 18%;">Ngày khám</th>
-                            <th class="text-start align-middle" style="width: 24%;">Chuyên khoa</th>
-                            <th class="text-start align-middle" style="width: 50%;">Ghi chú / kết luận</th>
+                            <th class="col-stt">STT</th>
+                            <th class="col-date">Ngày khám</th>
+                            <th class="col-spec">Chuyên khoa</th>
+                            <th class="col-note">Ghi chú / kết luận</th>
                         </tr>
                     </thead>
 
