@@ -236,7 +236,7 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
             });
         }
 
-        // Ví dụ khách chọn 08 giờ thì tìm các lịch đã đặt trong khoảng 08:00 - 08:59.
+        // Tìm các lịch đã đặt trong khoảng thời gian đặt lịch.
         const gioHenPrefix = gioHen.substring(0, 2) + '%';
 
         const bookedData = await query(

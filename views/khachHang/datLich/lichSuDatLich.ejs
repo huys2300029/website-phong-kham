@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="/css/khachHang/lichSuDatLich.css" />
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css"/>
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet"/>
-<script src="/vendor/axios/axios.min.js"></script>
 
     <!-- Giao diện thông báo Bootstrap dùng chung -->
     <link rel="stylesheet" href="/css/migrated-inline.css?v=1">
@@ -276,20 +275,31 @@
         });
       });
 
-      // Hàm xử lý khi bấm nút Thanh toán
+      // Hàm xử lý khi bấm nút Thanh toán (sử dụng Fetch API)
       async function thanhToanLai(id_lichHen, donGia, id_chuyenKhoa) {
         try {
-          const res = await axios.post('/thanhToanLai', {
-            id_lichHen, donGia, id_chuyenKhoa, _csrf: csrfToken
+          const res = await fetch('/thanhToanLai', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              id_lichHen,
+              donGia,
+              id_chuyenKhoa,
+              _csrf: csrfToken
+            })
           });
           
-          if (res.data.success) {
-            window.location.href = res.data.payUrl; // Chuyển sang web ZaloPay
+          const data = await res.json();
+          
+          if (data.success) {
+            window.location.href = data.payUrl; // Chuyển sang web ZaloPay
           } else {
             AppDialog.fire({
               icon: 'warning',
               title: 'Cảnh báo',
-              text: res.data.msg
+              text: data.msg
             });
           }
         } catch (error) {
@@ -301,7 +311,7 @@
         }
       }
 
-      // Hàm xử lý khi bấm nút Hủy
+      // Hàm xử lý khi bấm nút Hủy (sử dụng Fetch API)
       async function huyLich(id_lichHen) {
         const result = await AppDialog.fire({
           title: 'Bạn có chắc chắn?',
@@ -316,9 +326,20 @@
 
         if (result.isConfirmed) {
           try {
-            const res = await axios.post('/huyLich', { id_lichHen, _csrf: csrfToken });
+            const res = await fetch('/huyLich', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                id_lichHen,
+                _csrf: csrfToken
+              })
+            });
+
+            const data = await res.json();
             
-            if (res.data.success) {
+            if (data.success) {
               await AppDialog.fire({
                 icon: 'success',
                 title: 'Thành công!',
@@ -330,7 +351,7 @@
               AppDialog.fire({
                 icon: 'error',
                 title: 'Không thể hủy',
-                text: res.data.msg
+                text: data.msg
               });
             }
           } catch (error) {

@@ -143,7 +143,6 @@
               }
 
               try {
-                // Đã đổi sang gọi API của chuyên gia
                 const url = `/api/slotsChuyenGia?ngay=${encodeURIComponent(date)}&id_bacSi=${encodeURIComponent(id_bacSi)}`;
                 const res = await fetch(url, { cache: 'no-store' });
                 const data = await res.json();
