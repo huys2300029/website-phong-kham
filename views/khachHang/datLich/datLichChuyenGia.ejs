@@ -114,6 +114,7 @@
                         <h5 class="mt-3 text-muted">Đang tìm kiếm bác sĩ...</h5>
                     </div>
                 `;
+
                             try {
                                 const response = await fetch(`/api/bacsi?id_chuyenKhoa=${encodeURIComponent(chuyenKhoaId)}`);
                                 const dataResponse = await response.json();
