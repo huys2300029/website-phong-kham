@@ -242,8 +242,6 @@ async function getBacSiData() {
     SELECT
       nd.id,
       nd.hoTen,
-      nd.soDienThoai,
-      nd.email,
       bs.namTotNghiep,
       bs.trinhDo,
       bs.chiTiet,
