@@ -202,7 +202,7 @@ const dongBoTrangThaiThanhToan = async (lichHen) => {
 };
 
 /* ================= HELPER: TẠO LỊCH HẸN & THANH TOÁN ================= */
-// Đây là hàm chính khi khách vừa đặt lịch và muốn chuyển sang thanh toán.
+// Đây là hàm chính khi khách vừa đặt lịch và chuyển sang thanh toán.
 const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gioHen, id_khachHang, loaiKham = 'Thuong') => {
     try {
         damBaoCoKey1ZaloPay();
