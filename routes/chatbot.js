@@ -221,7 +221,7 @@ Ví dụ:
 }
 
 /* =========================================================
-   QUERY DATABASE THEO INTENT (Đã cập nhật hàm executeQuery)
+   QUERY DATABASE THEO INTENT
 ========================================================= */
 
 async function getChuyenKhoaData() {
@@ -445,12 +445,9 @@ function buildDatabaseContextText(contextItems) {
 ========================================================= */
 
 async function answerByGemini(ai, userQuestion, intent, databaseContextText) {
-  const answerInstruction = `
-Bạn là chatbot hỗ trợ khách hàng cho website Bệnh viện Đa khoa Thành phố Cần Thơ.
-
+  const answerInstruction = `Bạn là chatbot hỗ trợ khách hàng cho website Bệnh viện Đa khoa Thành phố Cần Thơ.
 Intent của câu hỏi:
 ${intent}
-
 Nhiệm vụ:
 - Trả lời câu hỏi của khách hàng bằng tiếng Việt.
 - Chỉ trả lời các câu hỏi liên quan đến bệnh viện.
