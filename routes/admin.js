@@ -85,7 +85,6 @@ router.get('/themNguoiDung', quanLyNguoiDung.getThemNguoiDung);
 router.post('/themNguoiDung', quanLyNguoiDung.postThemNguoiDung);
 router.get('/suaNguoiDung/:id', quanLyNguoiDung.getSuaNguoiDung);
 router.post('/suaNguoiDung/:id', quanLyNguoiDung.postSuaNguoiDung);
-router.get('/xoaNguoiDung/:id', quanLyNguoiDung.xoaNguoiDung);
 
 // ------------- Quan Ly thong bao va duyet lich --------------------
 // 1. Route hiển thị trang danh sách thông báo

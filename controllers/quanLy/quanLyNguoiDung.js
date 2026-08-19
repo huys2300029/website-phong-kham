@@ -244,7 +244,6 @@ const postSuaNguoiDung = (req, res) => {
             let msgError = 'Có lỗi xảy ra khi cập nhật vào CSDL.';
             if (err.code === 'ER_DUP_ENTRY') msgError = 'Tên đăng nhập, Email hoặc Số điện thoại đã được người khác sử dụng!';
             
-            // ĐÃ SỬA: Trỏ đúng về view chỉnh sửa để tránh crash giao diện
             return res.render('admin/quanLyNguoiDung/suaNguoiDung', {
                 pageTitle: 'Sửa Người Dùng',
                 user: { ...req.body, id: userId }, 
@@ -268,7 +267,6 @@ const postSuaNguoiDung = (req, res) => {
             con.query(upsertKhachHangQuery, [
                 userId, ngaySinh || null, mappedGioiTinh || null, diaChi || null, tienSuBenhLy || null, nhomMau || null
             ], () => {
-                // Xóa dữ liệu cũ bên bảng NguoiQuanLy khi chuyển sang Khách Hàng
                 con.query(`DELETE FROM NguoiQuanLy WHERE id = ?`, [userId], () => {
                     res.redirect('/admin/quanLyNguoiDung');
                 });
@@ -282,7 +280,6 @@ const postSuaNguoiDung = (req, res) => {
             `;
             
             con.query(upsertQuanLyQuery, [userId, boPhan || null], () => {
-                // Xóa dữ liệu cũ bên bảng KhachHang khi chuyển sang Quản Lý
                 con.query(`DELETE FROM KhachHang WHERE id = ?`, [userId], () => {
                     res.redirect('/admin/quanLyNguoiDung');
                 });
@@ -291,33 +288,10 @@ const postSuaNguoiDung = (req, res) => {
     });
 };
 
-// 6. Xóa Người Dùng
-const xoaNguoiDung = (req, res) => {
-    const id = req.params.id;
-
-    con.query(
-        "DELETE FROM NguoiDung WHERE id = ?",
-        [id],
-        (err) => {
-            if (err) {
-                req.session.uiMessage = {
-                    type: 'error',
-                    title: 'Không thể xóa người dùng',
-                    message: `Không thể xóa: ${err.message}`
-                };
-
-                return res.redirect('/admin/quanLyNguoiDung');
-            }
-
-            req.session.uiMessage = {
-                type: 'success',
-                title: 'Thành công',
-                message: 'Đã xóa người dùng thành công.'
-            };
-
-            return res.redirect('/admin/quanLyNguoiDung');
-        }
-    );
+module.exports = { 
+    getDanhSachNguoiDung, 
+    getThemNguoiDung, 
+    postThemNguoiDung, 
+    getSuaNguoiDung, 
+    postSuaNguoiDung 
 };
-
-module.exports = { getDanhSachNguoiDung, getThemNguoiDung, postThemNguoiDung, getSuaNguoiDung, postSuaNguoiDung, xoaNguoiDung };
