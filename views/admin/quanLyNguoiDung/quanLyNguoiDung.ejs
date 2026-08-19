@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Quản Lý Người Dùng' %></title>
-    
+    <title>
+        <%= typeof pageTitle !=='undefined' ? pageTitle : 'Quản Lý Người Dùng' %>
+    </title>
+
     <link href="/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/vendor/fontawesome/css/all.min.css">
-    
+
     <link rel="stylesheet" href="/css/admin/sidebar.css">
     <link rel="stylesheet" href="/css/admin/style.css">
 
@@ -17,105 +20,138 @@
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/js/bootstrap-ui.js?v=2"></script>
 </head>
+
 <body>
-    <% if (typeof uiMessage !== 'undefined' && uiMessage && uiMessage.message) { %>
-      <template
-        data-app-message="<%= uiMessage.message %>"
-                data-app-type="<%= uiMessage.type || 'info' %>"
-                data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
-    <% } %>
+    <% if (typeof uiMessage !=='undefined' && uiMessage && uiMessage.message) { %>
+        <template data-app-message="<%= uiMessage.message %>" data-app-type="<%= uiMessage.type || 'info' %>"
+            data-app-title="<%= uiMessage.title || 'Thông báo' %>"></template>
+        <% } %>
 
-    
-    <div class="d-flex vh-100 overflow-hidden csp-admin-quanlynguoidung-quanlynguoidung-ejs-10"> 
-        
-        <%- include('../sidebar') %>
 
-        <div class="main-content flex-grow-1 p-3 p-md-4 overflow-auto" style="margin-left: 0 !important;">
-            
-            <div class="card-box bg-white p-4 rounded shadow-sm border-0">
-                
-                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4 pb-2 border-bottom">
-                    <h2 class="mb-0 fw-bold csp-admin-quanlynguoidung-quanlynguoidung-ejs-9">Quản Lý Danh Sách Người Dùng</h2>
-                    
-                    <a href="/admin/themNguoiDung" class="btn-add text-nowrap text-decoration-none">
-                        <i class="fas fa-plus"></i> Thêm Người Dùng Mới
-                    </a>
-                </div>
+            <div class="d-flex vh-100 overflow-hidden csp-admin-quanlynguoidung-quanlynguoidung-ejs-10">
 
-                <form action="/admin/quanLyNguoiDung" method="GET" class="mb-4 d-flex">
-                    <input type="text" name="q" class="form-control me-2" placeholder="Tìm kiếm theo tên, email, sđt, tên đăng nhập..." value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
-                    <button type="submit" class="btn btn-primary px-4"><i class="fas fa-search"></i></button>
-                </form>
+                <%- include('../sidebar') %>
 
-                <div class="table-responsive">
-                    <table class="custom-table w-100">
-                        <thead>
-                            <tr>
-                                <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-8">STT</th>
-                                <th class="csp-admin-quanlynguoidung-quanlynguoidung-ejs-7">Họ Tên</th>
-                                <th class="csp-admin-quanlynguoidung-quanlynguoidung-ejs-6">Tên Đăng Nhập</th>
-                                <th class="csp-admin-quanlynguoidung-quanlynguoidung-ejs-5">Email</th>
-                                <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-4">Số Điện Thoại</th>
-                                <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-3">Vai Trò</th>
-                                <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-2">Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% let i = (typeof currentPage !== 'undefined' ? (currentPage - 1) * 10 + 1 : 1); %>
-                            <% if(typeof danhSach !== 'undefined' && danhSach.length > 0) { %>
-                                <% danhSach.forEach(user => { %>
-                                    <tr>
-                                        <td class="text-center"><%= i++ %></td>
-                                        <td><strong class="text-dark"><%= user.hoTen %></strong></td>
-                                        <td><%= user.tenDangNhap %></td>
-                                        <td class="text-muted"><%= user.email || 'Chưa cập nhật' %></td>
-                                        <td class="text-center"><%= user.soDienThoai || 'Chưa cập nhật' %></td>
-                                        <td class="text-center">
-                                            <span class="badge <%= user.vaiTro === 'NguoiQuanLy' ? 'bg-danger' : 'bg-success' %>">
-                                                <%= user.vaiTro === 'NguoiQuanLy' ? 'Quản Lý' : 'Khách Hàng' %>
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="action-wrapper d-flex justify-content-center gap-3">
-                                                <a href="/admin/suaNguoiDung/<%= user.id %>" class="btn-icon btn-edit" title="Sửa">
-                                                    <i class="fas fa-edit"></i>
+                    <div class="main-content flex-grow-1 p-3 p-md-4 overflow-auto" style="margin-left: 0 !important;">
+
+                        <div class="card-box bg-white p-4 rounded shadow-sm border-0">
+
+                            <div
+                                class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4 pb-2 border-bottom">
+                                <h2 class="mb-0 fw-bold csp-admin-quanlynguoidung-quanlynguoidung-ejs-9">Quản Lý Danh
+                                    Sách Người Dùng</h2>
+
+                                <a href="/admin/themNguoiDung" class="btn-add text-nowrap text-decoration-none">
+                                    <i class="fas fa-plus"></i> Thêm Người Dùng Mới
+                                </a>
+                            </div>
+
+                            <form action="/admin/quanLyNguoiDung" method="GET" class="mb-4 d-flex">
+                                <input type="text" name="q" class="form-control me-2"
+                                    placeholder="Tìm kiếm theo tên, email, sđt, tên đăng nhập..."
+                                    value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+                                <button type="submit" class="btn btn-primary px-4"><i
+                                        class="fas fa-search"></i></button>
+                            </form>
+
+                            <div class="table-responsive">
+                                <table class="custom-table w-100">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-8">STT
+                                            </th>
+                                            <th class="csp-admin-quanlynguoidung-quanlynguoidung-ejs-7">Họ Tên</th>
+                                            <th class="csp-admin-quanlynguoidung-quanlynguoidung-ejs-6">Tên Đăng Nhập
+                                            </th>
+                                            <th class="csp-admin-quanlynguoidung-quanlynguoidung-ejs-5">Email</th>
+                                            <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-4">Số
+                                                Điện Thoại</th>
+                                            <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-3">Vai
+                                                Trò</th>
+                                            <th class="text-center csp-admin-quanlynguoidung-quanlynguoidung-ejs-2">Thao
+                                                Tác</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% let i=(typeof currentPage !=='undefined' ? (currentPage - 1) * 10 + 1 : 1);
+                                            %>
+                                            <% if(typeof danhSach !=='undefined' && danhSach.length> 0) { %>
+                                                <% danhSach.forEach(user=> { %>
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            <%= i++ %>
+                                                        </td>
+                                                        <td><strong class="text-dark">
+                                                                <%= user.hoTen %>
+                                                            </strong></td>
+                                                        <td>
+                                                            <%= user.tenDangNhap %>
+                                                        </td>
+                                                        <td class="text-muted">
+                                                            <%= user.email || 'Chưa cập nhật' %>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <%= user.soDienThoai || 'Chưa cập nhật' %>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span
+                                                                class="badge <%= user.vaiTro === 'NguoiQuanLy' ? 'bg-danger' : 'bg-success' %>">
+                                                                <%= user.vaiTro==='NguoiQuanLy' ? 'Quản Lý'
+                                                                    : 'Khách Hàng' %>
+                                                            </span>
+                                                        </td>
+                                                        <td>
+                                                            <div
+                                                                class="action-wrapper d-flex justify-content-center gap-3">
+                                                                <a href="/admin/suaNguoiDung/<%= user.id %>"
+                                                                    class="btn-icon btn-edit" title="Sửa">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                                        <% } else { %>
+                                                            <tr>
+                                                                <td colspan="7" class="text-center py-5 text-muted">
+                                                                    <i
+                                                                        class="fas fa-users mb-3 csp-admin-quanlynguoidung-quanlynguoidung-ejs-1"></i>
+                                                                    <p class="mb-0 fs-5">Chưa có dữ liệu người dùng nào.
+                                                                    </p>
+                                                                </td>
+                                                            </tr>
+                                                            <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <% if(typeof totalPages !=='undefined' && totalPages> 1) { %>
+                                <nav aria-label="Page navigation" class="mt-4">
+                                    <ul class="pagination justify-content-center mb-0">
+                                        <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
+                                            <a class="page-link"
+                                                href="?page=<%= currentPage - 1 %>&q=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">Trước</a>
+                                        </li>
+                                        <% for(let p=1; p <=totalPages; p++) { %>
+                                            <li class="page-item <%= currentPage === p ? 'active' : '' %>">
+                                                <a class="page-link"
+                                                    href="?page=<%= p %>&q=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">
+                                                    <%= p %>
                                                 </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                <% }) %>
-                            <% } else { %>
-                                <tr>
-                                    <td colspan="7" class="text-center py-5 text-muted">
-                                        <i class="fas fa-users mb-3 csp-admin-quanlynguoidung-quanlynguoidung-ejs-1"></i>
-                                        <p class="mb-0 fs-5">Chưa có dữ liệu người dùng nào.</p>
-                                    </td>
-                                </tr>
-                            <% } %>
-                        </tbody>
-                    </table>
-                </div> 
-                
-                <% if(typeof totalPages !== 'undefined' && totalPages > 1) { %>
-                    <nav aria-label="Page navigation" class="mt-4">
-                        <ul class="pagination justify-content-center mb-0">
-                            <li class="page-item <%= currentPage === 1 ? 'disabled' : '' %>">
-                                <a class="page-link" href="?page=<%= currentPage - 1 %>&q=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">Trước</a>
-                            </li>
-                            <% for(let p = 1; p <= totalPages; p++) { %>
-                                <li class="page-item <%= currentPage === p ? 'active' : '' %>">
-                                    <a class="page-link" href="?page=<%= p %>&q=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"><%= p %></a>
-                                </li>
-                            <% } %>
-                            <li class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
-                                <a class="page-link" href="?page=<%= currentPage + 1 %>&q=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">Sau</a>
-                            </li>
-                        </ul>
-                    </nav>
-                <% } %>
-                
-            </div> 
-        </div> 
-    </div>
+                                            </li>
+                                            <% } %>
+                                                <li
+                                                    class="page-item <%= currentPage === totalPages ? 'disabled' : '' %>">
+                                                    <a class="page-link"
+                                                        href="?page=<%= currentPage + 1 %>&q=<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>">Sau</a>
+                                                </li>
+                                    </ul>
+                                </nav>
+                                <% } %>
+
+                        </div>
+                    </div>
+            </div>
 </body>
+
 </html>
