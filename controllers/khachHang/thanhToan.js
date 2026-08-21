@@ -128,8 +128,8 @@ const capNhatThanhToanThanhCong = async (app_trans_id, zp_trans_id) => {
         `
         UPDATE LichHen 
         SET trangThaiThanhToan = 'DaThanhToan',
-            maZalopay = ?
-        WHERE maZalo = ?
+            maGiaoDichZaloPay = ?
+        WHERE maDonHangApp = ?
           AND trangThaiThanhToan = 'ChuaThanhToan'
         `,
         [zp_trans_id, app_trans_id]
@@ -175,21 +175,21 @@ const dongBoTrangThaiThanhToan = async (lichHen) => {
     if (
         !lichHen ||
         lichHen.trangThaiThanhToan !== 'ChuaThanhToan' ||
-        !lichHen.maZalo
+        !lichHen.maDonHangApp
     ) {
         return false;
     }
 
-    const queryResult = await queryTrangThaiDonHangZaloPay(lichHen.maZalo);
+    const queryResult = await queryTrangThaiDonHangZaloPay(lichHen.maDonHangApp);
 
     if (queryResult.return_code === 1 && queryResult.zp_trans_id) {
         await capNhatThanhToanThanhCong(
-            lichHen.maZalo,
+            lichHen.maDonHangApp,
             queryResult.zp_trans_id
         );
 
         lichHen.trangThaiThanhToan = 'DaThanhToan';
-        lichHen.maZalopay = String(queryResult.zp_trans_id);
+        lichHen.maGiaoDichZaloPay = String(queryResult.zp_trans_id);
 
         logThanhToan(
             `Đồng bộ trạng thái thành công LH-${lichHen.id_lichHen}, ZP-${queryResult.zp_trans_id}`
@@ -312,7 +312,7 @@ const handleBookingAndPayment = async (res, req, id_ca, id_chuyenKhoa, ngay, gio
         await query(
             `
             UPDATE LichHen 
-            SET maZalo = ? 
+            SET maDonHangApp = ? 
             WHERE id_lichHen = ?
             `,
             [app_trans_id, id_lichHen_new]
@@ -434,8 +434,8 @@ const getLichSu = async (req, res) => {
                 lh.gioHen,
                 lh.trangThai,
                 lh.trangThaiThanhToan,
-                lh.maZalo,
-                lh.maZalopay,
+                lh.maDonHangApp,
+                lh.maGiaoDichZaloPay,
                 nd.hoTen AS tenBacSi,
                 lh.ghiChu
             FROM LichHen lh
@@ -460,7 +460,7 @@ const getLichSu = async (req, res) => {
         for (let item of rows) {
             // Nếu callback ZaloPay bị mất, trang lịch sử sẽ tự kiểm tra lại
             // và cập nhật TiDB trước khi hiển thị trạng thái.
-            if (item.trangThaiThanhToan === 'ChuaThanhToan' && item.maZalo) {
+            if (item.trangThaiThanhToan === 'ChuaThanhToan' && item.maDonHangApp) {
                 try {
                     await dongBoTrangThaiThanhToan(item);
                 } catch (syncError) {
@@ -714,7 +714,7 @@ const huyLichHen = async (req, res) => {
         }
 
         if (
-            !lichHen.maZalopay
+            !lichHen.maGiaoDichZaloPay
         ) {
             return res.json({
                 success: false,
@@ -729,7 +729,7 @@ const huyLichHen = async (req, res) => {
 
         const app_id = String(configZaloPay.app_id);
 
-        const zp_trans_id = String(lichHen.maZalopay);
+        const zp_trans_id = String(lichHen.maGiaoDichZaloPay);
 
         const amount = String(
             Math.round(
@@ -998,7 +998,7 @@ const thanhToanLai = async (req, res) => {
         await query(
             `
             UPDATE LichHen
-            SET maZalo = ?
+            SET maDonHangApp = ?
             WHERE id_lichHen = ?
               AND id_khachHang = ?
             `,
@@ -1127,7 +1127,7 @@ const callbackZaloPay = async (req, res) => {
                 JOIN NguoiDung nd ON lh.id_khachHang = nd.id
                 JOIN ChuyenKhoa ck ON lh.id_chuyenKhoa = ck.id_chuyenKhoa
                 JOIN CaKham ca ON lh.id_caKham = ca.id_caKham
-                WHERE lh.maZalo = ?
+                WHERE lh.maDonHangApp = ?
                 `,
                 [app_trans_id]
             );
@@ -1280,8 +1280,8 @@ const getThongTinLichKham = async (req, res) => {
 
         if (
             apptransid &&
-            data.maZalo &&
-            apptransid !== data.maZalo
+            data.maDonHangApp &&
+            apptransid !== data.maDonHangApp
         ) {
             logLoi(
                 `apptransid trên URL không khớp mã đơn LH-${id_lichHen}. ` +
@@ -1289,11 +1289,11 @@ const getThongTinLichKham = async (req, res) => {
             );
         }
 
-        // Không chỉ tin status=1 trên URL. Luôn hỏi lại ZaloPay bằng maZalo
+        // Không chỉ tin status=1 trên URL. Luôn hỏi lại ZaloPay bằng maDonHangApp
         // đã lưu trong TiDB trước khi công nhận thanh toán thành công.
         if (
             data.trangThaiThanhToan === 'ChuaThanhToan' &&
-            data.maZalo
+            data.maDonHangApp
         ) {
             try {
                 await dongBoTrangThaiThanhToan(data);
@@ -1346,8 +1346,8 @@ setInterval(async () => {
             `
             SELECT
                 id_lichHen,
-                maZalo,
-                maZalopay,
+                maDonHangApp,
+                maGiaoDichZaloPay,
                 trangThaiThanhToan,
                 created_at
             FROM LichHen
@@ -1360,13 +1360,13 @@ setInterval(async () => {
 
         // Xử lý lần lượt từng lịch đang chờ thanh toán.
         for (const lichHen of pendingRows) {
-            let duocPhepXoa = !lichHen.maZalo;
+            let duocPhepXoa = !lichHen.maDonHangApp;
 
             /*
              * Nếu lịch có mã giao dịch ZaloPay,
              * phải kiểm tra lại trạng thái trước khi xóa.
              */
-            if (lichHen.maZalo) {
+            if (lichHen.maDonHangApp) {
                 try {
                     const daThanhToan =
                         await dongBoTrangThaiThanhToan(
